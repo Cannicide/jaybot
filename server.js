@@ -21,7 +21,8 @@ client.on('guildCreate', guild => {
 
 client.on('ready', () => {
     console.log('ZH Discord Bot is up and running!');
-    client.user.setActivity('/help', { type: 'STREAMING', url: 'https://github.com/Cannicide/zh-bot' });
+    //Allows the status of the bot to be PURPLE (I don't stream on twitch anyways)
+    client.user.setActivity('/help', { type: 'STREAMING', url: 'https://twitch.tv/cannicide' });
 });
 
 client.on('message', message => {
@@ -66,4 +67,5 @@ client.on('message', message => {
     }
 });
 
-client.login("your token here");
+//Added token
+client.login(process.env.TOKEN);
