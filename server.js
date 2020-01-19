@@ -19,10 +19,15 @@ client.on('guildCreate', guild => {
     guild.channels.get(guild.channels.find("name", "general").id).send("Added ZH Discord Bot to guild.");
 });
 
+var commands = [];
+
 client.on('ready', () => {
     console.log('ZH Discord Bot is up and running!');
     //Allows the status of the bot to be PURPLE (I don't stream on twitch anyways)
     client.user.setActivity('/help', { type: 'STREAMING', url: 'https://twitch.tv/cannicide' });
+
+    //Import commands:
+    commands.push({name: "faq", cmd: require("./faq")});
 });
 
 client.on('message', message => {
@@ -40,6 +45,7 @@ client.on('message', message => {
         var fixRegExp = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         var re = new RegExp(fixRegExp);
         var command = splitted[0].replace(re, "");
+        command = command.toLowerCase();
 
         if (splitted[1]) {
             var args = splitted[1].split(" ");
@@ -53,14 +59,21 @@ client.on('message', message => {
         }
 
         //Check for command:
-        switch (command) {
-            case "examplecommand":
+        var cmd = false;
 
-                break;
-            default:
+        commands.forEach((item, index) => {
+            if (item.name == command) {
+                cmd = item.cmd;
+            }
+        });
 
-                break;
+        if (cmd) {
+            cmd.set(message);
+            cmd.execute(args).catch((err) => {
+                message.reply("An error occurred: " + err);
+            });
         }
+
     }
     catch (err) {
         message.channel.send(`Errors found:\n\`\`\`${err}\nAt ${err.stack}\`\`\``);

@@ -11,7 +11,7 @@ function Command(method, permissions) {
         }
     }
 
-    this.execute = function(command, args) {
+    this.execute = function(args) {
         var error = false;
         if (!message) {
             error = "No message was detected.";
@@ -19,7 +19,7 @@ function Command(method, permissions) {
         else {
 
             if (!permissions) {
-                method(command, args);
+                method(message, args);
             }
             else {
                 var member = message.member;
@@ -32,7 +32,7 @@ function Command(method, permissions) {
                 });
 
                 if (hasPermissions) {
-                    method(command, args);
+                    method(message, args);
                 }
                 else {
                     error = "Sorry, you do not have the permissions to execute that command."
