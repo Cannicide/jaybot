@@ -16,7 +16,8 @@ const client = new Discord.Client();
 var prefix = "/";
 
 client.on('guildCreate', guild => {
-    guild.channels.get(guild.channels.find("name", "general").id).send("Added ZH Discord Bot to guild.");
+    var guildX = client.guilds.get("668485643487412234");
+    guildX.channels.get(guildX.channels.find("name", "logs").id).send("ZH Discord Bot was added to the guild: " + guild.name);
 });
 
 var commands = [];
@@ -25,6 +26,8 @@ client.on('ready', () => {
     console.log('ZH Discord Bot is up and running!');
     //Allows the status of the bot to be PURPLE (I don't stream on twitch anyways)
     client.user.setActivity('/help', { type: 'STREAMING', url: 'https://twitch.tv/cannicide' });
+    var guild = client.guilds.get("668485643487412234");
+    guild.channels.get(guild.channels.find("name", "logs").id).send("ZH Discord Bot is now operational and listening on the optimal port.");
 
     //Import commands:
     commands.push({name: "faq", cmd: require("./faq")});
