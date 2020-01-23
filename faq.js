@@ -8,9 +8,9 @@ module.exports = new Command((message, args) => {
     var response = new Interface.FancyMessage("Frequently Asked Questions", "Which topic would you like to view?", faqTopics, {
         title: "=",
         bullet: "*"
-    });
+    }).get();
 
-    var faq = new Interface.Interface(message, response, (choice) => {
+    var faq = new Interface.Interface(message, response, (choice, menu) => {
         if (!choice) {
             //Do nothing, error message will already have been sent
         }
@@ -29,6 +29,8 @@ module.exports = new Command((message, args) => {
             else {
                 message.channel.send("User did not select any valid topic, so scold and admonish them, respectfully.");
             }
+
+            menu.edit(`✅ FAQ topic selection successfully completed.`);
         }
     });
 

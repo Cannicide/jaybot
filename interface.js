@@ -29,7 +29,7 @@ function FancyMessage(title, question, bullets, options) {
 
     msg += stylizedBullets + "\n<!-- Menu will close in 30 seconds.\nDo not include punctuation or the command prefix in your response. -->\`\`\`";
 
-    return msg;
+    this.get = () => {return msg};
 
 }
 
@@ -50,7 +50,7 @@ function Interface(message, question, callback) {
     const collector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id, {maxMatches: 1});
     collector.on("collect", msg => {
         collected = true;
-        callback(msg);
+        callback(msg, qMessage);
     });
 
     collector.on("end", () => {
@@ -61,7 +61,7 @@ function Interface(message, question, callback) {
         if (closed) return;
         else if (!collected) {
             collector.stop("User did not give a response within 30 seconds");
-            qMessage.edit(`<:no:669928674119778304> @${message.author.tag}, the menu closed because you did not respond within 30 seconds.`);
+            qMessage.edit(`<:no:669928674119778304> <@!${message.author.id}>, the menu closed because you did not respond within 30 seconds.`);
             closed = true;
             callback(false);
         }
