@@ -15,6 +15,9 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 var prefix = "/";
 
+var interface = require("./interface");
+interface.setClient(Discord);
+
 client.on('guildCreate', guild => {
     var guildX = client.guilds.get("668485643487412234");
     guildX.channels.get(guildX.channels.find("name", "logs").id).send("ZH Discord Bot was added to the guild: " + guild.name);
