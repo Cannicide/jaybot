@@ -39,13 +39,7 @@ function FancyMessage(title, question, bullets, options) {
  * @param {Object} message - Message containing the command that led to calling on the interface
  * @param {String} question - Question to ask user for a response
  */
-function Interface(message, question) {
-
-    function ThenPromise(item) {
-        this.then = function(callback) {
-            callback(item);
-        }
-    }
+function Interface(message, question, callback) {
 
     var collected = false;
     var closed = false;
@@ -56,7 +50,7 @@ function Interface(message, question) {
     const collector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id, {maxMatches: 1});
     collector.on("collect", msg => {
         collected = true;
-        return new ThenPromise(msg);
+        callback(msg);
     });
 
     collector.on("end", () => {
@@ -69,7 +63,7 @@ function Interface(message, question) {
             collector.stop("User did not give a response within 30 seconds");
             qMessage.edit(`<:no:669928674119778304> @${message.author.tag}, the menu closed because you did not respond within 30 seconds.`);
             closed = true;
-            return new ThenPromise(false);
+            callback(false);
         }
     }, 30000);
 
