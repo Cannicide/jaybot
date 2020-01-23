@@ -15,8 +15,8 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 var prefix = "/";
 
-var interface = require("./interface");
-interface.setClient(Discord);
+var inface = require("./interface");
+inface.setClient(Discord);
 
 client.on('guildCreate', guild => {
     var guildX = client.guilds.get("668485643487412234");
