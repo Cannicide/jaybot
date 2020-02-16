@@ -24,16 +24,29 @@ client.on('guildCreate', guild => {
 });
 
 var commands = [];
+var requisites = [];
 
 client.on('ready', () => {
     console.log('ZH Discord Bot is up and running!');
     //Allows the status of the bot to be PURPLE (I don't stream on twitch anyways)
     client.user.setActivity('/help', { type: 'STREAMING', url: 'https://twitch.tv/cannicide' });
     var guild = client.guilds.get("668485643487412234");
-    guild.channels.get(guild.channels.find("name", "logs").id).send("ZH Discord Bot is now operational and listening on the optimal port.");
+    guild.channels.get(guild.channels.find("name", "logs").id).fetchMessage("678657509296439353").then(msg => msg.edit("ZH Discord Bot is up and running again on the optimal port.\nAs of: " + new Date()));
+
 
     //Import commands:
-    commands.push({name: "faq", cmd: require("./faq")});
+    /**
+     * @type Command[]
+     */
+    requisites = [
+        require("./faq"),
+        require("./statistics"),
+
+        //Must be the last in the list:
+        require("./help")
+    ];
+
+    commands = requisites[requisites.length - 1].getCommands();
 });
 
 client.on('message', message => {
@@ -75,9 +88,16 @@ client.on('message', message => {
 
         if (cmd) {
             cmd.set(message);
-            cmd.execute(args).catch((err) => {
-                message.reply("An error occurred: " + err);
-            });
+            if (cmd.getName() == "help") {
+                cmd.execute([prefix]).catch((err) => {
+                    message.reply("An error occurred: " + err);
+                });
+            }
+            else {
+                cmd.execute(args).catch((err) => {
+                    message.reply("An error occurred: " + err);
+                });
+            }
         }
 
     }

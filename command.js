@@ -1,8 +1,18 @@
-function Command(method, permissions) {
+var commands = [];
+
+function Command(name, method, permissions) {
     var message = false;
 
     this.set = function(msg) {
         message = msg;
+    }
+
+    this.getCommands = () => {
+        return commands;
+    }
+
+    this.getName = () => {
+        return name;
     }
 
     function CatchPromise(err) {
@@ -43,6 +53,8 @@ function Command(method, permissions) {
 
         return new CatchPromise(error);
     }
+
+    if (name && method) commands.push({name: name, cmd: this});
 
 }
 
