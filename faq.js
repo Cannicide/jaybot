@@ -1,7 +1,7 @@
 var Command = require("./command");
 var Interface = require("./interface")
 
-module.exports = new Command((message, args) => {
+module.exports = new Command("faq", (message, args) => {
 
     var faqTopics = ["Gold", "Ranks", "Zombies", "XP", "Perks", "Kits"];
 
