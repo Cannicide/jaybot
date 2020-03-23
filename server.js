@@ -42,6 +42,7 @@ client.on('ready', () => {
         require("./faq"),
         require("./statistics"),
         require("./ban-appeals"),
+        require("./report"),
 
         //Must be the last in the list:
         require("./help")

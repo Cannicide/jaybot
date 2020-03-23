@@ -61,7 +61,8 @@ function EmbedMessage(message, thumbnail, fields) {
           "name": tuser.username,
           "icon_url": tuser.avatarURL
         },
-        "fields": fields
+        "fields": fields,
+        "image": {}
       }
     };
 }
@@ -93,12 +94,12 @@ function Interface(message, question, callback) {
     setTimeout(() => {
         if (closed) return;
         else if (!collected) {
-            collector.stop("User did not give a response within 30 seconds");
-            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 30 seconds.`);
+            collector.stop("User did not give a response within 120 seconds");
+            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 2 minutes.`);
             closed = true;
             callback(false);
         }
-    }, 30000);
+    }, 1200000);
 
 }
 
