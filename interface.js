@@ -34,6 +34,39 @@ function FancyMessage(title, question, bullets, options) {
 }
 
 /**
+ * Creates a new Embed, which can be used with or without the interface.
+ * @constructor
+ * @param {Object} message - The message containing the call to the currently processing command.
+ * @param {String} thumbnail - The URL to the preferred thumbnail of the Embed.
+ * @param {Object[]} fields - An array of the contents of the Embed, separated by field.
+ * @param {String} fields[].name - The title of the field.
+ * @param {String} fields[].value - The content of the field.
+ * @param {Boolean} [fields[].inline] - Whether or not the field is inline.
+ */
+function EmbedMessage(message, thumbnail, fields) {
+    let userID = message.author.id;
+    let client = message.client;
+    var tuser = client.users.find("id", userID);
+    return {embed: {
+        "color": tuser.toString().substring(2, 8),
+        "timestamp": new Date(),
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "thumbnail": {
+          "url": thumbnail
+        },
+        "author": {
+          "name": tuser.username,
+          "icon_url": tuser.avatarURL
+        },
+        "fields": fields
+      }
+    };
+}
+
+/**
  * Creates a new Interface, an interactive means of receiving input from the user.
  * Works fine with FancyMessage.
  * @param {Object} message - Message containing the command that led to calling on the interface
@@ -78,5 +111,6 @@ module.exports = {
     setClient: (client) => {
         Discord = client;
     },
-    FancyMessage: FancyMessage
+    FancyMessage: FancyMessage,
+    Embed: EmbedMessage
 };
