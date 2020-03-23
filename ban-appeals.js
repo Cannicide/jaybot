@@ -15,7 +15,7 @@ module.exports = new Command("banappeal", (message, args) => {
         },
         {
             name: "Properly Appealing",
-            value: `Once you have read the ban appeal format, copy the template provided in it. Create a new ban appeal thread [here](${banThread}). In order to maximize your chances of getting unbanned, provide detailed and professional responses to the prompts provided in the template. After you are finished creating your ban appeal, wait patiently until a staff member reviews your appeal. You will see a reply to your appeal on the forums either accepting or denying your appeal, and an explanation if denied. Please also refrain from nagging staff members to read your appeal. Doing so may increase the length of your ban, or may decrease your chances of getting unbanned.`
+            value: `Copy the template provided in the ban appeal format. Create a new appeal thread [here](${banThread}) and paste the template. Provide detailed and professional responses to the prompts provided in the template. Afterwards, wait patiently until staff reviews your appeal.`
         }
     ]);
 
