@@ -25,7 +25,7 @@ module.exports = new Command("statistics", (message, args) => {
 
     getServerInfo((info) => {
 
-        message.channel.send("**Statistics**\n\nPlayers Online: " + info.players + "\nVersion: " + info.version);
+        message.channel.send("**Statistics**\n\nPlayers Online: " + info.players + "\nVersion: " + "1.8.x");//info.version);
 
     });
 
