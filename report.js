@@ -43,7 +43,7 @@ module.exports = new Command("report", (message, args) => {
                                     var bugDesc = res2.content;
                                     init2.edit(`✅ Successfully entered a description for the bug report.`);
 
-                                    let img = new Interface.Interface(message, "Attach **one** image illustrating the bug that you found, or type `none` if you do not have an image. **Image files** and **image URLs** are both accepted.", (res3, init3) => {
+                                    let img = new Interface.Interface(message, "Attach **one** image or URL illustrating the bug that you found, or type `none` if you do not have an image/video/URL. **Image files** and **any URLs** are both accepted.", (res3, init3) => {
                                         if (!res3){}
                                         else {
                                             var bugImage;
@@ -58,17 +58,21 @@ module.exports = new Command("report", (message, args) => {
                                                 bugImage = attachment[0].url;
                                             }
 
-                                            init3.edit(`✅ Successfully set an image, or a default image if one was not attached, for the bug report.`);
+                                            init3.edit(`✅ Successfully set an image/file/URL, or a default image if one was not attached, for the bug report.`);
 
                                             //Now post a bug report embed to the #bugs channel
                                             let bugReport = new Interface.Embed(message, thumb, [
                                                 {
                                                     name: `Bug Report: **${bugTitle}**`,
                                                     value: bugDesc
+                                                },
+                                                {
+                                                    name: `Bug Evidence`,
+                                                    value: `[🔗](${bugImage})`
                                                 }
                                             ]);
 
-                                            bugReport.embed["image"]["url"] = bugImage;
+                                            bugReport.embed["image"]["url"] = bugImage.match(/\.(jpeg|jpg|gif|png)$/) ? bugImage : "";
                                             bugReport.embed.title = bugTitle;
 
                                             message.guild.channels.get(message.guild.channels.find("name", "bugs").id).send(bugReport);
