@@ -1,5 +1,6 @@
 var ping = require("minecraft-server-util");
 var Command = require("./command");
+var Interface = require("./interface");
 
 function getServerInfo(callback) {
 
@@ -25,7 +26,25 @@ module.exports = new Command("statistics", (message, args) => {
 
     getServerInfo((info) => {
 
-        message.channel.send("**Statistics**\n\nPlayers Online: " + info.players + "\nVersion: " + "1.8.x");//info.version);
+        var memOnline = message.guild.members.filter(m => m.presence.status == 'online').size;
+        var memTotal = message.guild.memberCount;
+        var memPercent = memOnline / memTotal * 100;
+
+        let embed = new Interface.Embed(message, message.guild.iconURL, [
+            {
+                name: "Minecraft Server",
+                value: `Players Online: ${info.players}\nVersion: 1.8.x`
+            },
+            {
+                name: "Discord Server",
+                value: `Total Member Count: ${memTotal} users\nTotal Online Members: ${memOnline}\nPercent of Members Online: ${Math.round(memPercent)}%`
+            }
+        ]);
+
+        embed.embed.title = "**Statistics**";
+        message.channel.send(embed);
+
+        //message.channel.send("**Statistics**\n\nPlayers Online: " + info.players + "\nVersion: " + "1.8.x");//info.version);
 
     });
 
