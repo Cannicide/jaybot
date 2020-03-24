@@ -19,6 +19,8 @@ module.exports = new Command("banappeal", (message, args) => {
         }
     ]);
 
+    embed.embed.title = "Ban Appeals";
+
     message.channel.send(embed);
 
 }, false);

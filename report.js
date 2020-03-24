@@ -69,6 +69,7 @@ module.exports = new Command("report", (message, args) => {
                                             ]);
 
                                             bugReport.embed["image"]["url"] = bugImage;
+                                            bugReport.embed.title = bugTitle;
 
                                             message.guild.channels.get(message.guild.channels.find("name", "bugs").id).send(bugReport);
                                             message.channel.send(`✅ Your bug report has been submitted, <@!${message.author.id}>`);
