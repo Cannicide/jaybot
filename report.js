@@ -29,7 +29,12 @@ module.exports = new Command("report", (message, args) => {
             if (matchesType) {
                 if (matchesType == "Bugs" || matchesType == "Safespots") {
                     //Report a bug/safespot
-                    let thumb = "https://cdn.discordapp.com/attachments/668485643487412237/691701166408728676/bug.png";
+                    let thumb;
+                    let bugThumb = "https://cdn.discordapp.com/attachments/668485643487412237/691701166408728676/bug.png";
+                    let safespotThumb = "https://cdn.discordapp.com/attachments/668485643487412237/692087177047310356/safespot.png";
+
+                    if (matchesType == "Bugs") thumb = bugThumb;
+                    else thumb = safespotThumb;
 
                     let title = new Interface.Interface(message, "Give a concise and descriptive title for your bug/safespot report (one small sentence recommended):", (res1, init1) => {
                         if (!res1){}
