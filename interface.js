@@ -95,8 +95,8 @@ function Interface(message, question, callback) {
     setTimeout(() => {
         if (closed) return;
         else if (!collected) {
-            collector.stop("User did not give a response within 120 seconds");
-            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 2 minutes.`);
+            collector.stop("User did not give a response within 60 seconds");
+            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 1 minute.`);
             closed = true;
             callback(false);
         }
