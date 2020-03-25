@@ -43,7 +43,8 @@ client.on('ready', () => {
         require("./statistics"),
         require("./ban-appeals"),
         require("./report"),
-        require("./speak"),
+        require("./speak"), //<--------Easter egg for admins only
+        require("./yt-promote"),
 
         //Must be the last in the list:
         require("./help")

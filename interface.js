@@ -62,7 +62,8 @@ function EmbedMessage(message, thumbnail, fields) {
           "icon_url": tuser.avatarURL
         },
         "fields": fields,
-        "image": {}
+        "image": {},
+        "video": {}
       }
     };
 }
