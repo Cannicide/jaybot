@@ -43,6 +43,7 @@ client.on('ready', () => {
         require("./statistics"),
         require("./ban-appeals"),
         require("./report"),
+        require("./speak"),
 
         //Must be the last in the list:
         require("./help")
