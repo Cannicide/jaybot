@@ -2,6 +2,7 @@ var commands = [];
 
 function Command(name, method, permissions) {
     var message = false;
+    var args = false;
 
     this.set = function(msg) {
         message = msg;
@@ -13,6 +14,24 @@ function Command(name, method, permissions) {
 
     this.getName = () => {
         return name;
+    }
+
+    this.getArguments = () => {
+        if (!args) return false;
+        else {
+            return args;
+        }
+    }
+
+    /**
+     * @param {Object[]} objArr - A list of the possible command arguments of a command.
+     * @param {String} objArr[].name - The name of the argument.
+     * @param {Boolean} [objArr[].optional] - Whether or not the argument is optional. Default is false.
+     */
+    this.attachArguments = (objArr) => {
+        args = objArr;
+
+        if (args.length == 0) args = false;
     }
 
     function CatchPromise(err) {
