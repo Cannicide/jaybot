@@ -31,56 +31,64 @@ module.exports = new Command("promote", (message, args) => {
                 video = url.split("youtu.be/")[1];
             }
 
-            fetchVideoInfo(video).then(info => {
-                let thumb = info.channelThumbnailUrl;
-                let desc = info.description.replace(/<([^<>]*)>/gm, " ");
-                let embed = new Interface.Embed(message, thumb, [
-                    {
-                        name: "Video Description",
-                        value: `${desc.length > 190 ? desc.substring(0, 190) + "..." : desc} [Watch now!](${info.url})`
-                    },
-                    {
-                        name: "** **",
-                        value: "** **"
-                    },
-                    {
-                        name: "Youtube Channel",
-                        value: `👤 [${info.owner}](https://youtube.com/channel/${info.channelId})`,
-                        inline: true
-                    },
-                    {
-                        name: "** **",
-                        value: "** **",
-                        inline: true
-                    },
-                    {
-                        name: "Total Views",
-                        value: `👁️ ${info.views} views`,
-                        inline: true
-                    },
-                    {
-                        name: "Video Duration",
-                        value: `⏳ ${Math.floor(info.duration / 60)} minutes and ${Math.floor(info.duration % 60)} seconds`,
-                        inline: true
-                    },
-                    {
-                        name: "** **",
-                        value: "** **",
-                        inline: true
-                    },
-                    {
-                        name: "Likes Received",
-                        value: `💕 ${info.likeCount} likes`,
-                        inline: true
-                    }
-                ]);
+            try {
+                fetchVideoInfo(video).then(info => {
+                    let thumb = info.channelThumbnailUrl;
+                    let desc = info.description.replace(/<([^<>]*)>/gm, " ");
+                    let embed = new Interface.Embed(message, thumb, [
+                        {
+                            name: "Video Description",
+                            value: `${desc.length > 190 ? desc.substring(0, 190) + "..." : desc} [Watch now!](${info.url})`
+                        },
+                        {
+                            name: "** **",
+                            value: "** **"
+                        },
+                        {
+                            name: "Youtube Channel",
+                            value: `👤 [${info.owner}](https://youtube.com/channel/${info.channelId})`,
+                            inline: true
+                        },
+                        {
+                            name: "** **",
+                            value: "** **",
+                            inline: true
+                        },
+                        {
+                            name: "Total Views",
+                            value: `👁️ ${info.views} views`,
+                            inline: true
+                        },
+                        {
+                            name: "Video Duration",
+                            value: `⏳ ${Math.floor(info.duration / 60)} minutes and ${Math.floor(info.duration % 60)} seconds`,
+                            inline: true
+                        },
+                        {
+                            name: "** **",
+                            value: "** **",
+                            inline: true
+                        },
+                        {
+                            name: "Likes Received",
+                            value: `💕 ${info.likeCount} likes`,
+                            inline: true
+                        }
+                    ]);
 
-                embed.embed.title = `New YT Video: ${info.title}`;
-                embed.embed["image"]["url"] = info.thumbnailUrl;
-                embed.embed.color = 16711680;
+                    embed.embed.title = `New YT Video: ${info.title}`;
+                    embed.embed["image"]["url"] = info.thumbnailUrl;
+                    embed.embed.color = 16711680;
 
-                message.guild.channels.find(channel => channel.name == "content-promotion").send(embed);
-            });
+                    message.guild.channels.find(channel => channel.name == "content-promotion").send(embed);
+                });
+
+                menu.edit("✅ Successfully promoted your video!");
+            }
+            catch (err) {
+                message.reply("I was unable to find that video. Are you sure you typed it in right?");
+                menu.edit("<a:no_animated:670060124399730699> Failed to promote your video :(");
+            }
         }
 
     });
