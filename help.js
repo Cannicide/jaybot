@@ -9,21 +9,23 @@ module.exports = new Command("help", (message, args) => {
     var prefix = args[0];
 
     cmds.forEach((item) => {
-        res += item.name + ": " + prefix + item.name;// + "\n";
-        let params = item.cmd.getArguments();
-        if (!params) {
-            res += "\n";
-        }
-        else {
-            params.forEach((arg) => {
-                if ("optional" in arg && arg.optional == true) {
-                    res += ` [${arg.name}]`;
-                }
-                else {
-                    res += ` <${arg.name}>`;
-                }
-            });
-            res += "\n";
+        if (!item.special) {
+            res += item.name + ": " + prefix + item.name;// + "\n";
+            let params = item.cmd.getArguments();
+            if (!params) {
+                res += "\n";
+            }
+            else {
+                params.forEach((arg) => {
+                    if ("optional" in arg && arg.optional == true) {
+                        res += ` [${arg.name}]`;
+                    }
+                    else {
+                        res += ` <${arg.name}>`;
+                    }
+                });
+                res += "\n";
+            }
         }
     });
 

@@ -1,6 +1,13 @@
 var commands = [];
 
-function Command(name, method, permissions) {
+/**
+ * Creates a new executable Command that can be called by users and run by the bot.
+ * @param {String} name - The name of the command, used to call the command and identify it in the help command.
+ * @param {function(Object, String[]):void} method - The method that is executed when the command is called. Has parameters (message, args).
+ * @param {String[]} [permissions] - Any Discord permissions required to run the command.
+ * @param {Boolean} [invisible] - Whether or not the command will not be shown in the help command menu. Intended for moderator commands or easter eggs.
+ */
+function Command(name, method, permissions, invisible) {
     var message = false;
     var args = false;
 
@@ -73,7 +80,7 @@ function Command(name, method, permissions) {
         return new CatchPromise(error);
     }
 
-    if (name && method) commands.push({name: name, cmd: this});
+    if (name && method) commands.push({name: name, cmd: this, special: invisible});
 
 }
 
