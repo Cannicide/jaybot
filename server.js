@@ -18,6 +18,8 @@ var prefix = "/";
 var inface = require("./interface");
 inface.setClient(Discord);
 
+var ranks = require("./rank");
+
 client.on('guildCreate', guild => {
     var guildX = client.guilds.get("668485643487412234");
     guildX.channels.get(guildX.channels.find("name", "logs").id).send("ZH Discord Bot was added to the guild: " + guild.name);
@@ -45,6 +47,7 @@ client.on('ready', () => {
         require("./report"),
         require("./speak"), //<--------Easter egg for admins only
         require("./yt-promote"),
+        ranks.command,
 
         //Must be the last in the list:
         require("./help")
@@ -64,6 +67,17 @@ client.on('message', message => {
             }
             return false;
         }
+
+        //Ranking system:
+
+        let system = ranks.system;
+        if (!system.userExists(message)) {
+            system.addUser(message);
+        }
+
+        system.addXP(5, message);
+
+        //Command determination:
 
         var fixRegExp = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         var re = new RegExp(fixRegExp);

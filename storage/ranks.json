@@ -1,0 +1,67 @@
+{
+    "ranks": [
+        {
+            "name": "Newbie",
+            "ending-xp": 40
+        },
+        {
+            "name": "Amateur",
+            "ending-xp": 40
+        },
+        {
+            "name": "Cadet",
+            "ending-xp": 80
+        },
+        {
+            "name": "Mercenary",
+            "ending-xp": 80
+        },
+        {
+            "name": "Lieutenant",
+            "ending-xp": 100
+        },
+        {
+            "name": "Captain",
+            "ending-xp": 120
+        },
+        {
+            "name": "Major",
+            "ending-xp": 200
+        },
+        {
+            "name": "Lieutenant Colonel",
+            "ending-xp": 220
+        },
+        {
+            "name": "Colonel",
+            "ending-xp": 150
+        },
+        {
+            "name": "Brigadier General",
+            "ending-xp": 250
+        },
+        {
+            "name": "Major General",
+            "ending-xp": 300
+        },
+        {
+            "name": "Lieutenant General",
+            "ending-xp": 150
+        },
+        {
+            "name": "General",
+            "ending-xp": 450
+        },
+        {
+            "name": "Temporal Commander",
+            "ending-xp": 475
+        },
+        {
+            "name": "Lord Butter",
+            "ending-xp": 600
+        }
+    ],
+    "users": {
+
+    }
+}
