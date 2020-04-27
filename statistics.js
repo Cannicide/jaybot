@@ -24,7 +24,7 @@ function getServerInfo(callback) {
 
 module.exports = new Command("statistics", (message, args) => {
 
-    getServerInfo((info) => {
+    /*getServerInfo((info) => {
 
         var memOnline = message.guild.members.filter(m => m.presence.status == 'online').size;
         var memTotal = message.guild.memberCount;
@@ -46,6 +46,8 @@ module.exports = new Command("statistics", (message, args) => {
 
         //message.channel.send("**Statistics**\n\nPlayers Online: " + info.players + "\nVersion: " + "1.8.x");//info.version);
 
-    });
+    });*/
+
+    message.channel.send("The statistics command is currently nonfunctional. Please try again later.");
 
 }, false);
