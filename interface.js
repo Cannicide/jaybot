@@ -27,7 +27,7 @@ function FancyMessage(title, question, bullets, options) {
         stylizedBullets += options.bullet + " " + bullet + "\n";
     });
 
-    msg += stylizedBullets + "\n<!-- Menu will close in 30 seconds.\nDo not include punctuation or the command prefix in your response. -->\`\`\`";
+    msg += stylizedBullets + "\n<!-- Menu will close in 60 seconds.\nDo not include punctuation or the command prefix in your response. -->\`\`\`";
 
     this.get = () => {return msg};
 
