@@ -112,6 +112,8 @@ function RankingSystem() {
         return numeral;  
     }
 
+    this.getRomanNum = romanNumeral;
+
     /**
      * Checks whether or not a user exists given the message object that they sent.
      */
@@ -250,11 +252,67 @@ var rank_command = new Command("rank", (message, args) => {
     }
 ]);
 
+var toplist = new Command("toplist", (message, args) => {
+
+    var users = ranking.get("users");
+    var ranks = ranking.get("ranks");
+    var top5 = ["-", "-", "-", "-", "-"];
+
+    var userSet = [];
+
+    Object.keys(users).forEach((item) => {
+        var level = 1;
+
+        ranks.forEach((rank, index) => {
+            if (rank.name == users[item].rank) {
+                level = index + 1 + (users[item].prestige * ranks.length);
+            }
+        });
+
+        userSet.push({
+            id: item,
+            xp: users[item].xp + users[item].prestige * 1150,
+            prestige: users[item].prestige,
+            level: level,
+            name: message.guild.members.get(item).user.tag
+        });
+    });
+
+    userSet.sort((a, b) => (a.level > b.level) ? -1 : 1);
+
+    var indexSubtractor = 0;
+
+    userSet.forEach((item, index) => {
+        if (index < 5) {
+            if (item.id != "668488976625303595") top5[index - indexSubtractor] = item;
+            else {
+                indexSubtractor += 1;
+            }
+        }
+    });
+
+    var msg = "```md\n# Rank Leaderboards #\n\n";
+
+    top5.forEach((item, index) => {
+        if (item != "-") {
+            msg += `${index + 1}. <${item.name}>\n\n-   XP: ${item.xp}\n-   Level: ${item.prestige != 0 ? `[${system.getRomanNum(item.prestige)}] ` : ``}${item.level}\n\n`;
+        }
+        else {
+            msg += `${index + 1}. <->\n\n`;
+        }
+    })
+
+    msg += "\n```";
+
+    message.channel.send(msg);
+
+}, false);
 
 
 
 module.exports = {
     command: rank_command,
+    toplist: toplist,
     LS: LS,
     system: system
 }

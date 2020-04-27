@@ -48,6 +48,7 @@ client.on('ready', () => {
         require("./speak"), //<--------Easter egg for admins only
         require("./yt-promote"),
         ranks.command,
+        ranks.toplist,
 
         //Must be the last in the list:
         require("./help")
