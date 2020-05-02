@@ -77,6 +77,29 @@ module.exports = new Command("report", (message, args) => {
                                                 }
                                             ]);
 
+                                            //Insert bugs to trello automagically
+                                            if (matchesType == "Bugs") {
+
+                                                var Trello = require('trello-node-api')(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
+                                                var data = {
+                                                    name: bugTitle,
+                                                    desc: bugDesc + " [Added automatically by ZH-Bot]",
+                                                    pos: 'bottom',
+                                                    idList: process.env.BUGS_LIST, //REQUIRED
+                                                    due: null,
+                                                    dueComplete: false,
+                                                    idMembers: [],
+                                                    idLabels: [],
+                                                    urlSource: bugImage
+                                                };
+
+                                                Trello.card.create(data).then(function (response) {
+                                                    //console.log('Trello card creation response ', response);
+                                                }).catch(function (error) {
+                                                    console.log('Trello card creation error:', error);
+                                                });
+                                            }
+
                                             bugReport.embed["image"]["url"] = bugImage.match(/\.(jpeg|jpg|gif|png)$/) ? bugImage : "";
                                             bugReport.embed.title = bugTitle;
 
