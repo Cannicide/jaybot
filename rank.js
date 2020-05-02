@@ -245,7 +245,7 @@ var rank_command = new Command("rank", (message, args) => {
         message.channel.send({files:[{attachment: card, name: "rank-card.png"}]});
     }
 
-}, false).attachArguments([
+}, false, false, "View your rank or another user's rank.").attachArguments([
     {
         name: "user-tag",
         optional: true
@@ -306,7 +306,7 @@ var toplist = new Command("toplist", (message, args) => {
 
     message.channel.send(msg);
 
-}, false);
+}, false, false, "View the rank leaderboards for the server (top 5).");
 
 
 

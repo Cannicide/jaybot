@@ -65,4 +65,4 @@ module.exports = new Command("statistics", (message, args) => {
         embed.embed.title = "**Statistics**";
         message.channel.send(embed);
 
-}, false);
+}, false, false, "View discord and minecraft server statistics.");

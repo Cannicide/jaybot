@@ -34,4 +34,4 @@ module.exports = new Command("faq", (message, args) => {
         }
     });
 
-}, false);
+}, false, false, "View the most frequently asked questions, and their answers.");

@@ -93,4 +93,4 @@ module.exports = new Command("promote", (message, args) => {
 
     });
 
-}, false);
+}, false, false, "Promote your Youtube videos in the server.");

@@ -137,4 +137,4 @@ module.exports = new Command("report", (message, args) => {
         }
     });
 
-}, false);
+}, false, false, "Report bugs, safespots, and players.");

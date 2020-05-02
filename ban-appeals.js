@@ -23,4 +23,4 @@ module.exports = new Command("banappeal", (message, args) => {
 
     message.channel.send(embed);
 
-}, false);
+}, false, false, "Command to create a ban appeal.");
