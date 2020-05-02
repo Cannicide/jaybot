@@ -2,9 +2,11 @@ const express = require('express');
 const app = express();
 
 app.use(express.static('public'));
-app.get('/', function(request, response) {
+/*app.get('/', function(request, response) {
   response.send("Running botserver");
-});
+});*/
+
+require("./website").setup(app);
 
 const listener = app.listen(process.env.PORT, function() {
   console.log('ZH Discord Bot listening on port ' + listener.address().port);
