@@ -80,7 +80,7 @@ module.exports = new Command("promote", (message, args) => {
                     embed.embed["image"]["url"] = info.thumbnailUrl;
                     embed.embed.color = 16711680;
 
-                    message.guild.channels.find(channel => channel.name == "content-promotion").send(embed);
+                    message.guild.channels.find(channel => channel.name == "📺media").send(embed);
                 });
 
                 menu.edit("✅ Successfully promoted your video!");
