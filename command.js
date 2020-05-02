@@ -6,8 +6,9 @@ var commands = [];
  * @param {function(Object, String[]):void} method - The method that is executed when the command is called. Has parameters (message, args).
  * @param {String[]} [permissions] - Any Discord permissions required to run the command.
  * @param {Boolean} [invisible] - Whether or not the command will not be shown in the help command menu. Intended for moderator commands or easter eggs.
+ * @param {String} [desc] - Optional description of the command.
  */
-function Command(name, method, permissions, invisible) {
+function Command(name, method, permissions, invisible, desc) {
     var message = false;
     var args = false;
 
@@ -80,7 +81,7 @@ function Command(name, method, permissions, invisible) {
         return new CatchPromise(error);
     }
 
-    if (name && method) commands.push({name: name, cmd: this, special: invisible});
+    if (name && method) commands.push({name: name, cmd: this, special: invisible, desc: desc});
 
 }
 

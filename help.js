@@ -13,7 +13,7 @@ module.exports = new Command("help", (message, args) => {
             res += item.name + ": " + prefix + item.name;// + "\n";
             let params = item.cmd.getArguments();
             if (!params) {
-                res += "\n";
+                res += item.desc ? " - " + item.desc + "\n" : "\n";
             }
             else {
                 params.forEach((arg) => {
@@ -24,7 +24,7 @@ module.exports = new Command("help", (message, args) => {
                         res += ` <${arg.name}>`;
                     }
                 });
-                res += "\n";
+                res += item.desc ? " - " + item.desc + "\n" : "\n";
             }
         }
     });
