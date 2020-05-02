@@ -24,10 +24,10 @@ module.exports = new Command("faq", (message, args) => {
             });
 
             if (matchesTopic) {
-                message.channel.send("Once at this point, show the user the FAQ for the topic: " + matchesTopic);
+                message.channel.send("Sorry, the FAQ is still under construction and is not yet finished. Once at this point, show the user the FAQ for the topic: " + matchesTopic);
             }
             else {
-                message.channel.send("User did not select any valid topic, so scold and admonish them, respectfully.");
+                message.channel.send("Sorry, the FAQ is still under construction and is not yet finished. User did not select any valid topic, so scold and admonish them, respectfully.");
             }
 
             menu.edit(`✅ FAQ topic selection successfully completed.`);
