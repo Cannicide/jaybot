@@ -1,8 +1,8 @@
-var ping = require("minecraft-server-util");
+//var ping = require("minecraft-server-util");
 var Command = require("./command");
 var Interface = require("./interface");
 
-function getServerInfo(callback) {
+/*function getServerInfo(callback) {
 
     var info = {
         players: 0,
@@ -20,7 +20,7 @@ function getServerInfo(callback) {
         .catch((error) => {
             console.log(error);
         });
-}
+}*/
 
 module.exports = new Command("statistics", (message, args) => {
 
@@ -48,6 +48,21 @@ module.exports = new Command("statistics", (message, args) => {
 
     });*/
 
-    message.channel.send("The statistics command is currently nonfunctional. Please try again later.");
+        var memOnline = message.guild.members.filter(m => m.presence.status != 'offline').size;
+        var memTotal = message.guild.memberCount;
+        var memPercent = memOnline / memTotal * 100;
+
+        let embed = new Interface.Embed(message, message.guild.iconURL, [
+            {
+                name: "Minecraft Server",
+                value: `Players Online: (Currently nonfunctional)\nVersion: 1.8.x-1.12.x`
+            },
+            {
+                name: "Discord Server",
+                value: `Total Member Count: ${memTotal} users\nTotal Online Members: ${memOnline}\nPercent of Members Online: ${Math.round(memPercent)}%`
+            }
+        ]);
+        embed.embed.title = "**Statistics**";
+        message.channel.send(embed);
 
 }, false);
