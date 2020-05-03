@@ -103,7 +103,8 @@ module.exports = new Command("report", (message, args) => {
                                             bugReport.embed["image"]["url"] = bugImage.match(/\.(jpeg|jpg|gif|png)$/) ? bugImage : "";
                                             bugReport.embed.title = bugTitle;
 
-                                            message.guild.channels.get(message.guild.channels.find("name", "bugs").id).send(bugReport);
+                                            if (matchesType == "Bugs") message.guild.channels.get(message.guild.channels.find("name", "bugs").id).send(bugReport);
+                                            else if (matchesType == "Safespots") message.guild.channels.get(message.guild.channels.find("name", "safespots").id).send(bugReport);
                                             message.channel.send(`✅ Your bug report has been submitted, <@!${message.author.id}>`);
                                         }
                                     })
