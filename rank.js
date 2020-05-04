@@ -269,13 +269,22 @@ var toplist = new Command("toplist", (message, args) => {
             }
         });
 
-        userSet.push({
-            id: item,
-            xp: users[item].xp + users[item].prestige * 1150,
-            prestige: users[item].prestige,
-            level: level,
-            name: message.guild.members.get(item).user.tag
-        });
+        var username = "";
+
+        if (message.guild.members.get(item)) {
+            username = message.guild.members.get(item).user.tag;
+            userSet.push({
+                id: item,
+                xp: users[item].xp + users[item].prestige * 1150,
+                prestige: users[item].prestige,
+                level: level,
+                name: username
+            });
+        }
+        else {
+            //User appears to not exist in the current guild, so do not push them to the userset.
+        }
+
     });
 
     userSet.sort((a, b) => (a.level > b.level) ? -1 : 1);
