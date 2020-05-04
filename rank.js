@@ -287,7 +287,7 @@ var toplist = new Command("toplist", (message, args) => {
 
     });
 
-    userSet.sort((a, b) => (a.level > b.level) ? -1 : 1);
+    userSet.sort((a, b) => (a.level > b.level) ? -1 : (a.level < b.level) ? 1 : ((a.xp > b.xp ? -1 : 1)));
 
     var indexSubtractor = 0;
 
