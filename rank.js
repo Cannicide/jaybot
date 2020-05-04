@@ -292,7 +292,7 @@ var toplist = new Command("toplist", (message, args) => {
     var indexSubtractor = 0;
 
     userSet.forEach((item, index) => {
-        if (index < 5) {
+        if (index < 6) {
             if (item.id != "668488976625303595") top5[index - indexSubtractor] = item;
             else {
                 indexSubtractor += 1;
