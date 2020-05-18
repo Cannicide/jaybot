@@ -4,7 +4,9 @@ var commands = [];
  * Creates a new executable Command that can be called by users and run by the bot.
  * @param {String} name - The name of the command, used to call the command and identify it in the help command.
  * @param {function(Object, String[]):void} method - The method that is executed when the command is called. Has parameters (message, args).
- * @param {String[]} [permissions] - Any Discord permissions required to run the command.
+ * @param {Object} [permissions] - Any Discord permissions required to run the command.
+ * @param {String[]} [permissions.perms] - Any Discord permissions required to run the command.
+ * @param {String[]} [permissions.roles] - Any Discord roles required to run the command.
  * @param {Boolean} [invisible] - Whether or not the command will not be shown in the help command menu. Intended for moderator commands or easter eggs.
  * @param {String} [desc] - Optional description of the command.
  */
@@ -61,12 +63,22 @@ function Command(name, method, permissions, invisible, desc) {
             else {
                 var member = message.member;
                 var hasPermissions = true;
-                permissions.forEach((item) => {
-                    item = item.toUpperCase();
-                    if (!member.hasPermission(item)) {
-                        hasPermissions = false;
-                    }
-                });
+
+                if ("perms" in permissions) {
+                    permissions.perms.forEach((item) => {
+                        item = item.toUpperCase();
+                        if (!member.hasPermission(item)) {
+                            hasPermissions = false;
+                        }
+                    });
+                }
+                if ("roles" in permissions) {
+                    permissions.roles.forEach((item) => {
+                        if (!member.roles.find(x => x.name == item)) {
+                            hasPermissions = false;
+                        }
+                    })
+                }
 
                 if (hasPermissions) {
                     method(message, args);
