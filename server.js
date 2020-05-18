@@ -51,6 +51,7 @@ client.on('ready', () => {
         require("./yt-promote"),
         ranks.command,
         ranks.toplist,
+        require("./nickname"),
 
         //Must be the last in the list:
         require("./help")
