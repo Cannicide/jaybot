@@ -6,11 +6,11 @@ var fetchVideoInfo = require("youtube-info");
 
 module.exports = new Command("promote", (message, args) => {
 
-    var ytRole = message.member.roles.find(role => role.name == "Youtuber");
+    /*var ytRole = message.member.roles.find(role => role.name == "Youtuber");
     if (!ytRole) {
         message.channel.send(`<@!${message.author.id}>, you must be a verified youtuber with the Youtuber role in order to promote your videos.`);
         return;
-    }
+    }*/
 
     var video;
 
@@ -93,4 +93,4 @@ module.exports = new Command("promote", (message, args) => {
 
     });
 
-}, false, false, "Promote your Youtube videos in the server.");
+}, {roles: ["Youtuber"]}, false, "Promote your Youtube videos in the server.");

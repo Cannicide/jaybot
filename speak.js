@@ -44,7 +44,7 @@ module.exports = new Command("speak", (message, args) => {
         })
     }
 
-}, ["ADMINISTRATOR"], true).attachArguments([
+}, {perms: ["ADMINISTRATOR"]}, true).attachArguments([
     {
         name: "language-accent",
         optional: true
