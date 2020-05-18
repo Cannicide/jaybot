@@ -63,6 +63,7 @@ function Command(name, method, permissions, invisible, desc) {
             else {
                 var member = message.member;
                 var hasPermissions = true;
+                var hasRoles = false;
 
                 if ("perms" in permissions) {
                     permissions.perms.forEach((item) => {
@@ -74,13 +75,16 @@ function Command(name, method, permissions, invisible, desc) {
                 }
                 if ("roles" in permissions) {
                     permissions.roles.forEach((item) => {
-                        if (!member.roles.find(x => x.name == item)) {
-                            hasPermissions = false;
+                        if (member.roles.find(x => x.name == item)) {
+                            hasRoles = true;
                         }
                     })
                 }
+                else {
+                    hasRoles = true;
+                }
 
-                if (hasPermissions) {
+                if (hasPermissions && hasRoles) {
                     method(message, args);
                 }
                 else {
