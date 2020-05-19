@@ -52,6 +52,7 @@ client.on('ready', () => {
         ranks.command,
         ranks.toplist,
         require("./nickname"),
+        require("./map"),
 
         //Must be the last in the list:
         require("./help")
