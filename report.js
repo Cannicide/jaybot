@@ -31,19 +31,19 @@ var reportFunction = (choice, menu) => {
                 if (matchesType == "Bugs") thumb = bugThumb;
                 else thumb = safespotThumb;
 
-                let title = new Interface.Interface(message, "Give a concise and descriptive title for your bug/safespot report (one small sentence recommended):", (res1, init1) => {
+                let title = new Interface.Interface(message, `Give a concise and descriptive title for your ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report (one small sentence recommended):`, (res1, init1) => {
                     if (!res1){}
                     else {
                         var bugTitle = res1.content;
-                        init1.edit(`✅ Successfully entered a title for the bug report.`);
+                        init1.edit(`✅ Successfully entered a title for the ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report.`);
 
-                        let desc = new Interface.Interface(message, "Now give a detailed description of the bug/safespot you found, what map and arena you found it in (if applicable), and describe whether this is a safespot or a bug in general (1-6 sentences recommended).", (res2, init2) => {
+                        let desc = new Interface.Interface(message, `Now give a detailed description of the ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} you found, what map and arena you found it in (if applicable), and ${matchesType == "Bugs" ? "describe how to reproduce this bug if reproducable" : "whether this is a partial or full safespot"} (1-6 sentences recommended).`, (res2, init2) => {
                             if (!res2){}
                             else {
                                 var bugDesc = res2.content;
-                                init2.edit(`✅ Successfully entered a description for the bug report.`);
+                                init2.edit(`✅ Successfully entered a description for the ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report.`);
 
-                                let img = new Interface.Interface(message, "Attach **one** image or URL illustrating the bug that you found, or type `none` if you do not have an image/video/URL. **Image files** and **any URLs** are both accepted.", (res3, init3) => {
+                                let img = new Interface.Interface(message, "Attach **one** image or URL illustrating the " + matchesType.toLowerCase().substring(0, matchesType.length - 1) + " that you found, or type `none` if you do not have an image/video/URL. **Image files** and **any URLs** are both accepted.", (res3, init3) => {
                                     if (!res3){}
                                     else {
                                         var bugImage;
@@ -58,16 +58,16 @@ var reportFunction = (choice, menu) => {
                                             bugImage = attachment[0].url;
                                         }
 
-                                        init3.edit(`✅ Successfully set an image/file/URL, or a default image if one was not attached, for the bug report.`);
+                                        init3.edit(`✅ Successfully set an image/file/URL, or a default image if one was not attached, for the ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report.`);
 
                                         //Now post a bug report embed to the #bugs channel
                                         let bugReport = new Interface.Embed(message, thumb, [
                                             {
-                                                name: `Bug Report: **${bugTitle}**`,
+                                                name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Report: **${bugTitle}**`,
                                                 value: bugDesc
                                             },
                                             {
-                                                name: `Bug Evidence`,
+                                                name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Evidence`,
                                                 value: `[🔗](${bugImage})`
                                             }
                                         ]);
@@ -100,7 +100,7 @@ var reportFunction = (choice, menu) => {
 
                                         if (matchesType == "Bugs") message.guild.channels.get(message.guild.channels.find("name", "bugs").id).send(bugReport);
                                         else if (matchesType == "Safespots") message.guild.channels.get(message.guild.channels.find("name", "safespots").id).send(bugReport);
-                                        message.channel.send(`✅ Your bug report has been submitted, <@!${message.author.id}>`);
+                                        message.channel.send(`✅ Your ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report has been submitted, <@!${message.author.id}>`);
                                     }
                                 })
                             }
