@@ -20,6 +20,8 @@ var prefix = "/";
 var inface = require("./interface");
 inface.setClient(Discord);
 
+var Interpreter = require("./interpreter");
+
 var ranks = require("./rank");
 
 client.on('guildCreate', guild => {
@@ -121,6 +123,10 @@ client.on('message', message => {
                     message.reply("An error occurred: " + err);
                 });
             }
+        }
+        else {
+            let intp = new Interpreter(message);
+            intp.interpret(message.content.split(" "));
         }
 
     }
