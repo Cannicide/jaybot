@@ -74,7 +74,7 @@ function EmbedMessage(message, thumbnail, fields) {
  * @param {Object} message - Message containing the command that led to calling on the interface
  * @param {String} question - Question to ask user for a response
  */
-function Interface(message, question, callback) {
+function Interface(message, question, callback, type) {
 
     var collected = false;
     var closed = false;
@@ -96,11 +96,11 @@ function Interface(message, question, callback) {
         if (closed) return;
         else if (!collected) {
             collector.stop("User did not give a response within 60 seconds");
-            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 1 minute.`);
+            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 1 minute. ${type == "report" ? "**Failed to report your bug.** Please follow ALL of the instructions to report the bug properly." : ""}`);
             closed = true;
             callback(false);
         }
-    }, 1200000);
+    }, 60000);
 
 }
 
