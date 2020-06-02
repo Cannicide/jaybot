@@ -36,6 +36,38 @@ const sagas = [
     }
 ];
 
+//Map wheel images:
+const wheels = [
+    {name: "Area 935", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FArea%20935.png?v=1591119546318"},
+    {name: "Cold Dead", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FCold%20Dead.png?v=1591119559264"}, 
+    {name: "Stygia", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FStygia.png?v=1591119673583"}, 
+    {name: "Dawn of the Horde", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FDawn.png?v=1591119571029"}, 
+    {name: "Dread Space", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FDread%20Space.png?v=1591119576616"}, 
+    {name: "Curse of the Horde", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FCurse.png?v=1591119566983"}, 
+    {name: "Fallen", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FFallen.png?v=1591119581107"}, 
+    {name: "Left to Rot", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FLeft%20to%20Rot.png?v=1591119623461"}, 
+    {name: "Grains", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FGrains.png?v=1591119585719"}, 
+    {name: "Hordelands", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FHordelands.jpg?v=1591119594684"}, 
+    {name: "Nowhere Fast", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FNowhere%20Fast.png?v=1591119639967"}, 
+    {name: "Undead High", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FUndead%20High.png?v=1591119685298"}, 
+    {name: "6 Blocks Under", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2F6blocks.png?v=1591119537691"}, 
+    {name: "Boziem Desert", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FBoziem.png?v=1591119549899"}, 
+    {name: "Anguith City", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FAnguith.png?v=1591119540908"}, 
+    {name: "Nuketown 2025", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FNuketown.png?v=1591119644777"}, 
+    {name: "Mansion of Massacre", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FMansion.png?v=1591119628965"}, 
+    {name: "Cruise of Chaos", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FCruise.png?v=1591119563184"}, 
+    {name: "Trench of Terror", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FTrench.png?v=1591119680286"}, 
+    {name: "Haunted Halls", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FHauntedHalls.png?v=1591119590206"}, 
+    {name: "Mathus Station", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FMathus.png?v=1591119634238"}, 
+    {name: "Knight of the Dead", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FKnight.png?v=1591119618900"}, 
+    {name: "Sanctuary", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FSanctuary.png?v=1591119649864"}, 
+    {name: "Shipwrecked", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FShipwrecked.png?v=1591119665827"}, 
+    {name: "Incarceration", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FIncarceration.png?v=1591119605183"}, 
+    {name: "Cobas Calamity", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FCobas.png?v=1591119554206"}, 
+    {name: "Sewers of Surprise", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FSewers.png?v=1591119656408"}, 
+    {name: "Submerged", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FSubmerged.png?v=1591119677992"}
+]
+
 //Random chooser:
 function randomNumber(length) {
     return Math.floor(Math.random() * length);
@@ -78,25 +110,56 @@ module.exports = new Command("map", (message, args) => {
 
             if (matchesType) {
                 //Chose a valid topic
-                var wheel = "https://media.discordapp.net/attachments/668519540384333864/712341221309415464/Mx9Z4G4m8l.gif";
+                //var wheel = "https://media.discordapp.net/attachments/668519540384333864/712341221309415464/Mx9Z4G4m8l.gif";
+                var wheel = "https://cdn.discordapp.com/attachments/668519540384333864/717419461770215485/colorwheel.gif";
                 var insaneEmote = "<a:flame:712338342364315739>";
                 var spinnerEmote = "<a:spinner:712338342196281345>";
-                message.channel.send(wheel).then(spinner => {
+                var spinnerResp;
+                var chosen;
+                var img;
+
+                if (matchesType == "Normal Map") {
+                    chosen = randomMap();
+                    spinnerResp = `${chosen}`;
+                    img = wheels.find(m => m.name == chosen).image;
+                }
+                else if (matchesType == "Insane Map") {
+                    chosen = randomMap();
+                    spinnerResp = `${insaneEmote} ${chosen} (Insane)`;
+                    img = wheels.find(m => m.name == chosen).image;
+                }
+                else if (matchesType == "Map Saga") {
+                    chosen = randomSaga();
+                    var saga = chosen;
+                    var sagaName = saga.name;
+                    var sagaMaps = saga.maps.join(" -> ");
+                    spinnerResp = `${sagaName}\n**Maps:** ${sagaMaps}`;
+                    img = wheels.find(m => m.name == "Area 935").image;
+                }
+
+                var embed = new Interface.Embed(message, "", [
+                    {
+                        name: `*The wheel shall decide your fate...*`,
+                        value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** Selecting...`
+                    }
+                ]);
+
+                embed.embed.title = spinnerEmote + " Random Map Selector";
+                embed.embed.image.url = wheel;
+
+                message.channel.send(embed).then(spinner => {
                     setTimeout(() => {
-                        if (matchesType == "Normal Map") {
-                            var map = randomMap();
-                            spinner.edit(`${spinnerEmote} **Selected Map:** ${map}`);
-                        }
-                        else if (matchesType == "Insane Map") {
-                            var map = randomMap();
-                            spinner.edit(`${spinnerEmote} **Selected Map:** ${insaneEmote} ${map} (Insane)`);
-                        }
-                        else if (matchesType == "Map Saga") {
-                            var saga = randomSaga();
-                            var sagaName = saga.name;
-                            var sagaMaps = saga.maps.join(" -> ");
-                            spinner.edit(`${spinnerEmote} **Selected Map Saga:** ${sagaName}\n**Maps:** ${sagaMaps}`);
-                        }
+                        embed = new Interface.Embed(message, "", [
+                            {
+                                name: `*The wheel hath decided...*`,
+                                value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** ${spinnerResp}`
+                            }
+                        ])
+
+                        embed.embed.title = spinnerEmote + " Random Map Selector";
+                        embed.embed.image.url = img;
+
+                        spinner.edit(embed);
                     }, 4000);
                 });
             }
