@@ -105,9 +105,9 @@ var reportFunction = (choice, menu) => {
                                         else if (matchesType == "Safespots") message.guild.channels.get(message.guild.channels.find("name", "safespots").id).send(bugReport);
                                         message.channel.send(`✅ Your ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report has been submitted, <@!${message.author.id}>`);
                                     }
-                                }, "report")
+                                }, "report." + matchesType.toLowerCase().substring(0, matchesType.length - 1))
                             }
-                        }, "report")
+                        }, "report." + matchesType.toLowerCase().substring(0, matchesType.length - 1))
                 //})
             }
             else if (matchesType == "Players") {
@@ -151,7 +151,7 @@ module.exports = new Command("report", (msg, args) => {
         reportFunction({content: "Safespots"});
     }
     else {
-        var report = new Interface.Interface(msg, response, reportFunction, "report");
+        var report = new Interface.Interface(msg, response, reportFunction, "report.issue");
     }
 
 }, false, false, "Report bugs, safespots, and players.");

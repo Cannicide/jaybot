@@ -96,7 +96,7 @@ function Interface(message, question, callback, type) {
         if (closed) return;
         else if (!collected) {
             collector.stop("User did not give a response within 120 seconds");
-            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 2 minutes. ${type == "report" ? "**Failed to report your bug.** Please follow ALL of the instructions to report the bug properly." : ""}`);
+            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 2 minutes. ${type.match("report") ? `**Failed to report your ${type.split(".")[1]}.** Please follow ALL of the instructions in the given time to report the ${type.split(".")[1]} properly.` : ""}`);
             closed = true;
             callback(false);
         }
