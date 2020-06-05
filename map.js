@@ -94,7 +94,6 @@ module.exports = new Command("map", (message, args) => {
 
     if (args[0]) {
         var answer = args[0];
-        var answer = choice.content;
             var matchesType = false;
     
             types.forEach((item) => {
