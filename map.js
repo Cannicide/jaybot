@@ -92,11 +92,9 @@ module.exports = new Command("map", (message, args) => {
         bullet: "*"
     }).get();
 
-    var chooser = new Interface.Interface(message, response, (choice, menu) => {
-
-        if (!choice){}
-        else {
-            var answer = choice.content;
+    if (args[0]) {
+        var answer = args[0];
+        var answer = choice.content;
             var matchesType = false;
     
             types.forEach((item) => {
@@ -167,11 +165,94 @@ module.exports = new Command("map", (message, args) => {
                 //Did not choose a valid topic
                 message.channel.send("You did not select a valid map-type. Please try again.");
             }
+    }
+    else {
+        var chooser = new Interface.Interface(message, response, (choice, menu) => {
 
-            menu.edit(`✅ Map-type selection successfully completed.`);
+            if (!choice){}
+            else {
+                var answer = choice.content;
+                var matchesType = false;
+        
+                types.forEach((item) => {
+                    if (item.toLowerCase() == answer.toLowerCase() || item.substring(0, item.length - 1).toLowerCase() == answer.toLowerCase()) {
+                        matchesType = item;
+                    }
+                    else if (item.toLowerCase().match(answer.toLowerCase())) {
+                        matchesType = item;
+                    }
+                });
 
-        }
+                if (matchesType) {
+                    //Chose a valid topic
+                    //var wheel = "https://media.discordapp.net/attachments/668519540384333864/712341221309415464/Mx9Z4G4m8l.gif";
+                    var wheel = "https://cdn.discordapp.com/attachments/668519540384333864/717419461770215485/colorwheel.gif";
+                    var insaneEmote = "<a:flame:712338342364315739>";
+                    var spinnerEmote = "<a:spinner:712338342196281345>";
+                    var spinnerResp;
+                    var chosen;
+                    var img;
 
-    });
+                    if (matchesType == "Normal Map") {
+                        chosen = randomMap();
+                        spinnerResp = `${chosen}`;
+                        img = wheels.find(m => m.name == chosen).image;
+                    }
+                    else if (matchesType == "Insane Map") {
+                        chosen = randomMap();
+                        spinnerResp = `${insaneEmote} ${chosen} (Insane)`;
+                        img = wheels.find(m => m.name == chosen).image;
+                    }
+                    else if (matchesType == "Map Saga") {
+                        chosen = randomSaga();
+                        var saga = chosen;
+                        var sagaName = saga.name;
+                        var sagaMaps = saga.maps.join(" -> ");
+                        spinnerResp = `${sagaName}\n**Maps:** ${sagaMaps}`;
+                        img = wheels.find(m => m.name == "Area 935").image;
+                    }
 
-}, false, false, "An advanced random map selector for indecisive players.");
+                    var embed = new Interface.Embed(message, "", [
+                        {
+                            name: `*The wheel shall decide your fate...*`,
+                            value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** Selecting...`
+                        }
+                    ]);
+
+                    embed.embed.title = spinnerEmote + " Random Map Selector";
+                    embed.embed.image.url = wheel;
+
+                    message.channel.send(embed).then(spinner => {
+                        setTimeout(() => {
+                            embed = new Interface.Embed(message, "", [
+                                {
+                                    name: `*The wheel hath decided...*`,
+                                    value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** ${spinnerResp}`
+                                }
+                            ])
+
+                            embed.embed.title = spinnerEmote + " Random Map Selector";
+                            embed.embed.image.url = img;
+
+                            spinner.edit(embed);
+                        }, 4000);
+                    });
+                }
+                else {
+                    //Did not choose a valid topic
+                    message.channel.send("You did not select a valid map-type. Please try again.");
+                }
+
+                menu.edit(`✅ Map-type selection successfully completed.`);
+
+            }
+
+        });
+    }
+
+}, false, false, "An advanced random map selector for indecisive players.").attachArguments([
+    {
+        name: "map type",
+        optional: true
+    }
+]);
