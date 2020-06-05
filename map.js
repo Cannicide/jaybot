@@ -134,6 +134,17 @@ module.exports = new Command("map", (message, args) => {
                     img = wheels.find(m => m.name == "Area 935").image;
                 }
 
+                if (args[1] && matchesType == "Map Saga") {
+                    message.channel.send("Selecting from a preset list of maps is not supported for Map Sagas at this time.");
+                    return;
+                }
+                else if (args[1]) {
+                    var user_choices = args.join(" ").replace(" ", ";;split;;").split(";;split;;")[1].split(",");
+                    chosen = user_choices[randomNumber(user_choices.length)];
+                    spinnerResp = `${matchesType == "Insane Map" ? insaneEmote + " " + chosen + " (Insane)" : chosen}`;
+                    img = wheels.find(m => m.name == "Area 935").image;
+                }
+
                 var embed = new Interface.Embed(message, "", [
                     {
                         name: `*The wheel shall decide your fate...*`,
@@ -252,6 +263,10 @@ module.exports = new Command("map", (message, args) => {
 }, false, false, "An advanced random map selector for indecisive players.").attachArguments([
     {
         name: "map type",
+        optional: true
+    },
+    {
+        name: "list of maps separated by commas",
         optional: true
     }
 ]);
