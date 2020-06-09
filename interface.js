@@ -27,7 +27,7 @@ function FancyMessage(title, question, bullets, options) {
         stylizedBullets += options.bullet + " " + bullet + "\n";
     });
 
-    msg += stylizedBullets + "\n<!-- Menu will close in 120 seconds.\nDo not include punctuation or the command prefix in your response. -->\`\`\`";
+    msg += stylizedBullets + "\n<!-- Menu will close in 5 minutes.\nDo not include punctuation or the command prefix in your response. -->\`\`\`";
 
     this.get = () => {return msg};
 
@@ -95,12 +95,12 @@ function Interface(message, question, callback, type) {
     setTimeout(() => {
         if (closed) return;
         else if (!collected) {
-            collector.stop("User did not give a response within 120 seconds");
-            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 2 minutes. ${type.match("report") ? `**Failed to report your ${type.split(".")[1]}.** Please follow ALL of the instructions in the given time to report the ${type.split(".")[1]} properly.` : ""}`);
+            collector.stop("User did not give a response within 5 minutes.");
+            qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 5 minutes. ${type.match("report") ? `**Failed to report your ${type.split(".")[1]}.** Please follow ALL of the instructions in the given time to report the ${type.split(".")[1]} properly.` : ""}`);
             closed = true;
             callback(false);
         }
-    }, 120000);
+    }, 5 * 60 * 1000);
 
 }
 
