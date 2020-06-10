@@ -6,7 +6,6 @@ app.use(express.static('public'));
   response.send("Running botserver");
 });*/
 
-require("./website").setup(app);
 
 const listener = app.listen(process.env.PORT, function() {
   console.log('ZH Discord Bot listening on port ' + listener.address().port);
@@ -16,6 +15,8 @@ const listener = app.listen(process.env.PORT, function() {
 const Discord = require('discord.js');
 const client = new Discord.Client();
 var prefix = "/";
+
+require("./website").setup(app, client);
 
 var inface = require("./interface");
 inface.setClient(Discord);
@@ -112,17 +113,21 @@ client.on('message', message => {
         });
 
         if (cmd) {
-            cmd.set(message);
-            if (cmd.getName() == "help") {
-                cmd.execute([prefix]).catch((err) => {
-                    message.reply("An error occurred: " + err);
-                });
-            }
-            else {
-                cmd.execute(args).catch((err) => {
-                    message.reply("An error occurred: " + err);
-                });
-            }
+            message.channel.startTyping();
+            setTimeout(() => {
+                cmd.set(message);
+                if (cmd.getName() == "help") {
+                    cmd.execute([prefix]).catch((err) => {
+                        message.reply("An error occurred: " + err);
+                    });
+                }
+                else {
+                    cmd.execute(args).catch((err) => {
+                        message.reply("An error occurred: " + err);
+                    });
+                }
+                message.channel.stopTyping();
+            }, 1000);
         }
         else {
             let intp = new Interpreter(message);
