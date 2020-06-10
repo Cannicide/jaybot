@@ -225,7 +225,7 @@ var rank_command = new Command("rank", (message, args) => {
 
                 if (system.userExists({author: {id: mem_id}})) {
                     let stored_user = system.getUser({author: {id: mem_id}});
-                    let card = system.getCard(stored_user, mem.user.lastMessage);
+                    let card = system.getCard(stored_user, mem.lastMessage);
                     message.channel.send({files:[{attachment: card, name: "rank-card.png"}]});
                 }
                 else {
