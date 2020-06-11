@@ -112,7 +112,8 @@ client.on('message', message => {
             }
         });
 
-        if (cmd) {
+
+        if (cmd && splitted[0].match(prefix)) {
             message.channel.startTyping();
             setTimeout(() => {
                 cmd.set(message);
