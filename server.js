@@ -25,6 +25,9 @@ var Interpreter = require("./interpreter");
 
 var ranks = require("./rank");
 
+var statistics = require("./statistics");
+statistics.logger(client);
+
 client.on('guildCreate', guild => {
     var guildX = client.guilds.get("668485643487412234");
     guildX.channels.get(guildX.channels.find("name", "logs").id).send("ZH Discord Bot was added to the guild: " + guild.name);
@@ -47,7 +50,7 @@ client.on('ready', () => {
      */
     requisites = [
         require("./faq"),
-        require("./statistics"),
+        statistics.command,
         require("./ban-appeals"),
         require("./report"),
         require("./speak"), //<--------Easter egg for admins only

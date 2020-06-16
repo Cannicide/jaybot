@@ -22,7 +22,7 @@ function getServerInfo(callback) {
         });
 }
 
-module.exports = new Command("statistics", (message, args) => {
+var stats = new Command("statistics", (message, args) => {
 
     getServerInfo((info) => {
 
@@ -51,3 +51,90 @@ module.exports = new Command("statistics", (message, args) => {
         
 
 }, false, false, "View discord and minecraft server statistics.");
+
+const fs = require("fs");
+var storageSrc = __dirname + "/storage/" + "statistics" + ".json";;
+
+function getLS() {
+    try {
+        //Gets json file, and converts into JS object
+        var storage = JSON.parse(fs.readFileSync(storageSrc));
+    }
+    catch (err) {
+        console.log("Reading JSON was not possible due to error: " + err);
+        return false;
+    }
+
+
+   //Returns the storage object
+   return storage;
+}
+
+function setLS(newStorage) {
+
+    //Updates json file with new config additions/updates
+    fs.writeFileSync(storageSrc, JSON.stringify(newStorage, null, "\t"));
+}
+
+function logStatistics(client) {
+    var guild = client.guilds.get("351824506773569541");
+
+    setInterval(() => {
+
+        var fulldate = new Date().toLocaleString('en-US', {
+            timeZone: 'America/New_York'
+        });
+        
+        let parts = fulldate.split(", ");
+
+        var date = parts[0];
+        var fulltime = parts[1];
+
+        //Time:
+
+        var time = {
+            raw: fulltime.split(" ")[0],
+            ampm: fulltime.split(" ")[1]
+        }
+        time.hours = time.raw.split(":")[0];
+        time.mins = time.raw.split(":")[1];
+        time.secs = time.raw.split(":")[2];
+
+        if (time.ampm == "PM") {
+            time.hours += 12;
+        }
+
+        //Get storage and fetch stats:
+
+        var obj = getLS();
+        var response = {};
+
+        if (Number(time.mins) == 0 && !(time.hours in obj[date])) {
+            getServerInfo((info) => {
+
+                response.onlineDiscordMembers = guild.members.filter(m => m.presence.status != 'offline').size;
+                response.totalDiscordMembers = guild.memberCount;
+                response.percentDiscordOnline = memOnline / memTotal * 100;
+
+                response.onlineMinecraftPlayers = info.players;
+                response.recordedTime = fulltime;
+            });
+
+            //Set storage
+
+            if (!(date in obj)) {
+                obj[date] = {};
+            }
+
+            obj[date][time.hours] = response;
+            setLS(obj);
+        }
+
+    }, 60 * 1000);
+
+}
+
+module.exports = {
+    command: stats,
+    logger: logStatistics
+}
