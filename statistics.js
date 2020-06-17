@@ -96,12 +96,15 @@ function logStatistics(client) {
             raw: fulltime.split(" ")[0],
             ampm: fulltime.split(" ")[1]
         }
-        time.hours = time.raw.split(":")[0];
-        time.mins = time.raw.split(":")[1];
+        time.hours = Number(time.raw.split(":")[0]);
+        time.mins = Number(time.raw.split(":")[1]);
         time.secs = time.raw.split(":")[2];
 
-        if (time.ampm == "PM") {
+        if (time.ampm == "PM" && time.hours != 12) {
             time.hours += 12;
+        }
+        else if (time.ampm == "AM" && time.hours == 12) {
+            time.hours = 0;
         }
 
         //Get storage and fetch stats:
@@ -109,7 +112,11 @@ function logStatistics(client) {
         var obj = getLS();
         var response = {};
 
-        if (Number(time.mins) == 0 && !(time.hours in obj[date])) {
+        if (!(date in obj)) {
+            obj[date] = {};
+          }
+
+        if (time.mins == 0 && !(time.hours in obj[date])) {
             getServerInfo((info) => {
 
                 response.onlineDiscordMembers = guild.members.filter(m => m.presence.status != 'offline').size;
@@ -121,10 +128,6 @@ function logStatistics(client) {
             });
 
             //Set storage
-
-            if (!(date in obj)) {
-                obj[date] = {};
-            }
 
             obj[date][time.hours] = response;
             setLS(obj);
