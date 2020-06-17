@@ -77,7 +77,6 @@ function setLS(newStorage) {
 }
 
 function logStatistics(client) {
-    var guild = client.guilds.get("351824506773569541");
 
     setInterval(() => {
 
@@ -119,6 +118,7 @@ function logStatistics(client) {
         if (time.mins == 0 && !(time.hours in obj[date])) {
             getServerInfo((info) => {
 
+                var guild = client.guilds.find(g => g.id == "351824506773569541");
                 response.onlineDiscordMembers = guild.members.filter(m => m.presence.status != 'offline').size;
                 response.totalDiscordMembers = guild.memberCount;
                 response.percentDiscordOnline = memOnline / memTotal * 100;
