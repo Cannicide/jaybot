@@ -125,12 +125,12 @@ function logStatistics(client) {
 
                 response.onlineMinecraftPlayers = info.players;
                 response.recordedTime = fulltime;
+
+                //Set storage
+
+                obj[date][time.hours] = response;
+                setLS(obj);
             });
-
-            //Set storage
-
-            obj[date][time.hours] = response;
-            setLS(obj);
         }
 
     }, 60 * 1000);
