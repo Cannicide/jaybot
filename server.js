@@ -59,6 +59,7 @@ client.on('ready', () => {
         ranks.toplist,
         require("./nickname"),
         require("./map"),
+        require("./role"),
 
         //Must be the last in the list:
         require("./help")
