@@ -1,0 +1,200 @@
+<html>
+    <head>
+        <title>Zhorde Bot | Statistics</title>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+		<link rel="icon" type="image/x-icon" href="https://media.discordapp.net/attachments/668486291033292801/668486641572118561/ZHBotServer.png" />
+		<meta content="https://media.discordapp.net/attachments/668486291033292801/668486641572118561/ZHBotServer.png" property="og:image" /> 
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/overcast/jquery-ui.css" />
+		<meta name="description" content="Zhorde discord and minecraft statistics compiled over the course of several hours and days." />
+		<meta property="og:description" content="Zhorde discord and minecraft statistics compiled over the course of several hours and days." />
+		<meta property="og:title" content="Zhorde Bot | Statistics" />
+        <meta property="og:url" content="https://zh-bot.glitch.me/statistics" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+        <style>
+            body {
+                background-color: #1e1e1e;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            div.chart-container {
+                margin-top: -25%;
+            }
+
+            div.credit {
+                position: fixed; bottom: 5px;
+                right: 5px;
+                font-size: 12pt;
+                color: #999;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+            <canvas id="chart"></canvas>
+        </div>
+        <div class="credit">
+            Created by Cannicide#2753
+        </div>
+    </body>
+    <script>
+
+        //Get current date:
+        var fulldate = new Date().toLocaleString('en-US', {
+            timeZone: 'America/New_York'
+        });
+        
+        let parts = fulldate.split(", ");
+
+        var date = parts[0];
+        var dateparts = date.split("/");
+
+        var month = Number(dateparts[0]);
+        var day = Number(dateparts[1]);
+        var year = Number(dateparts[2]);
+
+        //Get number of days in given month (numeric month):
+        function getLastDay(m, y) {
+            //Checks for leap year:
+            function leapYear(year) {
+                return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+            }
+
+            //30 days in september (9), april (4), june (6), and november (11)
+            if (m == 9 || m == 4 || m == 6 || m == 11) {
+                return 30;
+            }
+            else if (m == 2) {
+                return leapYear(y) ? 29 : 28;
+            }
+            else {
+                return 31;
+            }
+        }
+
+        //Find the dates of the seven past days using the current date
+        var goaldates = [];
+
+        for (var i = 7; i > 0; i--) {
+            if (day - i <= 0) {
+                var differential = Math.abs(day - i);
+                if (month == 1) {
+                    goaldates.push(12 + "/" + (getLastDay(12, year) - differential) + "/" + (year - 1));
+                }
+                else {
+                    goaldates.push(month - 1 + "/" + (getLastDay(month - 1, year) - differential) + "/" + year);
+                }
+            }
+            else {
+                goaldates.push(month + "/" + (day - i) + "/" + year);
+            }
+        }
+
+        //Set x-axis:
+        var labels = ["7 Days Ago", "6 Days Ago", "5 Days Ago", "4 Days Ago", "3 Days Ago", "2 Days Ago", "1 Day Ago"];
+
+        //Discord members online for the past 7 days, in order (on graph)
+        var discOnline = [];
+
+        //Minecraft players online for the past 7 days, in order (on graph)
+        var mcOnline = [];
+
+        //% of Discord members online for the past 7 days, in order (on tooltip)
+        var discPercent = [];
+
+        //Total Discord members in guild for past 7 days, in order (on tooltip)
+        var totalDisc = [];
+
+        //Fetch statistics data
+        $.ajax({
+            url: "https://zh-bot.glitch.me/statistics/json",
+            cache: false
+        }).done((text) => {
+            var stats = text;
+            goaldates.forEach((item, index) => {
+                if (item in stats) {
+                    var dataset = stats[item];
+                    var avgDiscOnline = 0, avgMcOnline = 0, avgDiscPercent = 0, avgTotalDisc = 0;
+                    var keys = Object.keys(dataset);
+
+                    keys.forEach((key) => {
+                        avgDiscOnline += dataset[key]["onlineDiscordMembers"];
+                        avgMcOnline += dataset[key]["onlineMinecraftPlayers"];
+                        avgDiscPercent += dataset[key]["percentDiscordOnline"];
+                        avgTotalDisc += dataset[key]["totalDiscordMembers"];
+                    });
+
+                    avgDiscOnline = Math.floor(avgDiscOnline / keys.length);
+                    avgMcOnline = Math.floor(avgMcOnline / keys.length);
+                    avgDiscPercent = Math.floor(avgDiscPercent / keys.length);
+                    avgTotalDisc = Math.floor(avgTotalDisc / keys.length);
+
+                    discOnline.push(avgDiscOnline);
+                    mcOnline.push(avgMcOnline);
+                    discPercent.push(avgDiscPercent);
+                    totalDisc.push(avgTotalDisc);
+                }
+                else {
+                    discOnline.push(-1);
+                    mcOnline.push(-1);
+                    discPercent.push(-1);
+                    totalDisc.push(-1);
+                }
+            });
+
+            //Build chart:
+            var chart = new Chart($("#chart"), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "# Discorders Online",
+                            data: discOnline,
+                            backgroundColor: "#7289DA"
+                        },
+                        {
+                            label: "# Minecrafters Online",
+                            data: mcOnline,
+                            backgroundColor: "limegreen"
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    tooltips: {
+                        enabled: true,
+                        callbacks: {
+                            label: (tooltipItem, data) => {
+                                var resp = [tooltipItem.value + (tooltipItem.datasetIndex == 0 ? " Discorders" : " Minecrafters")];
+                                if (tooltipItem.datasetIndex == 0) {
+                                    resp.push(discPercent[tooltipItem.index] + "% Online");
+                                    resp.push(totalDisc[tooltipItem.index] + " Total Members");
+                                }
+
+                                if (tooltipItem.value == -1) resp = ["No data collected for this day."];
+                                return resp;
+                            }
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            gridLines: {
+                                display: true,
+                                color: "#666"
+                            }
+                        }],
+                        xAxes: [{
+                            gridLines: {
+                                display: true,
+                                color: "#666"
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+    </script>
+</html>

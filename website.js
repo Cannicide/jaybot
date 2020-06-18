@@ -22,9 +22,13 @@ function setup(app, disc) {
     res.send(disc.users.find(m => m.tag == tag).displayAvatarURL);
   });
   
-  app.get("/statistics", (req, res) => {
+  app.get("/statistics/json", (req, res) => {
       res.sendFile(__dirname + "/storage/statistics.json");
   });
+
+  app.get("/statistics/", (req, res) => {
+      res.sendFile(__dirname + "/views/statistics.html");
+  })
 
 }
 
