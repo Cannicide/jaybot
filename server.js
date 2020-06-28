@@ -59,6 +59,7 @@ client.on('ready', () => {
         ranks.toplist,
         require("./nickname"),
         require("./msg"),
+        require("./reactfix"),
         require("./map"),
         require("./role"),
 
