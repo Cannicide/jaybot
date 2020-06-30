@@ -81,7 +81,7 @@ var reportFunction = (choice, menu) => {
                                             var Trello = require('trello-node-api')(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
                                             var data = {
                                                 name: bugTitle,
-                                                desc: bugDesc + `[Reported by ${message.author.tag}]`,
+                                                desc: bugDesc + ` [Reported by ${message.author.tag}]`,
                                                 pos: 'bottom',
                                                 idList: process.env.BUGS_LIST, //REQUIRED
                                                 due: null,
