@@ -24,7 +24,7 @@ function randomNumber(length) {
     return Math.floor(Math.random() * length);
 }
 
-module.exports = new Command("tips", (message, args) => {
+var tipFunc = (message, args) => {
 
     //If args[0] present, send all tips to the player in JSON file format
     if (args && args[0] && args[0].toLowerCase() == "all") {
@@ -39,9 +39,19 @@ module.exports = new Command("tips", (message, args) => {
         message.channel.send(`**Random tip:** ${tip}`);
     }
 
-}, false, false, "View the in-game tips.").attachArguments([
-    {
-        name: "all",
-        optional: true
-    }
-]);
+};
+
+module.exports = {
+    command: new Command("tips", tipFunc, false, false, "View the in-game tips.").attachArguments([
+        {
+            name: "all",
+            optional: true
+        }
+    ]),
+    alias: new Command("tip", tipFunc, false, false, "View the in-game tips (alias of /tips).").attachArguments([
+        {
+            name: "all",
+            optional: true
+        }
+    ])
+};

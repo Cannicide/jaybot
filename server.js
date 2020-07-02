@@ -24,6 +24,7 @@ inface.setClient(Discord);
 var Interpreter = require("./interpreter");
 
 var ranks = require("./rank");
+var tips = require("./tips");
 
 var statistics = require("./statistics");
 statistics.logger(client);
@@ -50,7 +51,8 @@ client.on('ready', () => {
      */
     requisites = [
         require("./faq"),
-        require("./tips"),
+        tips.command,
+        tips.alias,
         statistics.command,
         require("./ban-appeals"),
         require("./report"),
@@ -59,7 +61,6 @@ client.on('ready', () => {
         ranks.command,
         ranks.toplist,
         require("./nickname"),
-        require("./msg"),
         require("./reactfix"),
         require("./map"),
         require("./role"),
