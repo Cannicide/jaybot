@@ -53,7 +53,7 @@ var stats = new Command("statistics", (message, args) => {
 }, false, false, "View discord and minecraft server statistics.");
 
 const fs = require("fs");
-var storageSrc = __dirname + "/storage/" + "statistics" + ".json";;
+var storageSrc = __dirname + "/storage/" + "statistics" + ".json";
 
 function getLS() {
     try {
