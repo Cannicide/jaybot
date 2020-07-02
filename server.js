@@ -50,6 +50,7 @@ client.on('ready', () => {
      */
     requisites = [
         require("./faq"),
+        require("./tips"),
         statistics.command,
         require("./ban-appeals"),
         require("./report"),
