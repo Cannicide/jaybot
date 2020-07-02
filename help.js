@@ -3,7 +3,6 @@ var Interface = require("./interface")
 
 module.exports = new Command("help", (message, args) => {
 
-    //Rudimentary help command for now, will be improved once all commands are added
     var cmds = new Command().getCommands();
     var prefix = args[0];
     var fields = [];
@@ -31,6 +30,7 @@ module.exports = new Command("help", (message, args) => {
                 });
                 res.value += "```\n** **";
             }
+            res.inline = true;
             fields.push(res);
         }
     });
