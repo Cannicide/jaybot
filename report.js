@@ -66,7 +66,7 @@ var reportFunction = (choice, menu) => {
                                         //Now post a bug report embed to the #bugs channel
                                         let bugReport = new Interface.Embed(message, thumb, [
                                             {
-                                                name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Report: **${bugTitle}**`,
+                                                name: `[${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Report]`,
                                                 value: bugDesc
                                             },
                                             {
