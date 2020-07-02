@@ -5,7 +5,7 @@ const plrepFormat = "https://zhorde.net/threads/how-to-report-a-player.875/";
 
 var Command = require("./command");
 var Interface = require("./interface");
-var in_a = require("in-a-nutshell");
+//var in_a = require("in-a-nutshell");
 
 var reportTypes = ["Players", "Bugs", "Safespots"];
 var message;
@@ -43,7 +43,9 @@ var reportFunction = (choice, menu) => {
                             else {
                                 var bugDesc = res2.content;
                                 //var bugTitle = bugDesc.length < 42 ? bugDesc : bugDesc.substring(0, 42);
-                                var bugTitle = in_a.nutshell(bugDesc + ".", 1); //Summarizes bug description in one sentence using artificial intelligence (not 100% accurate)
+                                //var bugTitle = in_a.nutshell(bugDesc + ".", 1); //Summarizes bug description in one sentence using artificial intelligence (not 100% accurate)
+                                var bugTitle = bugDesc.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.");
+                                
                                 init2.edit(`✅ Successfully entered a description for the ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report.`);
 
                                 let img = new Interface.Interface(message, "**Step 2)**\nAttach **one** image or URL illustrating the " + matchesType.toLowerCase().substring(0, matchesType.length - 1) + " that you found, or type `none` if you do not have an image/video/URL. **Image files** and **any URLs** are both accepted.", (res3, init3) => {
