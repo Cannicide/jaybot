@@ -1,6 +1,7 @@
 //The command to provide tips on gameplay and the server, mostly the same as those in-game
 
 var Command = require("./command");
+const fs = require("fs");
 var json_src = "https://cdn.discordapp.com/attachments/728320173009797190/728320370205261844/tips.json";
 var storageSrc = __dirname + "/tips.json";
 
