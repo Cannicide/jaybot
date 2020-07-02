@@ -44,7 +44,7 @@ var reportFunction = (choice, menu) => {
                                 var bugDesc = res2.content;
                                 //var bugTitle = bugDesc.length < 42 ? bugDesc : bugDesc.substring(0, 42);
                                 //var bugTitle = in_a.nutshell(bugDesc + ".", 1); //Summarizes bug description in one sentence using artificial intelligence (not 100% accurate)
-                                var bugTitle = bugDesc.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.");
+                                var bugTitle = bugDesc.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
                                 
                                 init2.edit(`✅ Successfully entered a description for the ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report.`);
 
@@ -68,7 +68,7 @@ var reportFunction = (choice, menu) => {
                                         //Now post a bug report embed to the #bugs channel
                                         let bugReport = new Interface.Embed(message, thumb, [
                                             {
-                                                name: `[${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Report]`,
+                                                name: `*[${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Report]*`,
                                                 value: bugDesc
                                             },
                                             {
