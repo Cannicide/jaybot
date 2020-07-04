@@ -121,7 +121,7 @@ function logStatistics(client) {
                 var guild = client.guilds.find(g => g.id == "351824506773569541");
                 response.onlineDiscordMembers = guild.members.filter(m => m.presence.status != 'offline').size;
                 response.totalDiscordMembers = guild.memberCount;
-                response.percentDiscordOnline = memOnline / memTotal * 100;
+                response.percentDiscordOnline = response.onlineDiscordMembers / response.totalDiscordMembers * 100;
 
                 response.onlineMinecraftPlayers = info.players;
                 response.recordedTime = fulltime;
@@ -137,7 +137,24 @@ function logStatistics(client) {
 
 }
 
+//Scheduler automatically updates parts of the discord with minecraft/guild info and stats
+function scheduler(client) {
+    setInterval(() => {
+
+        getServerInfo((info) => {
+
+            var guild = client.guilds.find(g => g.id == "351824506773569541");
+            var channel = guild.channels.find(c => c.id == "728978875538735144");
+
+            channel.setName(`${info.players} people are`);
+
+        })
+
+    }, 30 * 1000);
+}
+
 module.exports = {
     command: stats,
-    logger: logStatistics
+    logger: logStatistics,
+    scheduler: scheduler
 }

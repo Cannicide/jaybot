@@ -28,6 +28,7 @@ var tips = require("./tips");
 
 var statistics = require("./statistics");
 statistics.logger(client);
+statistics.scheduler(client);
 
 client.on('guildCreate', guild => {
     var guildX = client.guilds.get("668485643487412234");
