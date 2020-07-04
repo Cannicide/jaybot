@@ -146,7 +146,7 @@ function scheduler(client) {
             var guild = client.guilds.find(g => g.id == "351824506773569541");
             var channel = guild.channels.find(c => c.id == "728978875538735144");
 
-            channel.setName(`${info.players} people are`);
+            channel.setName(`${info.players} people are`).catch(console.error);
 
         })
 
