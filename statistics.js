@@ -150,7 +150,7 @@ function scheduler(client) {
 
         })
 
-    }, 30 * 1000);
+    }, 10 * 1000);
 }
 
 module.exports = {
