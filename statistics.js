@@ -155,12 +155,15 @@ function scheduler(client) {
 
             var guild = client.guilds.find(g => g.id == "351824506773569541");
             var channel = guild.channels.find(c => c.id == "728978875538735144");
+            var msg = false;
 
-            channel.setName(`${info.players.online} ${info.players.online == 1 ? "person is" : "people are"}`).catch(console.error);
+            if (info && info.players) msg = `${info.players.online} ${info.players.online == 1 ? "person is" : "people are"}`;
+
+            if (msg && channel.name != msg) channel.setName(msg).catch(console.error);
 
         });
 
-    }, 30 * 1000);
+    }, 40 * 1000);
 }
 
 module.exports = {
