@@ -163,7 +163,7 @@ function scheduler(client) {
 
         });
 
-    }, 80 * 1000);
+    }, 5 * 60 * 1000);
 }
 
 module.exports = {
