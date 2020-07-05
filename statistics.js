@@ -1,4 +1,5 @@
 var ping = require("minecraft-server-util");
+var jayping = require("./jay-ping");
 var Command = require("./command");
 var Interface = require("./interface");
 
@@ -141,14 +142,23 @@ function logStatistics(client) {
 function scheduler(client) {
     setInterval(() => {
 
-        getServerInfo((info) => {
+        /*getServerInfo((info) => {
 
             var guild = client.guilds.find(g => g.id == "351824506773569541");
             var channel = guild.channels.find(c => c.id == "728978875538735144");
 
             channel.setName(`${info.players} ${info.players == 1 ? "person is" : "people are"}`).catch(console.error);
 
-        })
+        })*/
+
+        jayping.zhorde((info) => {
+
+            var guild = client.guilds.find(g => g.id == "351824506773569541");
+            var channel = guild.channels.find(c => c.id == "728978875538735144");
+
+            channel.setName(`${info.players.online} ${info.players.online == 1 ? "person is" : "people are"}`).catch(console.error);
+
+        });
 
     }, 30 * 1000);
 }
