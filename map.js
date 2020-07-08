@@ -4,7 +4,7 @@ var Command = require("./command");
 var Interface = require("./interface");
 
 //Selections:
-const maps = ["Area 935", "Cold Dead", "Stygia", "Dawn of the Horde", "Dread Space", "Curse of the Horde", "Fallen", "Left to Rot", "Grains", "Hordelands", "Nowhere Fast", "Undead High", "6 Blocks Under", "Boziem Desert", "Anguith City", "Nuketown 2025", "Mansion of Massacre", "Cruise of Chaos", "Trench of Terror", "Haunted Halls", "Mathus Station", "Knight of the Dead", "Sanctuary", "Shipwrecked", "Incarceration", "Cobas Calamity", "Sewers of Surprise", "Submerged"];
+const maps = ["Area 935", "Cold Dead", "Stygia", "Dawn of the Horde", "Dread Space", "Curse of the Horde", "Fallen", "Left to Rot", "Grains", "Hordelands", "Nowhere Fast", "Undead High", "6 Blocks Under", "Boziem Desert", "Anguith City", "Nuketown 2025", "Mansion of Massacre", "Cruise of Chaos", "Trench of Terror", "Shafted", "Mathus Station", "Knight of the Dead", "Sanctuary", "Shipwrecked", "Incarceration", "Cobas Calamity", "Sewers of Surprise", "Submerged"];
 const sagas = [
     {
         name: "Rise of the Horde",
@@ -17,6 +17,10 @@ const sagas = [
     {
         name: "The Final Vacation",
         maps: ["Cruise of Chaos", "Shipwrecked"]
+    },
+    {
+        name: "Pure Insanity",
+        maps: ["Submerged", "Hordelands", "Shafted"]
     },
     {
         name: "Jungle Calamity",
@@ -57,7 +61,8 @@ const wheels = [
     {name: "Mansion of Massacre", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FMansion.png?v=1591119628965"}, 
     {name: "Cruise of Chaos", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FCruise.png?v=1591119563184"}, 
     {name: "Trench of Terror", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FTrench.png?v=1591119680286"}, 
-    {name: "Haunted Halls", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FHauntedHalls.png?v=1591119590206"}, 
+    //{name: "Haunted Halls", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FHauntedHalls.png?v=1591119590206"}, 
+    {name: "Shafted", image: "https://cdn.glitch.com/0b7ca58c-4ccd-4274-807a-64df3a2b5006%2FShafted%20(haunted%20halls).png?v=1594213381637"}, 
     {name: "Mathus Station", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FMathus.png?v=1591119634238"}, 
     {name: "Knight of the Dead", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FKnight.png?v=1591119618900"}, 
     {name: "Sanctuary", image: "https://cdn.glitch.com/815b6ec0-cdbf-4b44-afd2-60f27a075bc8%2FSanctuary.png?v=1591119649864"}, 
@@ -142,7 +147,8 @@ module.exports = new Command("map", (message, args) => {
                     var user_choices = args.join(" ").replace(" ", ";;split;;").split(";;split;;")[1].split(",");
                     chosen = user_choices[randomNumber(user_choices.length)];
                     spinnerResp = `${matchesType == "Insane Map" ? insaneEmote + " " + chosen + " (Insane)" : chosen}`;
-                    img = wheels.find(m => m.name == "Area 935").image;
+                    img = wheels.find(m => m.name.toLowerCase() == chosen.toLowerCase()) ? wheels.find(m => m.name.toLowerCase() == chosen.toLowerCase()).image : wheels.find(m => m.name == "Area 935").image;
+
                 }
 
                 var embed = new Interface.Embed(message, "", [
