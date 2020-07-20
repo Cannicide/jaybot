@@ -121,17 +121,17 @@ module.exports = new Command("map", (message, args) => {
                 var chosen;
                 var img;
 
-                if (matchesType == "Normal Map") {
+                if (matchesType == "Normal Map" && !args[1]) {
                     chosen = randomMap();
                     spinnerResp = `${chosen}`;
                     img = wheels.find(m => m.name == chosen).image;
                 }
-                else if (matchesType == "Insane Map") {
+                else if (matchesType == "Insane Map" && !args[1]) {
                     chosen = randomMap();
                     spinnerResp = `${insaneEmote} ${chosen} (Insane)`;
                     img = wheels.find(m => m.name == chosen).image;
                 }
-                else if (matchesType == "Map Saga") {
+                else if (matchesType == "Map Saga" && !args[1]) {
                     chosen = randomSaga();
                     var saga = chosen;
                     var sagaName = saga.name;
