@@ -61,7 +61,7 @@ var reportFunction = (choice, menu) => {
                                         }
                                         else {
                                             var attachment = (res3.attachments).array();
-                                            bugImage = attachment[0].url;
+                                            bugImage = attachment[0] ? attachment[0].url : thumb;
                                         }
 
                                         init3.edit(`✅ Successfully set an image/file/URL, or a default image if one was not attached, for the ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report.`);
