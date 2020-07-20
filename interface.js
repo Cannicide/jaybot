@@ -43,7 +43,7 @@ function FancyMessage(title, question, bullets, options) {
  * @param {String} fields[].value - The content of the field.
  * @param {Boolean} [fields[].inline] - Whether or not the field is inline.
  */
-function EmbedMessage(message, thumbnail, fields) {
+function EmbedMessage(message, thumbnail, fields, desc) {
     let userID = message.author.id;
     let client = message.client;
     var tuser = client.users.find("id", userID);
@@ -63,7 +63,8 @@ function EmbedMessage(message, thumbnail, fields) {
         },
         "fields": fields,
         "image": {},
-        "video": {}
+        "video": {},
+        "description": desc ? desc : ""
       }
     };
 }
