@@ -136,7 +136,8 @@ module.exports = new Command("map", (message, args) => {
                     var sagaName = saga.name;
                     var sagaMaps = saga.maps.join(" -> ");
                     spinnerResp = `${sagaName}\n**Maps:** ${sagaMaps}`;
-                    img = wheels.find(m => m.name == "Area 935").image;
+                    var randImage = randomMap();
+                    img = wheels.find(m => m.name == randImage).image;
                 }
 
                 if (args[1] && matchesType == "Map Saga") {
@@ -146,8 +147,9 @@ module.exports = new Command("map", (message, args) => {
                 else if (args[1]) {
                     var user_choices = args.join(" ").replace(" ", ";;split;;").split(";;split;;")[1].split(",");
                     chosen = user_choices[randomNumber(user_choices.length)];
+                    var randImage = randomMap();
                     spinnerResp = `${matchesType == "Insane Map" ? insaneEmote + " " + chosen + " (Insane)" : chosen}`;
-                    img = wheels.find(m => m.name.toLowerCase() == chosen.toLowerCase()) ? wheels.find(m => m.name.toLowerCase() == chosen.toLowerCase()).image : wheels.find(m => m.name == "Area 935").image;
+                    img = wheels.find(m => m.name.toLowerCase() == chosen.toLowerCase()) ? wheels.find(m => m.name.toLowerCase() == chosen.toLowerCase()).image : wheels.find(m => m.name == randImage).image;
 
                 }
 
