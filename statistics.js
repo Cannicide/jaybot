@@ -53,29 +53,8 @@ var stats = new Command("statistics", (message, args) => {
 
 }, false, false, "View discord and minecraft server statistics.");
 
-const fs = require("fs");
-var storageSrc = __dirname + "/storage/" + "statistics" + ".json";
-
-function getLS() {
-    try {
-        //Gets json file, and converts into JS object
-        var storage = JSON.parse(fs.readFileSync(storageSrc));
-    }
-    catch (err) {
-        console.log("Reading JSON was not possible due to error: " + err);
-        return false;
-    }
-
-
-   //Returns the storage object
-   return storage;
-}
-
-function setLS(newStorage) {
-
-    //Updates json file with new config additions/updates
-    fs.writeFileSync(storageSrc, JSON.stringify(newStorage, null, "\t"));
-}
+var Evg = require("./evg");
+var evg = new Evg("storage");
 
 function logStatistics(client) {
 
@@ -109,7 +88,7 @@ function logStatistics(client) {
 
         //Get storage and fetch stats:
 
-        var obj = getLS();
+        var obj = evg.get();
         var response = {};
 
         if (!(date in obj)) {
@@ -130,7 +109,7 @@ function logStatistics(client) {
                 //Set storage
 
                 obj[date][time.hours] = response;
-                setLS(obj);
+                evg.set(obj);
             });
         }
 
