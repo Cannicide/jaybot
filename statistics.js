@@ -154,12 +154,12 @@ function scheduler(client) {
         jayping.zhorde((info) => {
 
             var guild = client.guilds.find(g => g.id == "351824506773569541");
-            var channel = guild.channels.find(c => c.id == "728978875538735144");
+            var channel = guild ? guild.channels.find(c => c.id == "728978875538735144") : false;
             var msg = false;
 
             if (info && info.players) msg = `${info.players.online} ${info.players.online == 1 ? "person is" : "people are"}`;
 
-            if (msg && channel.name != msg) channel.setName(msg).catch(console.error);
+            if (channel && msg && channel.name != msg) channel.setName(msg).catch(console.error);
 
         });
 
