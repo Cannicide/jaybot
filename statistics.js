@@ -54,7 +54,7 @@ var stats = new Command("statistics", (message, args) => {
 }, false, false, "View discord and minecraft server statistics.");
 
 var Evg = require("./evg");
-var evg = new Evg("storage");
+var evg = new Evg("statistics");
 
 function logStatistics(client) {
 
