@@ -15,6 +15,17 @@ function RankingSystem() {
         evg.set(sysadm);
     }
 
+    function getTotalPrestigeXP() {
+        var total = 0;
+        ranks.forEach((item) => {
+            total += Number(item["ending-xp"]);
+        })
+
+        return total;
+    }
+
+    this.getTotalXP = getTotalPrestigeXP;
+
     function romanNumeral(num) {
         var numeralCodes = [["","I","II","III","IV","V","VI","VII","VIII","IX"],         // Ones
                             ["","X","XX","XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"],   // Tens
@@ -66,12 +77,12 @@ function RankingSystem() {
      */
     this.getCard = (user, message) => {
         var rank = user.prestige != 0 ? `[${romanNumeral(user.prestige)}] ${user.rank}` : user.rank;
-        var xp = user.prestige * 1150 + user.xp;
+        var xp = user.prestige * getTotalPrestigeXP() + user.xp;
         var total_xp, level, user_name, user_id, user_img;
 
         ranks.forEach((item, index) => {
             if (item.name == user.rank) {
-                total_xp = user.prestige * 1150 + item["ending-xp"];
+                total_xp = user.prestige * getTotalPrestigeXP() + item["ending-xp"];
                 level = index + 1 + (user.prestige * ranks.length);
             }
         });
@@ -191,7 +202,7 @@ var toplist = new Command("toplist", (message, args) => {
             username = message.guild.members.get(item).user.tag;
             userSet.push({
                 id: item,
-                xp: users[item].xp + users[item].prestige * 1150,
+                xp: users[item].xp + users[item].prestige * system.getTotalXP(),
                 prestige: users[item].prestige,
                 level: level,
                 name: username
