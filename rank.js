@@ -2,101 +2,17 @@
 
 var Command = require("./command");
 const fs = require("fs");
-
-//LS Storage:
-
-function getLS(storageSrc) {
-    try {
-        //Gets json file, and converts into JS object
-        var storage = JSON.parse(fs.readFileSync(storageSrc));
-    }
-    catch (err) {
-        console.log("Reading JSON was not possible due to error: " + err);
-        return false;
-    }
-
-
-   //Returns the storage object
-   return storage;
-}
-
-/**
- * Allows storing and retrieving data locally using JSON files.
- * @param {String} src - The name of the JSON file in the storage folder, without the file extension (.json)
- * @param {Object} def - The default (empty) object structure that should occur in the JSON file, even if empty/cleared
- */
-function LS(src, def) {
-
-    var storageSrc = __dirname + "/storage/" + src + ".json";
-
-    /**
-     * Sets a key in the storage to a value, or creates a new (key, value) pair if none exists.
-     * @param {String} key - The key to access and store the value at.
-     * @param {*} value - The value to store in the storage.
-     */
-    this.set = (key, value) => {
-        //Gets the current storage from JSON file
-        var currentStorage = getLS(storageSrc);
-
-        if (!currentStorage) {
-            console.log("Unable to set the configuration; could not get the current configuration.");
-            return false;
-        }
-
-        currentStorage[key] = value;
-
-        //Updates json file with new config additions/updates
-        fs.writeFileSync(storageSrc, JSON.stringify(currentStorage, null, "\t"));
-    }
-
-    /**
-     * Clears the storage (or resets it to the default) if the boolean parameter is true.
-     * @param {Boolean} bool - A boolean to determine whether or not the storage should be cleared.
-     */
-    this.clear = (bool) => {
-        if (bool) fs.writeFileSync(storageSrc, JSON.stringify(def ? def : {}, null, "\t"));
-    }
-
-    /**
-     * Returns true if the key exists, and false if not.
-     * @param {String} key - The key to check for.
-     * @return {boolean} (boolean) key existence
-     */
-    let exists = (key) => {
-        var currentStorage = getLS(storageSrc);
-        if (key in currentStorage) return true;
-        else return false;
-    }
-
-    this.exists = exists;
-
-    /**
-     * Gets the value from the storage that is stored at the specified key.
-     * @param {String} key - The key at which the value is stored.
-     * @return {*} (*) retrieved key, or `false` if none found
-     */
-    this.get = (key) => {
-        var currentStorage = getLS(storageSrc);
-        if (exists(key)) {
-            return currentStorage[key];
-        }
-        else {
-            return false;
-        }
-    }
-
-}
-
+var evg = new (require("./evg"))("ranks");
 
 //Ranking System:
 
-var ranking = new LS("ranks");
-
 function RankingSystem() {
-    let ranks = ranking.get("ranks");
+    let ranks = evg.get()["ranks"];
 
     function updateUsers(obj) {
-        ranking.set("users", obj);
+        var sysadm = evg.get();
+        sysadm["users"] = obj;
+        evg.set(sysadm);
     }
 
     function romanNumeral(num) {
@@ -118,7 +34,7 @@ function RankingSystem() {
      * Checks whether or not a user exists given the message object that they sent.
      */
     this.userExists = (message) => {
-        let users = ranking.get("users");
+        let users = evg.get()["users"];
         if (message.author.id in users) return true;
         else return false;
     }
@@ -127,7 +43,7 @@ function RankingSystem() {
      * Adds or resets the stats of a user, given a message object that they sent.
      */
     this.addUser = (message) => {
-        let users = ranking.get("users");
+        let users = evg.get()["users"];
         users[message.author.id] = {
             "rank": "Newbie",
             "xp": 0,
@@ -141,7 +57,7 @@ function RankingSystem() {
      * Gets a user object (with rank, xp, and prestige properties) given a message object that they sent.
      */
     this.getUser = (message) => {
-        let users = ranking.get("users");
+        let users = evg.get()["users"];
         return users[message.author.id];
     }
 
@@ -173,7 +89,7 @@ function RankingSystem() {
      * Adds a specified amount of XP to a user given a message object that they sent. Users prestige when they surpass max rank.
      */
     this.addXP = (xp, message) => {
-        let users = ranking.get("users");
+        let users = evg.get()["users"];
         let user = users[message.author.id];
         let rank, rank_index;
 
@@ -254,8 +170,8 @@ var rank_command = new Command("rank", (message, args) => {
 
 var toplist = new Command("toplist", (message, args) => {
 
-    var users = ranking.get("users");
-    var ranks = ranking.get("ranks");
+    var users = evg.get()["users"];
+    var ranks = evg.get()["ranks"];
     var top5 = ["-", "-", "-", "-", "-"];
 
     var userSet = [];
@@ -322,6 +238,5 @@ var toplist = new Command("toplist", (message, args) => {
 module.exports = {
     command: rank_command,
     toplist: toplist,
-    LS: LS,
     system: system
 }
