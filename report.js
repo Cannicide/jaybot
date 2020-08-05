@@ -104,8 +104,8 @@ var reportFunction = (choice, menu) => {
                                         bugReport.embed["image"]["url"] = bugImage.match(/\.(jpeg|jpg|gif|png)$/) ? bugImage : "";
                                         bugReport.embed.title = bugTitle;
 
-                                        if (matchesType == "Bugs") message.guild.channels.get(message.guild.channels.find("name", "bugs").id).send(bugReport);
-                                        else if (matchesType == "Safespots") message.guild.channels.get(message.guild.channels.find("name", "safespots").id).send(bugReport);
+                                        if (matchesType == "Bugs") message.guild.channels.get(message.guild.channels.find(c => c.name == "bugs").id).send(bugReport);
+                                        else if (matchesType == "Safespots") message.guild.channels.get(message.guild.channels.find(c => c.name == "safespots").id).send(bugReport);
                                         message.channel.send(`✅ Your ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report has been submitted, <@!${message.author.id}>`);
                                     }
                                 }, "report." + matchesType.toLowerCase().substring(0, matchesType.length - 1))
@@ -197,8 +197,8 @@ function bugcolon(message, args, matchesType) {
         });
     }
 
-    if (matchesType == "Bugs") message.guild.channels.get(message.guild.channels.find("name", "bugs").id).send(bugReport);
-    else if (matchesType == "Safespots") message.guild.channels.get(message.guild.channels.find("name", "safespots").id).send(bugReport);
+    if (matchesType == "Bugs") message.guild.channels.get(message.guild.channels.find(c => c.name == "bugs").id).send(bugReport);
+    else if (matchesType == "Safespots") message.guild.channels.get(message.guild.channels.find(c => c.name == "safespots").id).send(bugReport);
     message.channel.send(`✅ Your ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report has been submitted, <@!${message.author.id}>.\n${bugImage == orig ? "No image/video evidence was found attached to your report. You can attach evidence by attaching an image on the same message as the report, or by including a link to the evidence anywhere in your report." : ""}`);
     message.react("✅");
 
