@@ -56,7 +56,7 @@ client.on('ready', () => {
         tips.alias,
         statistics.command,
         require("./ban-appeals"),
-        require("./report"),
+        require("./report").command,
         require("./speak"), //<--------Easter egg for admins only
         require("./yt-promote"),
         ranks.command,

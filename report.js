@@ -138,23 +138,92 @@ var reportFunction = (choice, menu) => {
     }
 };
 
-module.exports = new Command("report", (msg, args) => {
+//The oversimplified Bug: bug-reporting system
+function bugcolon(message, args, matchesType) {
 
-    var response = new Interface.FancyMessage("Report Issues", "Which of the following would you like to report?", reportTypes, {
-        title: "#",
-        bullet: "*"
-    }).get();
+    var orig = "https://cdn.discordapp.com/attachments/668485643487412237/691701166408728676/bug.png";
+    var bugImage = orig;
 
-    message = msg;
-
-    if (message.channel.name.toLowerCase().match("bug")) {
-        reportFunction({content: "Bugs"});
-    }
-    else if (message.channel.name.toLowerCase().match("safespot")) {
-        reportFunction({content: "Safespots"});
+    if (message.content.match("http")) {
+        bugImage = args.find(m => m.match("http"));
     }
     else {
-        var report = new Interface.Interface(msg, response, reportFunction, "report.issue");
+        var attachment = (message.attachments).array();
+        bugImage = attachment[0] ? attachment[0].url : orig;
     }
 
-}, false, false, "Report bugs, safespots, and players.");
+    var nonargs = args;
+    nonargs.shift();
+
+    var bugDesc = nonargs.join(" ");
+    var bugTitle = bugDesc.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
+    if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
+
+    //Now post a bug report embed to the #bugs channel
+    let bugReport = new Interface.Embed(message, orig, [
+        {
+            name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Description`,
+            value: bugDesc
+        },
+        {
+            name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Evidence`,
+            value: `[🔗](${bugImage})`
+        }
+    ]);
+
+    bugReport.embed["image"]["url"] = bugImage.match(/\.(jpeg|jpg|gif|png)$/) ? bugImage : "";
+    bugReport.embed.title = bugTitle;
+
+    //Insert bugs to trello automagically
+    if (matchesType == "Bugs") {
+
+        var Trello = require('trello-node-api')(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
+        var data = {
+            name: bugTitle,
+            desc: bugDesc + ` [Reported by ${message.author.tag}]`,
+            pos: 'bottom',
+            idList: process.env.BUGS_LIST, //REQUIRED
+            due: null,
+            dueComplete: false,
+            idMembers: [],
+            idLabels: [],
+            urlSource: bugImage
+        };
+
+        Trello.card.create(data).then(function (response) {
+            //console.log('Trello card creation response ', response);
+        }).catch(function (error) {
+            console.log('Trello card creation error:', error);
+        });
+    }
+
+    if (matchesType == "Bugs") message.guild.channels.get(message.guild.channels.find("name", "bugs").id).send(bugReport);
+    else if (matchesType == "Safespots") message.guild.channels.get(message.guild.channels.find("name", "safespots").id).send(bugReport);
+    message.channel.send(`✅ Your ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report has been submitted, <@!${message.author.id}>.\n${bugImage == orig ? "No image/video evidence was found attached to your report. You can attach evidence by attaching an image on the same message as the report, or by including a link to the evidence anywhere in your report." : ""}`);
+    message.react("✅");
+
+}
+
+module.exports = {
+    command: new Command("report", (msg, args) => {
+
+        var response = new Interface.FancyMessage("Report Issues", "Which of the following would you like to report?", reportTypes, {
+            title: "#",
+            bullet: "*"
+        }).get();
+
+        message = msg;
+
+        if (message.channel.name.toLowerCase().match("bug")) {
+            reportFunction({content: "Bugs"});
+        }
+        else if (message.channel.name.toLowerCase().match("safespot")) {
+            reportFunction({content: "Safespots"});
+        }
+        else {
+            var report = new Interface.Interface(msg, response, reportFunction, "report.issue");
+        }
+
+    }, false, false, "Report bugs, safespots, and players."),
+    colon: bugcolon
+}
