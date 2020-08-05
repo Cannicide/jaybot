@@ -32,7 +32,7 @@ statistics.scheduler(client);
 
 client.on('guildCreate', guild => {
     var guildX = client.guilds.get("668485643487412234");
-    guildX.channels.get(guildX.channels.find("name", "logs").id).send("ZH Discord Bot was added to the guild: " + guild.name);
+    guildX.channels.get(guildX.channels.find(c => c.name == "logs").id).send("ZH Discord Bot was added to the guild: " + guild.name);
 });
 
 var commands = [];
