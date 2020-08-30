@@ -29,6 +29,12 @@ function setup(app, disc) {
   app.get("/statistics/", (req, res) => {
       res.sendFile(__dirname + "/views/statistics.html");
   })
+  
+  app.use(bodyParser.json());
+  
+  app.post("/discordsrz", (req, res) => {
+    console.log("DiscordSRZ:", req.body);
+  });
 
 }
 
