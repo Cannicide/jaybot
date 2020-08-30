@@ -11,7 +11,7 @@ function Alias(alias, original) {
     var options = origcmd.getOptions();
     var args = origcmd.getArguments();
 
-    var aliascmd = new Command(alias, options.method, options.permissions, options.invisible, options.desc);
+    var aliascmd = new Command(alias, options.method, options.permissions, options.invisible, `Alias of the \`/${origcmd.getName()}\` command.`);
 
     if (args) aliascmd.attachArguments(args);
 
