@@ -1,7 +1,7 @@
 //Easily get role information (namely any role's ID)
 
-var Command = require("./command");
-var Interface = require("./interface");
+var Command = require("../command");
+var Interface = require("../interface");
 
 module.exports = new Command("role", (message, args) => {
 

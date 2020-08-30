@@ -1,6 +1,6 @@
 //A non-command system to interpret messages that are not commands and auto-respond/auto-react if necessary
 
-var report = require("./report");
+var report = require("./commands/report");
 
 function Interpreter(message) {
 

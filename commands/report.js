@@ -3,8 +3,8 @@
 const plrepThread = "https://zhorde.net/forums/player-reports.14/create-thread?title=Player+Report+-+ZhordeBot-Generated";
 const plrepFormat = "https://zhorde.net/threads/how-to-report-a-player.875/";
 
-var Command = require("./command");
-var Interface = require("./interface");
+var Command = require("../command");
+var Interface = require("../interface");
 //var in_a = require("in-a-nutshell");
 
 var reportTypes = ["Players", "Bugs", "Safespots"];
@@ -205,7 +205,7 @@ function bugcolon(message, args, matchesType) {
 }
 
 module.exports = {
-    command: new Command("report", (msg, args) => {
+    commands: [new Command("report", (msg, args) => {
 
         var response = new Interface.FancyMessage("Report Issues", "Which of the following would you like to report?", reportTypes, {
             title: "#",
@@ -224,6 +224,6 @@ module.exports = {
             var report = new Interface.Interface(msg, response, reportFunction, "report.issue");
         }
 
-    }, false, false, "Report bugs, safespots, and players."),
+    }, false, false, "Report bugs, safespots, and players.")],
     colon: bugcolon
 }

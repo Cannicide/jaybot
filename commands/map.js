@@ -1,7 +1,7 @@
 //Command to randomly choose a map in a more advanced way than the in-game map chooser
 
-var Command = require("./command");
-var Interface = require("./interface");
+var Command = require("../command");
+var Interface = require("../interface");
 
 //Selections:
 const maps = ["Area 935", "Cold Dead", "Stygia", "Dawn of the Horde", "Dread Space", "Curse of the Horde", "Fallen", "Left to Rot", "Grains", "Hordelands", "Nowhere Fast", "Undead High", "6 Blocks Under", "Boziem Desert", "Anguith City", "Nuketown 2025", "Mansion of Massacre", "Cruise of Chaos", "Trench of Terror", "Shafted", "Mathus Station", "Knight of the Dead", "Sanctuary", "Shipwrecked", "Incarceration", "Cobas Calamity", "Sewers of Surprise", "Submerged"];

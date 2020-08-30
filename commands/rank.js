@@ -1,8 +1,7 @@
 //A ranking system based on users' discord activity with in-discord rewards
 
-var Command = require("./command");
-const fs = require("fs");
-var evg = new (require("./evg"))("ranks");
+var Command = require("../command");
+var evg = new (require("../evg"))("ranks");
 
 //Ranking System:
 
@@ -247,7 +246,6 @@ var toplist = new Command("toplist", (message, args) => {
 
 
 module.exports = {
-    command: rank_command,
-    toplist: toplist,
+    commands: [rank_command, toplist],
     system: system
 }

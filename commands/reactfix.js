@@ -1,6 +1,6 @@
 //For manually adding reaction votes if someone sends a suggestion while the bot is down
 
-var Command = require("./command");
+var Command = require("../command");
 
 module.exports = new Command("reactfix", (message, args) => {
 

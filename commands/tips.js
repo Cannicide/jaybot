@@ -1,7 +1,9 @@
 //The command to provide tips on gameplay and the server, mostly the same as those in-game
 
-var Command = require("./command");
+var Command = require("../command");
+var Alias = require("../alias");
 const fs = require("fs");
+const { allowedNodeEnvironmentFlags } = require("process");
 var json_src = "https://cdn.discordapp.com/attachments/728320173009797190/728320370205261844/tips.json";
 var storageSrc = __dirname + "/tips.json";
 
@@ -42,16 +44,11 @@ var tipFunc = (message, args) => {
 };
 
 module.exports = {
-    command: new Command("tips", tipFunc, false, false, "View the in-game tips.").attachArguments([
+    commands: [new Command("tips", tipFunc, false, false, "View the in-game tips.").attachArguments([
         {
             name: "all",
             optional: true
         }
     ]),
-    alias: new Command("tip", tipFunc, false, false, "View the in-game tips (alias of /tips).").attachArguments([
-        {
-            name: "all",
-            optional: true
-        }
-    ])
+    new Alias("tip", "tips").getAsCommand()]
 };

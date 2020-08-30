@@ -1,7 +1,7 @@
 //A command to help promote the content of youtubers in the server (currently specialized to youtube only)
 
-var Command = require("./command");
-var Interface = require("./interface");
+var Command = require("../command");
+var Interface = require("../interface");
 var fetchVideoInfo = require("youtube-info");
 
 module.exports = new Command("promote", (message, args) => {

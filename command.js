@@ -13,6 +13,7 @@ var commands = [];
 function Command(name, method, permissions, invisible, desc) {
     var message = false;
     var args = false;
+    var aliases = [];
 
     this.set = function(msg) {
         message = msg;
@@ -33,6 +34,35 @@ function Command(name, method, permissions, invisible, desc) {
         }
     }
 
+    this.getOptions = () => {
+        return {method:method,permissions:permissions,invisible:invisible,desc:desc};
+    }
+
+    /**
+     * Attach alias objects to this Command.
+     * @param {Object} alias - Alias object
+     */
+    this.attachAlias = (alias) => {
+        aliases.push(alias);
+
+        return this;
+    }
+
+    /**
+     * Check if this command or any of its aliases have the name given.
+     * @param {String} cmd 
+     * @returns {boolean}
+     */
+    this.matches = (cmd) => {
+        if (name == cmd) return true;
+
+        aliases.forEach((item) => {
+            if (item.getAsCommand().getName() == cmd) return true;
+        });
+
+        return false;
+    }
+
     /**
      * @param {Object[]} objArr - A list of the possible command arguments of a command.
      * @param {String} objArr[].name - The name of the argument.
@@ -42,6 +72,8 @@ function Command(name, method, permissions, invisible, desc) {
         args = objArr;
 
         if (args.length == 0) args = false;
+
+        return this;
     }
 
     function CatchPromise(err) {

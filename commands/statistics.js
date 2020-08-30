@@ -1,7 +1,7 @@
 var ping = require("minecraft-server-util");
-var jayping = require("./jay-ping");
-var Command = require("./command");
-var Interface = require("./interface");
+var jayping = require("../jay-ping");
+var Command = require("../command");
+var Interface = require("../interface");
 
 function getServerInfo(callback) {
 
@@ -53,7 +53,7 @@ var stats = new Command("statistics", (message, args) => {
 
 }, false, false, "View discord and minecraft server statistics.");
 
-var Evg = require("./evg");
+var Evg = require("../evg");
 var evg = new Evg("statistics");
 
 function logStatistics(client) {

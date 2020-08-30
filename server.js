@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const fs = require("fs");
 
 app.use(express.static('public'));
 /*app.get('/', function(request, response) {
@@ -22,11 +23,12 @@ var inface = require("./interface");
 inface.setClient(Discord);
 
 var Interpreter = require("./interpreter");
+var Command = require("./command");
+var Alias = require("./alias");
 
-var ranks = require("./rank");
-var tips = require("./tips");
+var ranks = require("./commands/rank");
 
-var statistics = require("./statistics");
+var statistics = require("./commands/statistics");
 statistics.logger(client);
 statistics.scheduler(client);
 
@@ -36,6 +38,10 @@ client.on('guildCreate', guild => {
 });
 
 var commands = [];
+
+/**
+* @type Command[]
+*/
 var requisites = [];
 
 client.on('ready', () => {
@@ -47,30 +53,21 @@ client.on('ready', () => {
 
 
     //Import commands:
-    /**
-     * @type Command[]
-     */
-    requisites = [
-        require("./faq"),
-        tips.command,
-        tips.alias,
-        statistics.command,
-        require("./ban-appeals"),
-        require("./report").command,
-        require("./speak"), //<--------Easter egg for admins only
-        require("./yt-promote"),
-        ranks.command,
-        ranks.toplist,
-        require("./nickname"),
-        require("./reactfix"),
-        require("./map"),
-        require("./role"),
+    var cmdfiles = fs.readdirSync("commands");
+    cmdfiles.forEach((item) => {
+        var file = require(`./commands/${item.substring(0, item.length - 3)}`);
+        if (file instanceof Command) {
+            requisites.push(file);
+        }
+        else if ("commands" in file) {
+            file.commands.forEach((alias) => {
+                if (alias instanceof Command) requisites.push(alias);
+                else if (alias instanceof Alias) requisites.push(alias.getAsCommand());
+            })
+        }
+    });
 
-        //Must be the last in the list:
-        require("./help")
-    ];
-
-    commands = requisites[requisites.length - 1].getCommands();
+    commands = requisites.find(c => c.getName() == "help").getCommands();
 });
 
 client.on('message', message => {
@@ -126,7 +123,7 @@ client.on('message', message => {
             message.channel.startTyping();
             setTimeout(() => {
                 cmd.set(message);
-                if (cmd.getName() == "help") {
+                if (cmd.matches("help")) {
                     cmd.execute([prefix]).catch((err) => {
                         message.reply("An error occurred: " + err);
                     });

@@ -1,6 +1,6 @@
 //A Mod+ command to change the nicknames of other players.
 
-var Command = require("./command");
+var Command = require("../command");
 
 module.exports = new Command("nickname", (message, args) => {
 

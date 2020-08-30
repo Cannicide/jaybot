@@ -46,7 +46,7 @@ function FancyMessage(title, question, bullets, options) {
 function EmbedMessage(message, thumbnail, fields, desc) {
     let userID = message.author.id;
     let client = message.client;
-    var tuser = client.users.find("id", userID);
+    var tuser = client.users.find(m => m.id == userID);
     return {embed: {
         "color": tuser.toString().substring(2, 8),
         "timestamp": new Date(),

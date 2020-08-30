@@ -1,7 +1,7 @@
 //Command to create polls and votes.
 
-var Command = require("./command");
-var Interface = require("./interface");
+var Command = require("../command");
+var Interface = require("../interface");
 
 module.exports = new Command("poll", (message, args) => {
 

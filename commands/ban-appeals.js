@@ -2,8 +2,8 @@
 /*Ban appeal creation:*/ const banThread = "https://zhorde.net/forums/ban-appeals.17/create-thread?title=_%27s+Ban+Appeal"
 /*Ban appeal format:*/ const banFormat = "https://zhorde.net/threads/how-to-appeal-a-ban.876/#post-3058";
 
-var Command = require("./command");
-var Interface = require("./interface");
+var Command = require("../command");
+var Interface = require("../interface");
 
 module.exports = new Command("banappeal", (message, args) => {
 
