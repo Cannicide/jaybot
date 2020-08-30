@@ -34,13 +34,17 @@ function Command(name, method, permissions, invisible, desc) {
         }
     }
 
+    this.getAliases = () => {
+        return aliases;
+    }
+
     this.getOptions = () => {
         return {method:method,permissions:permissions,invisible:invisible,desc:desc};
     }
 
     /**
-     * Attach alias objects to this Command.
-     * @param {Object} alias - Alias object
+     * Attach alias Command objects to this Command.
+     * @param {Object} alias - Command object
      */
     this.attachAlias = (alias) => {
         aliases.push(alias);
@@ -54,13 +58,15 @@ function Command(name, method, permissions, invisible, desc) {
      * @returns {boolean}
      */
     this.matches = (cmd) => {
-        if (name == cmd) return true;
+        var matched = false;
+
+        if (name == cmd) matched = true;
 
         aliases.forEach((item) => {
-            if (item.getAsCommand().getName() == cmd) return true;
+            if (item.getName() == cmd) matched = true;
         });
 
-        return false;
+        return matched;
     }
 
     /**

@@ -19,8 +19,8 @@ function Alias(alias, original) {
         return aliascmd;
     }
 
-    origcmd.attachAlias(this);
-
+    origcmd.attachAlias(this.getAsCommand());
+    aliascmd.attachAlias(origcmd);
 }
 
 module.exports = Alias;
