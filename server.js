@@ -25,6 +25,9 @@ inface.setClient(Discord);
 var Interpreter = require("./interpreter");
 var Command = require("./command");
 var Alias = require("./alias");
+var Cycler = require("./presence-cycler");
+
+const PresenceHandler = new Cycler.PresenceHandler(client);
 
 var ranks = require("./commands/rank");
 
@@ -46,8 +49,17 @@ var requisites = [];
 
 client.on('ready', () => {
     console.log('ZH Discord Bot is up and running!');
+
     //Allows the status of the bot to be PURPLE (I don't stream on twitch anyways)
-    client.user.setActivity('/help', { type: 'STREAMING', url: 'https://twitch.tv/cannicide' });
+    var presence = new Cycler.Presence();
+    PresenceHandler.set(presence);
+
+    //Cycles the presence every 10 minutes
+    setInterval(() => {
+        var presence = new Cycler.Presence();
+        PresenceHandler.set(presence);
+    }, 10 * 60 * 1000);
+
     var guild = client.guilds.get("668485643487412234");
     guild.channels.get(guild.channels.find(c => c.name == "logs").id).fetchMessage("678657509296439353").then(msg => msg.edit("ZH Discord Bot is up and running again on the optimal port.\nAs of: " + new Date().toLocaleString('en-US', {timeZone: 'America/New_York'}) + " EST"));
 
