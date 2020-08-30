@@ -136,7 +136,7 @@ client.on('message', message => {
             setTimeout(() => {
                 cmd.set(message);
                 if (cmd.matches("help")) {
-                    cmd.execute([prefix]).catch((err) => {
+                    cmd.execute([prefix, args]).catch((err) => {
                         message.reply("An error occurred: " + err);
                     });
                 }
