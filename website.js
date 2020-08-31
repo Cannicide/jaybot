@@ -1,3 +1,5 @@
+var DiscordSRZ = require("./discordsrz");
+
 function setup(app, disc) {
     const bodyParser = require("body-parser");
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -34,6 +36,8 @@ function setup(app, disc) {
   
   app.post("/discordsrz", (req, res) => {
     console.log("DiscordSRZ:", req.body);
+    var srz = new DiscordSRZ(disc);
+    new srz.DataHandler(req.body);
   });
 
 }

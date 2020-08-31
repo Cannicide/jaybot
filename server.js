@@ -85,12 +85,44 @@ client.on('ready', () => {
 client.on('message', message => {
     try {
 
+        // Avoid bot messages, DM and otherwise:
+
+        if (message.author.bot) {
+            return false;
+        }
+
+        //Create new interpreter
+        var intp = new Interpreter(message);
+
+        //Command determination:
+
         var splitter = message.content.replace(" ", ";:splitter185151813367::");
         var splitted = splitter.split(";:splitter185151813367::");
+
+        var fixRegExp = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var re = new RegExp(fixRegExp);
+
+        var command = splitted[0].replace(re, "");
+        command = command.toLowerCase();
+
+        if (splitted[1]) {
+            var args = splitted[1].split(" ");
+        }
+        else {
+            var args = false;
+        }
+
+        // DM determination:
+
         if (message.guild === null) {
-            if (message.author.id != client.user.id) {
+            if (splitted[0].match(prefix)) {
                 message.reply("Sorry " + message.author.username + ", DM messages are not supported by this bot.");
             }
+            else {
+                //Interpret for DiscordSRZ code
+                intp.interpretDM(message.content.split(" "), client);
+            }
+
             return false;
         }
 
@@ -102,24 +134,6 @@ client.on('message', message => {
         }
 
         system.addXP(5, message);
-
-        //Command determination:
-
-        var fixRegExp = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        var re = new RegExp(fixRegExp);
-        var command = splitted[0].replace(re, "");
-        command = command.toLowerCase();
-
-        if (splitted[1]) {
-            var args = splitted[1].split(" ");
-        }
-        else {
-            var args = false;
-        }
-
-        if (message.author.bot) {
-            return false;
-        }
 
         //Check for command:
         var cmd = false;
@@ -149,7 +163,6 @@ client.on('message', message => {
             }, 1000);
         }
         else {
-            let intp = new Interpreter(message);
             intp.interpret(message.content.split(" "));
         }
 

@@ -28,6 +28,18 @@ function Interpreter(message) {
 
     }
 
+    this.interpretDM = (args, client) => {
+
+        var DiscordSRZ = require("./discordsrz");
+
+        //DiscordSRZ Code Link:
+        if (args[0].length == 5 && args[0].match(/[0-9]{5}/g)) {
+            var srz = new DiscordSRZ(client);
+            new srz.Link(args[0], message);
+        }
+
+    }
+
 }
 
 module.exports = Interpreter;
