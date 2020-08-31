@@ -23,6 +23,7 @@ function Presence() {
     var options = ["Slaying Zombies", "FLAMETHROWER!", "Molotovs: Just 25 Gold!", "A Cure?", "Braaiiinnnnsssss", "/help", "/help", "/help"]
     var selected = options[index];
     index += 1;
+    if (index == options.length) index = 0;
 
     this.get = () => {
         return selected;
