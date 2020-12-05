@@ -46,12 +46,12 @@ function FancyMessage(title, question, bullets, options) {
 function EmbedMessage(message, thumbnail, fields, desc) {
     let userID = message.author.id;
     let client = message.client;
-    var tuser = client.users.find(m => m.id == userID);
+    var tuser = client.users.cache.find(m => m.id == userID);
     return {embed: {
         "color": tuser.toString().substring(2, 8),
         "timestamp": new Date(),
         "footer": {
-          "icon_url": client.user.avatarURL,
+          "icon_url": client.user.avatarURL(),
           "text": client.user.username
         },
         "thumbnail": {
@@ -59,7 +59,7 @@ function EmbedMessage(message, thumbnail, fields, desc) {
         },
         "author": {
           "name": tuser.username,
-          "icon_url": tuser.avatarURL
+          "icon_url": tuser.avatarURL()
         },
         "fields": fields,
         "image": {},
@@ -83,7 +83,7 @@ function Interface(message, question, callback, type) {
     message.channel.send(question).then((msg) => {
         qMessage = msg;
     });
-    const collector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id, {maxMatches: 1});
+    const collector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id, {max: 1});
     collector.on("collect", msg => {
         collected = true;
         callback(msg, qMessage);
@@ -105,6 +105,98 @@ function Interface(message, question, callback, type) {
 
 }
 
+/**
+ * Creates a new ReactionInterface, a reaction collector to perform actions on user reaction
+ * @param {Object} message - Discord message object
+ * @param {String} question - Message to send and collect reactions from
+ * @param {function(message, reaction)} callback - Callback to execute on collect
+ */
+function ReactionInterface(message, question, reactions, callback) {
+
+    message.channel.send(question).then(m => {
+
+        var previous = false;
+
+        reactions.forEach((reaction) => {
+
+            if (previous) previous = previous.then(r => {return m.react(reaction)})
+            else previous = m.react(reaction);
+
+            let collector = m.createReactionCollector((r, user) => r.emoji.name === reaction.emoji.name && user.id === message.author.id, { time: 120000 });
+
+            collector.on("collect", r => {
+                r.users.remove(message.author);
+
+                callback(m, r);
+            });
+
+        });
+
+    });
+
+}
+
+/**
+ * Creates a new Pagination Interface, a reaction collector that cycles through pages on user reaction
+ * @param {Object} message - Discord message object
+ * @param {EmbedMessage} embed - Message to send and paginate
+ * @param {Object[]} elements - Array of fields to cycle through when paginating
+ * @param {String} elements[].name - Field title
+ * @param {String} elements[].value - Field content
+ * @param {Number} perPage - Number of elements per page
+ */
+function Paginator(message, embed, elements, perPage) {
+
+    var insertions = 0;
+    var pages = [];
+    var page = [];
+    var pageIndex = 0;
+    
+    elements.forEach((elem) => {
+        insertions++;
+
+        page.push(elem);
+        if (insertions == perPage) {
+            pages.push(page);
+            page = [];
+            insertions = 0;
+        }
+    });
+
+    if (pages[pages.length - 1] != page && page.length != 0) pages.push(page);
+    embed.embed.fields = pages[pageIndex];
+
+    new ReactionInterface(message, embed, ['➡️', '⬅️'], (m, r) => {
+
+        if (r.emoji.name == '⬅️') {
+            //Back
+            pageIndex--;
+
+            if (pageIndex < 0) {
+                pageIndex = 0;
+            }
+            else {
+                embed.embed.fields = pages[pageIndex];
+                m.edit(embed);
+            }
+        }
+        else {
+            //Forward
+            pageIndex++;
+
+            if (pageIndex > pages.length - 1) {
+                pageIndex = pages.length - 1;
+            }
+            else {
+                embed.embed.fields = pages[pageIndex];
+                m.edit(embed);
+            }
+        }
+
+    });
+
+}
+
 module.exports = {
     Interface: Interface,
     /**
@@ -115,5 +207,7 @@ module.exports = {
         Discord = client;
     },
     FancyMessage: FancyMessage,
-    Embed: EmbedMessage
+    Embed: EmbedMessage,
+    ReactionInterface: ReactionInterface,
+    Paginator: Paginator
 };

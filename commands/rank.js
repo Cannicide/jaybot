@@ -89,7 +89,7 @@ function RankingSystem() {
         let user_tag = message.author.tag.split("#");
         user_name = user_tag[0];
         user_id = user_tag[1];
-        user_img = message.author.displayAvatarURL;
+        user_img = message.author.displayAvatarURL();
 
         return `https://cannicideapi.glitch.me/p/card/?user_name=${user_name}&user_id=${user_id}&level=${level}&rank=${rank}&xp=${xp}&max_xp=${total_xp}&img=${user_img}`;
 
@@ -145,7 +145,7 @@ var rank_command = new Command("rank", (message, args) => {
             message.reply("in order to view another user's rank you must use their user tag.\nFor example: `Cannicide#2753`");
         }
         else {
-            var mem = message.guild.members.find(m => m.user.tag == user);
+            var mem = message.guild.members.cache.find(m => m.user.tag == user);
             if (mem) {
                 let mem_id = mem.user.id;
 
@@ -197,8 +197,8 @@ var toplist = new Command("toplist", (message, args) => {
 
         var username = "";
 
-        if (message.guild.members.get(item)) {
-            username = message.guild.members.get(item).user.tag;
+        if (message.guild.members.cache.get(item)) {
+            username = message.guild.members.cache.get(item).user.tag;
             userSet.push({
                 id: item,
                 xp: users[item].xp + users[item].prestige * system.getTotalXP(),

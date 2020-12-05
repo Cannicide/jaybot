@@ -1,8 +1,8 @@
-//A Mod+ command to change the nicknames of other players.
+//A Mod+ command to change the nicknames of other players. [disabled]
 
 var Command = require("../command");
 
-module.exports = new Command("nickname", (message, args) => {
+/*module.exports = new Command("nickname", (message, args) => {
 
     var nick = "";
 
@@ -116,4 +116,4 @@ module.exports = new Command("nickname", (message, args) => {
                 optional: true
             }
         ]
-    );
+    );*/

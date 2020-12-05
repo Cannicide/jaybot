@@ -13,7 +13,12 @@ module.exports = {
             var embed;
             var thumb = "https://cdn.discordapp.com/attachments/372124612647059476/431626525809573898/ZHFinal.png";
 
+            var isFull = false;
+            var pages = [];
+
             function fullList() {
+                isFull = true;
+
                 cmds.forEach((item) => {
                     if (!item.special) {
                         var res = {
@@ -38,13 +43,15 @@ module.exports = {
                             res.value += "```\n** **";
                         }
                         res.inline = true;
-                        fields.push(res);
+
+                        //fields.push(res);
+                        pages.push(res);
                     }
                 });
 
-                embed = new Interface.Embed(message, thumb, fields);
+                embed = new Interface.Embed(message, thumb, pages.slice(0, 2));
                 embed.embed.title = "**Commands**";
-                embed.embed.description = "ZhordeBot is the official Zombie Horde Discord Bot, created by Cannicide#2753 (JayCraft2)."
+                embed.embed.description = "ZhordeBot is the official Zombie Horde Discord Bot, created by Cannicide#2753."
             }
 
             if (args) {
@@ -89,7 +96,10 @@ module.exports = {
             }
 
 
-            message.channel.send(embed);
+            if (!isFull) message.channel.send(embed);
+            else {
+                new Interface.Paginator(message, embed, pages, 2);
+            }
 
         }, false, false, "Gets a list of all commands, parameters, and their descriptions. Format: [optional] parameters, <required> parameters.").attachArguments([
             {

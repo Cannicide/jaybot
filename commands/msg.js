@@ -2,7 +2,7 @@
 var Command = require("../command");
 
 function sendMsg(message, channelID, content) {
-    message.guild.channels.find(c => c.id == channelID).send(content);
+    message.guild.channels.cache.find(c => c.id == channelID).send(content);
 }
 
 module.exports = new Command("msg", (message, args) => {

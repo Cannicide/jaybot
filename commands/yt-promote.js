@@ -1,10 +1,10 @@
-//A command to help promote the content of youtubers in the server (currently specialized to youtube only)
+//A command to help promote the content of youtubers in the server (currently specialized to youtube only) [disabled]
 
 var Command = require("../command");
 var Interface = require("../interface");
 var fetchVideoInfo = require("youtube-info");
 
-module.exports = new Command("promote", (message, args) => {
+//module.exports = new Command("promote", (message, args) => {
 
     /*var ytRole = message.member.roles.find(role => role.name == "Youtuber");
     if (!ytRole) {
@@ -12,7 +12,7 @@ module.exports = new Command("promote", (message, args) => {
         return;
     }*/
 
-    var video;
+    /*var video;
 
     let promote = new Interface.Interface(message, "Are you a verified youtuber seeking to promote one of your Zhorde videos? Enter the link to a single video below to begin:", (url, menu) => {
         if (url) {
@@ -91,6 +91,6 @@ module.exports = new Command("promote", (message, args) => {
             }
         }
 
-    });
+    });*/
 
-}, {roles: ["Youtuber"]}, false, "Promote your Youtube videos in the server.");
+//}, {roles: ["Youtuber"]}, false, "Promote your Youtube videos in the server.");

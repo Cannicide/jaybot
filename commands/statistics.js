@@ -1,5 +1,4 @@
 var ping = require("minecraft-server-util");
-var jayping = require("../jay-ping");
 var Command = require("../command");
 var Interface = require("../interface");
 
@@ -13,9 +12,9 @@ function getServerInfo(callback) {
 
     ping("server.zombiehorde.net", 25565)
         .then((response) => {
-            info.players = response.getPlayersOnline();
-            info.icon = response.getFavicon();
-            info.version = response.getVersion();
+            info.players = response.onlinePlayers;
+            info.icon = response.favicon;
+            info.version = response.version;
             return callback(info);
         })
         .catch((error) => {
@@ -27,11 +26,11 @@ var stats = new Command("statistics", (message, args) => {
 
     getServerInfo((info) => {
 
-        var memOnline = message.guild.members.filter(m => m.presence.status != 'offline').size;
+        var memOnline = message.guild.members.cache.filter(m => m.presence.status != 'offline').size;
         var memTotal = message.guild.memberCount;
         var memPercent = memOnline / memTotal * 100;
 
-        let embed = new Interface.Embed(message, message.guild.iconURL, [
+        let embed = new Interface.Embed(message, message.guild.iconURL(), [
             {
                 name: "Minecraft Server",
                 value: `Players Online: ${info.players}\nVersion: 1.8.x-1.12.x`
@@ -42,10 +41,22 @@ var stats = new Command("statistics", (message, args) => {
             }
         ]);
 
+        embed.embed.description = "View all statistics [here](https://zh-bot.glitch.me/statistics)";
+
         embed.embed.title = "**Statistics**";
+      
+        //return message.channel.send("The statistics command is currently down due to an update to the Discord API that breaks this command. The entire bot must be rewritten in order to fix this.");
+      
         message.channel.send(embed);
 
         //message.channel.send("**Statistics**\n\nPlayers Online: " + info.players + "\nVersion: " + "1.8.x-1.12.x");//info.version);
+
+    }, (err) => {
+
+        let embed = new Interface.Embed(message, message.guild.iconURL(), [], "The server appears to be down.\nView all statistics [here](https://scav-bot.glitch.me/statistics)");
+
+        embed.embed.title = "**Statistics**";
+        message.channel.send(embed);
 
     });
 
@@ -60,6 +71,8 @@ function logStatistics(client) {
 
     setInterval(() => {
 
+      //return;
+      
         var fulldate = new Date().toLocaleString('en-US', {
             timeZone: 'America/New_York'
         });
@@ -98,8 +111,8 @@ function logStatistics(client) {
         if (time.mins == 0 && !(time.hours in obj[date])) {
             getServerInfo((info) => {
 
-                var guild = client.guilds.find(g => g.id == "351824506773569541");
-                response.onlineDiscordMembers = guild.members.filter(m => m.presence.status != 'offline').size;
+                var guild = client.guilds.cache.find(g => g.id == "351824506773569541");
+                response.onlineDiscordMembers = guild.members.cache.filter(m => m.presence.status != 'offline').size;
                 response.totalDiscordMembers = guild.memberCount;
                 response.percentDiscordOnline = response.onlineDiscordMembers / response.totalDiscordMembers * 100;
 
@@ -121,22 +134,13 @@ function logStatistics(client) {
 function scheduler(client) {
     setInterval(() => {
 
-        /*getServerInfo((info) => {
+        getServerInfo((info) => {
 
-            var guild = client.guilds.find(g => g.id == "351824506773569541");
-            var channel = guild.channels.find(c => c.id == "728978875538735144");
-
-            channel.setName(`${info.players} ${info.players == 1 ? "person is" : "people are"}`).catch(console.error);
-
-        })*/
-
-        jayping.zhorde((info) => {
-
-            var guild = client.guilds.find(g => g.id == "351824506773569541");
-            var channel = guild ? guild.channels.find(c => c.id == "728978875538735144") : false;
+            var guild = client.guilds.cache.find(g => g.id == "351824506773569541");
+            var channel = guild ? guild.channels.cache.find(c => c.id == "728978875538735144") : false;
             var msg = false;
 
-            if (info && info.players) msg = `${info.players.online} ${info.players.online == 1 ? "person is" : "people are"}`;
+            if (info && info.players) msg = `${info.players} ${info.players == 1 ? "person is" : "people are"}`;
 
             if (channel && msg && channel.name != msg) channel.setName(msg).catch(console.error);
 

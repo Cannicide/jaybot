@@ -6,7 +6,7 @@ var Interface = require("../interface");
 module.exports = new Command("role", (message, args) => {
 
     var given = args.join(" ");
-    var role = message.guild.roles.find(r => r.name.toLowerCase() == given.toLowerCase());
+    var role = message.guild.roles.cache.find(r => r.name.toLowerCase() == given.toLowerCase());
 
     if (role) {
         var embed = new Interface.Embed(message, "", [

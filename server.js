@@ -3,10 +3,6 @@ const app = express();
 const fs = require("fs");
 
 app.use(express.static('public'));
-/*app.get('/', function(request, response) {
-  response.send("Running botserver");
-});*/
-
 
 const listener = app.listen(process.env.PORT, function() {
   console.log('ZH Discord Bot listening on port ' + listener.address().port);
@@ -14,7 +10,8 @@ const listener = app.listen(process.env.PORT, function() {
 
 //Discord.js initialized
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const intents = ["GUILDS", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_VOICE_STATES", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_MESSAGE_TYPING", "DIRECT_MESSAGES", "GUILD_PRESENCES"];
+const client = new Discord.Client({intents: intents, ws:{intents: intents}});
 var prefix = "/";
 
 require("./website").setup(app, client);
@@ -36,8 +33,8 @@ statistics.logger(client);
 statistics.scheduler(client);
 
 client.on('guildCreate', guild => {
-    var guildX = client.guilds.get("668485643487412234");
-    guildX.channels.get(guildX.channels.find(c => c.name == "logs").id).send("ZH Discord Bot was added to the guild: " + guild.name);
+    var guildX = client.guilds.cache.get("668485643487412234");
+    guildX.channels.cache.get(guildX.channels.cache.find(c => c.name == "logs").id).send("ZH Discord Bot was added to the guild: " + guild.name);
 });
 
 var commands = [];
@@ -60,8 +57,8 @@ client.on('ready', () => {
         PresenceHandler.set(presence);
     }, 10 * 60 * 1000);
 
-    var guild = client.guilds.get("668485643487412234");
-    guild.channels.get(guild.channels.find(c => c.name == "logs").id).fetchMessage("678657509296439353").then(msg => msg.edit("ZH Discord Bot is up and running again on the optimal port.\nAs of: " + new Date().toLocaleString('en-US', {timeZone: 'America/New_York'}) + " EST"));
+    var guild = client.guilds.cache.get("668485643487412234");
+    guild.channels.cache.get(guild.channels.cache.find(c => c.name == "logs").id).messages.fetch("678657509296439353").then(msg => msg.edit("ZH Discord Bot is up and running again on the optimal port.\nAs of: " + new Date().toLocaleString('en-US', {timeZone: 'America/New_York'}) + " EST"));
 
 
     //Import commands:

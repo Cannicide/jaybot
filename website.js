@@ -21,7 +21,7 @@ function setup(app, disc) {
     res.header("Access-Control-Allow-Origin", "https://cannicideapi.glitch.me");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     var tag = req.params.user + "#" + req.params.discrim;
-    res.send(disc.users.find(m => m.tag == tag).displayAvatarURL);
+    res.send(disc.users.cache.find(m => m.tag == tag).displayAvatarURL());
   });
   
   app.get("/statistics/json", (req, res) => {

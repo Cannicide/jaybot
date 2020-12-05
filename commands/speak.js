@@ -1,10 +1,10 @@
-//Designed to be a fun test of the command permissions and argument attachment systems.
+//Designed to be a fun test of the command permissions and argument attachment systems. [disabled]
 
 var Command = require("../command");
 var Interface = require("../interface");
 var googleTTS = require("google-tts-api");
 
-module.exports = new Command("speak", (message, args) => {
+/*module.exports = new Command("speak", (message, args) => {
 
     var voiceChannel = message.member.voiceChannel;
     if (!voiceChannel) {
@@ -49,4 +49,4 @@ module.exports = new Command("speak", (message, args) => {
         name: "language-accent",
         optional: true
     }
-]);
+]);*/
