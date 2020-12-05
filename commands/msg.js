@@ -1,7 +1,7 @@
 //Allows Jay to send custom messages as the bot.
 var Command = require("../command");
 
-function sendMsg(message, channelID, content) {
+/*function sendMsg(message, channelID, content) {
     message.guild.channels.cache.find(c => c.id == channelID).send(content);
 }
 
@@ -35,4 +35,4 @@ module.exports = new Command("msg", (message, args) => {
         name: "message",
         optional: false
     }
-]);
+]);*/

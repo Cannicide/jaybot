@@ -122,7 +122,7 @@ function ReactionInterface(message, question, reactions, callback) {
             if (previous) previous = previous.then(r => {return m.react(reaction)})
             else previous = m.react(reaction);
 
-            let collector = m.createReactionCollector((r, user) => r.emoji.name === reaction.emoji.name && user.id === message.author.id, { time: 120000 });
+            let collector = m.createReactionCollector((r, user) => r.emoji.name === reaction && user.id === message.author.id, { time: 120000 });
 
             collector.on("collect", r => {
                 r.users.remove(message.author);
@@ -166,7 +166,7 @@ function Paginator(message, embed, elements, perPage) {
     if (pages[pages.length - 1] != page && page.length != 0) pages.push(page);
     embed.embed.fields = pages[pageIndex];
 
-    new ReactionInterface(message, embed, ['➡️', '⬅️'], (m, r) => {
+    new ReactionInterface(message, embed, ['⬅️', '➡️'], (m, r) => {
 
         if (r.emoji.name == '⬅️') {
             //Back
