@@ -169,5 +169,9 @@ client.on('message', message => {
     }
 });
 
+client.on("messageReactionAdd", (r, user) => {
+    intp.interpretReaction(r, user);
+});
+
 //Added token
 client.login(process.env.TOKEN);
