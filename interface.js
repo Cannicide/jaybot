@@ -47,7 +47,7 @@ function EmbedMessage(message, thumbnail, fields, desc) {
     let userID = message.author.id;
     let client = message.client;
     var tuser = client.users.cache.find(m => m.id == userID);
-    return {embed: {
+    var embed = {embed: {
         "color": tuser.toString().substring(2, 8),
         "timestamp": new Date(),
         "footer": {
@@ -67,6 +67,10 @@ function EmbedMessage(message, thumbnail, fields, desc) {
         "description": desc ? desc : ""
       }
     };
+
+    if (!thumbnail) embed.embed.thumbnail = {};
+
+    return embed;
 }
 
 /**
