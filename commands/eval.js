@@ -3,6 +3,7 @@
 const Command = require("../command");
 const evg = require("../evg");
 const Reactions = new evg("reactions");
+const Interface = require("../interface");
 
 module.exports = new Command("eval", (message, args) => {
 
