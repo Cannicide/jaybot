@@ -210,7 +210,7 @@ function sendTicketingMessage(message, args) {
     if (!message.channel.name.toLowerCase().match("bug")) return message.channel.send("You can only do this in bug-reporting channels!");
 
     var cache = Reactions.get();
-    var request = `Some creative message here for bug ticketing.`;
+    var request = new Interface.Embed(message, "", [], "Click 🎟️ to report a bug!");
 
     message.channel.send(request).then(m => {
 
