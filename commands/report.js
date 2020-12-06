@@ -222,6 +222,7 @@ function sendTicketingMessage(message, args) {
         });
 
         m.react("🎟️");
+        Reactions.set(cache);
 
     });
     
