@@ -79,15 +79,19 @@ function EmbedMessage(message, thumbnail, fields, desc) {
  * @param {Object} message - Message containing the command that led to calling on the interface
  * @param {String} question - Question to ask user for a response
  */
-function Interface(message, question, callback, type) {
+function Interface(message, question, callback, type, options) {
 
     var collected = false;
     var closed = false;
+    var opts = options || {max: 1};
+
     var qMessage;
     message.channel.send(question).then((msg) => {
         qMessage = msg;
     });
-    const collector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id, {max: 1});
+
+    const collector = new Discord.MessageCollector(message.channel, m => m.author.id == message.author.id, opts);
+
     collector.on("collect", msg => {
         collected = true;
         callback(msg, qMessage);
