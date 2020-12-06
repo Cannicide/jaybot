@@ -5,6 +5,7 @@ const plrepFormat = "https://zhorde.net/threads/how-to-report-a-player.875/";
 
 var Command = require("../command");
 var Interface = require("../interface");
+var Reactions = new (require("../evg"))("reactions");
 
 var reportTypes = ["Players", "Bugs", "Safespots"];
 var message;
@@ -203,6 +204,34 @@ function bugcolon(message, args, matchesType) {
 
 }
 
+//Setup the bug-ticketing message (message with the reaction) for the bug ticketing system
+function sendTicketingMessage(message, args) {
+    //Ensure the channel is a bug reports channel before continuing
+    if (!message.channel.name.toLowerCase().match("bug")) return message.channel.send("You can only do this in bug-reporting channels!");
+
+    var cache = Reactions.get();
+    var request = `Some creative message here for bug ticketing.`;
+
+    message.channel.send(request).then(m => {
+
+        cache.push({
+            name: "🎟️",
+            id: "ticket-emoji",
+            type: "bug-ticket",
+            messageID: m.id
+        });
+
+        m.react("🎟️");
+
+    });
+    
+}
+
+//Handle the ticketing process on user reaction
+function handleTicketing(message, user) {
+    message.channel.send("Handled bug ticket");
+}
+
 module.exports = {
     commands: [new Command("report", (msg, args) => {
 
@@ -223,6 +252,12 @@ module.exports = {
             var report = new Interface.Interface(msg, response, reportFunction, "report.issue");
         }
 
-    }, false, false, "Report bugs, safespots, and players.")],
-    colon: bugcolon
+    }, false, false, "Report bugs, safespots, and players."),
+    new Command("ticketer", (msg, args) => {
+
+        sendTicketingMessage(msg, args);
+
+    }, {perms:["ADMINISTRATOR"]}, false, "Admin-only tool to generate our bug-ticketing system.")],
+    colon: bugcolon,
+    ticket: handleTicketing
 }

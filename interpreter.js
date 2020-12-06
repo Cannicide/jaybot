@@ -5,7 +5,7 @@ var evg = require("./evg");
 
 function Interpreter(message) {
 
-    var Reactions = evg("reactions");
+    var Reactions = new evg("reactions");
 
     this.interpret = (args) => {
 
@@ -52,7 +52,7 @@ function Interpreter(message) {
         var emoteID = reaction.emoji.id;
 
         var cache = Reactions.get();
-        var inCache = cache.find(category => (category.name == emote || category.id == emoteID) && category.message.id == message.id);
+        var inCache = cache.find(category => (category.name == emote || category.id == emoteID) && category.messageID == message.id);
 
         //The given message is not to be interpreted by the interpreter if not stored as such
         if (!inCache) return;
@@ -64,7 +64,15 @@ function Interpreter(message) {
         }
         else if (inCache.type == "bug-ticket") {
             //Bug ticket stuff
-            console.log("Bug ticket stuff")
+
+            //Remove the users' reaction if not a bot
+            reaction.users.cache.array().forEach((u) => {
+                if (u.bot) return;
+                reaction.users.remove(u);
+            });
+
+            //Create and handle the user's bug ticket
+            report.ticket(message, user);
         }
 
     }
