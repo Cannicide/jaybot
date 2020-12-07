@@ -333,7 +333,7 @@ function handleTicketing(message, user) {
                 if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
 
                 //Now create a bug report embed to be posted to the #bugs channel
-                let bugReport = new Interface.Embed(message, orig, [
+                let bugReport = new Interface.Embed({author:{id:user.id},client:message.client}, orig, [
                     {
                         name: `Bug Description`,
                         value: bugDesc
