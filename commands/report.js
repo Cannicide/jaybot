@@ -231,6 +231,8 @@ function sendTicketingMessage(message, args) {
         m.react("🎟️");
         Reactions.set(cache);
 
+        message.delete();
+
     });
     
 }
@@ -243,13 +245,18 @@ function handleTicketing(message, user) {
     //Send request for bug ticket
     message.channel.send(request).then(m => request = m);
 
+    //Fetch current channel permission overwrites
+    var overwrites = message.channel.permissionOverwrites.array();
+
+    if (overwrites.find(o => o.id == user.id)) overwrites.splice(overwrites.findIndex(o => o.id == user.id), 1);
+
+    overwrites.push({
+        id: user.id,
+        allow: ['SEND_MESSAGES'],
+    })
+
     //Give permissions to send messages in channel
-    message.channel.overwritePermissions([
-        {
-            id: user.id,
-            allow: ['SEND_MESSAGES'],
-        },
-    ], 'Member is using Bug Ticketing System.');
+    message.channel.overwritePermissions(overwrites, 'Member is using Bug Ticketing System.');
 
     var collector = message.channel.createMessageCollector(m => m.author.id == user.id, {max: 2, time: 5 * 60 * 1000});
     collector.on("end", (collected) => {
@@ -272,6 +279,7 @@ function handleTicketing(message, user) {
 
                 var bugImage = orig;
                 var args = m.content.split(" ");
+                var needsCustomURL = false;
 
                 if (m.content.match("http")) {
                     bugImage = args.find(msg => msg.match("http"));
@@ -283,12 +291,15 @@ function handleTicketing(message, user) {
 
                     if (bugImage != orig && (!evidence || evidence == orig)) {
                         var url = `https://cannicideapi.glitch.me/upload/000000000000000000/?url=${bugImage}`;
+                        needsCustomURL = true;
 
                         fetch(url).then(res => res.text())
                         .then(body => {
                             evidence = body;
+                            m.delete({reason:"Message collection for Bug Ticketing System."});
                         })
                     }
+                    else if (bugImage == orig && (!evidence || evidence == orig)) evidence = orig;
 
                 }
 
@@ -302,7 +313,7 @@ function handleTicketing(message, user) {
                 bugDesc += m.content;
 
                 //Delete individual messages
-                m.delete({reason:"Message collection for Bug Ticketing System."});
+                if (!needsCustomURL) m.delete({reason:"Message collection for Bug Ticketing System."});
 
             });
 
@@ -351,7 +362,7 @@ function handleTicketing(message, user) {
                     console.log('Trello card creation error:', error);
                 });
 
-            }, 5000);
+            }, 15000);
 
         }
 
@@ -359,7 +370,17 @@ function handleTicketing(message, user) {
         request.delete();
 
         //Remove the user's perms to send messages in channel
-        message.channel.permissionOverwrites.get(user.id).delete('Member has finished using Bug Ticketing System.');
+        overwrites.splice(overwrites.findIndex(o => o.id == user.id), 1);
+        message.channel.overwritePermissions(overwrites, 'Member has finished using Bug Ticketing System.');
+
+        //Send thank you message for reporting bug, and delete after 5 seconds
+        message.channel.send(new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Your bug report has been submitted! Thank you for submitting a ticket."))
+        .then(thanks => {
+            setTimeout(() => {
+                thanks.delete();
+            }, 5000)
+        });
+
     });
 
 }
