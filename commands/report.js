@@ -257,16 +257,27 @@ function handleTicketing(message, user) {
     })
 
     //Create request message
-    var request = new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Thank you for opening a ticket, please describe your bug in two or less messages below.\nYour report will automatically be saved to a hidden channel **after 5 minutes**.\nAttach an image/link to one of your messages to include it in the report.");
+    var request = new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Thank you for opening a ticket, please describe your bug in two or less messages below.\nAttach an image/link to include it in the report.\nYour report will automatically be saved to a hidden channel.\n\nClick 📨 to submit your report!");
     request.embed.title = "Bug Ticket";
 
+    //Establish collector
+    var collector;
+
     //Send request for bug ticket
-    message.channel.send(request).then(m => request = m);
+    message.channel.send(request).then(m => {
+        request = m;
+        m.react("📨");
+
+        var reactor = m.createReactionCollector((reaction, tuser) => reaction.emoji.name == "📨" && tuser.id == user.id, {time: 4.5 * 60 * 1000});
+        reactor.on('collect', r => {
+            collector.stop();
+        });
+    });
 
     //Give permissions to send messages in channel
     message.channel.overwritePermissions(overwrites, 'Member is using Bug Ticketing System.');
 
-    var collector = message.channel.createMessageCollector(m => m.author.id == user.id, {max: 2, time: 5 * 60 * 1000});
+    collector = message.channel.createMessageCollector(m => m.author.id == user.id, {max: 2, time: 5 * 60 * 1000});
     collector.on("end", (collected) => {
         if (collected.size == 0) {
             //User did not respond in time
