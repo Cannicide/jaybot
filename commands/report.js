@@ -245,7 +245,7 @@ function sendTicketingMessage(message, args) {
 
 //Handle the ticketing process on user reaction
 function handleTicketing(message, user) {
-    var request = new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Thank you for opening a ticket, please describe your bug in two or less messages below.\nYour report will automatically be saved to a hidden channel within 5 minutes.\nAttach an image/link to one of your messages to include it in the report.");
+    var request = new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Thank you for opening a ticket, please describe your bug in two or less messages below.\nYour report will automatically be saved to a hidden channel **after 5 minutes**.\nAttach an image/link to one of your messages to include it in the report.");
     request.embed.title = "Bug Ticket";
 
     //Send request for bug ticket
