@@ -5,13 +5,13 @@ const evg = require("../evg");
 const Reactions = new evg("reactions");
 const Interface = require("../interface");
 
-module.exports = new Command("eval", (message, args) => {
+module.exports = new Command("eval", async (message, args) => {
 
     if (message.member.user.id != "274639466294149122") return message.channel.send("Only Cannicide can use this command!");
 
     try {
         var result = eval(args.join(" "));
-        if (result && result != "") message.channel.send("```js\n" + result + "```");
+        if (result && result != "" && !(result instanceof Promise)) await message.channel.send("```js\n" + result + "```");
     }
     catch (err) {
         message.channel.send("```js\n" + err.stack + "```");
