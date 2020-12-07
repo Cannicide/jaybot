@@ -24,6 +24,9 @@ var reportFunction = (choice, menu) => {
         });
 
         if (matchesType) {
+
+            if (matchesType == "Bugs") return message.channel.send("Reporting bugs in this method is no longer supported, please use the ticketing system.");
+
             if (matchesType == "Bugs" || matchesType == "Safespots") {
                 //Report a bug/safespot
                 let thumb;
@@ -141,6 +144,9 @@ var reportFunction = (choice, menu) => {
 
 //The oversimplified Bug: bug-reporting system
 function bugcolon(message, args, matchesType) {
+
+    //Bugs can only be reported via ticketing system now
+    if (matchesType == "Bugs") return message.channel.send("Reporting bugs in this method is no longer supported, please use the ticketing system.");
 
     var orig = "https://cdn.discordapp.com/attachments/668485643487412237/691701166408728676/bug.png";
     var bugImage = orig;
