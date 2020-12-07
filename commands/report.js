@@ -245,21 +245,23 @@ function sendTicketingMessage(message, args) {
 
 //Handle the ticketing process on user reaction
 function handleTicketing(message, user) {
-    var request = new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Thank you for opening a ticket, please describe your bug in two or less messages below.\nYour report will automatically be saved to a hidden channel **after 5 minutes**.\nAttach an image/link to one of your messages to include it in the report.");
-    request.embed.title = "Bug Ticket";
-
-    //Send request for bug ticket
-    message.channel.send(request).then(m => request = m);
 
     //Fetch current channel permission overwrites
     var overwrites = message.channel.permissionOverwrites.array();
 
-    if (overwrites.find(o => o.id == user.id)) overwrites.splice(overwrites.findIndex(o => o.id == user.id), 1);
+    if (overwrites.find(o => o.id == user.id)) return overwrites.splice(overwrites.findIndex(o => o.id == user.id), 1);
 
     overwrites.push({
         id: user.id,
         allow: ['SEND_MESSAGES'],
     })
+
+    //Create request message
+    var request = new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Thank you for opening a ticket, please describe your bug in two or less messages below.\nYour report will automatically be saved to a hidden channel **after 5 minutes**.\nAttach an image/link to one of your messages to include it in the report.");
+    request.embed.title = "Bug Ticket";
+
+    //Send request for bug ticket
+    message.channel.send(request).then(m => request = m);
 
     //Give permissions to send messages in channel
     message.channel.overwritePermissions(overwrites, 'Member is using Bug Ticketing System.');
