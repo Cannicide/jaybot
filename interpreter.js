@@ -52,7 +52,7 @@ function Interpreter(message) {
         var emoteID = reaction.emoji.id;
 
         var cache = Reactions.get();
-        var inCache = cache.find(category => (category.name == emote || category.id == emoteID) && category.messageID == message.id);
+        var inCache = cache.find(entry => (entry.name == emote || entry.id == emoteID) && entry.messageID == message.id);
 
         //The given message is not to be interpreted by the interpreter if not stored as such
         if (!inCache) return;
@@ -75,6 +75,16 @@ function Interpreter(message) {
             report.ticket(message, user);
         }
 
+    }
+
+    this.fetchReactionInterpreters = (client) => {
+        var cache = Reactions.get();
+
+        cache.forEach(entry => {
+            //Fetch and cache all messages that need their reactions interpreted
+            client.channels.cache.get(entry.channelID).messages.fetch(entry.messageID, true);
+        });
+        
     }
 
 }

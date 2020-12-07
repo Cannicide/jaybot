@@ -77,6 +77,11 @@ client.on('ready', () => {
     });
 
     commands = requisites.find(c => c.getName() == "help").getCommands();
+
+    //Fetch reaction interpreters:
+    var intp = new Interpreter();
+    intp.fetchReactionInterpreters(client);
+
 });
 
 client.on('message', message => {

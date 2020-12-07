@@ -6,6 +6,7 @@ const plrepFormat = "https://zhorde.net/threads/how-to-report-a-player.875/";
 var Command = require("../command");
 var Interface = require("../interface");
 var Reactions = new (require("../evg"))("reactions");
+var fetch = require("node-fetch");
 
 var reportTypes = ["Players", "Bugs", "Safespots"];
 var message;
@@ -223,7 +224,8 @@ function sendTicketingMessage(message, args) {
             name: "🎟️",
             id: "ticket-emoji",
             type: "bug-ticket",
-            messageID: m.id
+            messageID: m.id,
+            channelID: m.channel.id
         });
 
         m.react("🎟️");
@@ -235,7 +237,131 @@ function sendTicketingMessage(message, args) {
 
 //Handle the ticketing process on user reaction
 function handleTicketing(message, user) {
-    message.channel.send("Handled bug ticket");
+    var request = new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Thank you for opening a ticket, please describe your bug in two or less messages below.\nYour report will automatically be saved to a hidden channel within 5 minutes.\nAttach an image/link to one of your messages to include it in the report.");
+    request.embed.title = "Bug Ticket";
+
+    //Send request for bug ticket
+    message.channel.send(request).then(m => request = m);
+
+    //Give permissions to send messages in channel
+    message.channel.overwritePermissions([
+        {
+            id: user.id,
+            allow: ['SEND_MESSAGES'],
+        },
+    ], 'Member is using Bug Ticketing System.');
+
+    var collector = message.channel.createMessageCollector(m => m.author.id == user.id, {max: 2, time: 5 * 60 * 1000});
+    collector.on("end", (collected) => {
+        if (collected.size == 0) {
+            //User did not respond in time
+            message.channel.send(`<a:no_animated:670060124399730699> <@!${user.id}>, you did not respond within 5 minutes. **Failed to report your bug.** Please follow the instructions in the given time to report the bug properly.`);
+        }
+        else {
+            //User did respond with 1-2 messages, combine all of them into a bug report.
+
+            var evidence = false;
+            var bugDesc = "";
+            var bugTitle = "";
+
+            var orig = "https://cdn.discordapp.com/attachments/668485643487412237/691701166408728676/bug.png";
+
+            collected.array().forEach((m) => {
+
+                //Fetch evidence from individual messages
+
+                var bugImage = orig;
+                var args = m.content.split(" ");
+
+                if (m.content.match("http")) {
+                    bugImage = args.find(msg => msg.match("http"));
+                    if (!evidence) evidence = bugImage;
+                }
+                else {
+                    var attachment = (m.attachments).array();
+                    bugImage = attachment[0] ? attachment[0].url : orig;
+
+                    if (bugImage != orig && (!evidence || evidence == orig)) {
+                        var url = `https://cannicideapi.glitch.me/upload/000000000000000000/?url=${bugImage}`;
+
+                        fetch(url).then(res => res.text())
+                        .then(body => {
+                            evidence = body;
+                        })
+                    }
+
+                }
+
+                //Build description from individual messages
+
+                if (bugDesc.length != 0) {
+                    bugTitle = bugDesc;
+                    bugDesc += "\n";
+                }
+
+                bugDesc += m.content;
+
+                //Delete individual messages
+                m.delete({reason:"Message collection for Bug Ticketing System."});
+
+            });
+
+            //5 second timeout to allow for uploading of evidence to CannicideAPI
+            setTimeout(() => {
+
+                //Build title
+                bugTitle = bugTitle.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
+                if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
+
+                //Now create a bug report embed to be posted to the #bugs channel
+                let bugReport = new Interface.Embed(message, orig, [
+                    {
+                        name: `Bug Description`,
+                        value: bugDesc
+                    },
+                    {
+                        name: `Bug Evidence`,
+                        value: `[🔗](${evidence})`
+                    }
+                ]);
+
+                bugReport.embed["image"]["url"] = evidence.match(/\.(jpeg|jpg|gif|png)$/) ? evidence : "";
+                bugReport.embed.title = bugTitle;
+
+                //Send the bug report embed to #bugs
+                message.guild.channels.cache.get(message.guild.channels.cache.find(c => c.name == "bugs").id).send(bugReport);
+
+                //Post the bug to our trello automagically
+                var Trello = require('trello-node-api')(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
+                var data = {
+                    name: bugTitle,
+                    desc: bugDesc + ` [Reported by ${user.tag}]`,
+                    pos: 'bottom',
+                    idList: process.env.BUGS_LIST, //REQUIRED
+                    due: null,
+                    dueComplete: false,
+                    idMembers: [],
+                    idLabels: [],
+                    urlSource: evidence
+                };
+
+                Trello.card.create(data).then(function (response) {
+                    //console.log('Trello card creation response ', response);
+                }).catch(function (error) {
+                    console.log('Trello card creation error:', error);
+                });
+
+            }, 5000);
+
+        }
+
+        //Delete the request message
+        request.delete();
+
+        //Remove the user's perms to send messages in channel
+        message.channel.permissionOverwrites.get(user.id).delete('Member has finished using Bug Ticketing System.');
+    });
+
 }
 
 module.exports = {

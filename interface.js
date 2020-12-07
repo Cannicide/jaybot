@@ -83,6 +83,8 @@ function Interface(message, question, callback, type, options) {
 
     var collected = false;
     var closed = false;
+    var deleted = false;
+
     var opts = options || {max: 1};
 
     var qMessage;
@@ -95,10 +97,19 @@ function Interface(message, question, callback, type, options) {
     collector.on("collect", msg => {
         collected = true;
         callback(msg, qMessage);
+
+        if (!deleted && options.deleteSelf) {
+            deleted = true;
+            qMessage.delete();
+        }
     });
 
     collector.on("end", () => {
         closed = true;
+        if (!deleted && options.deleteSelf) {
+            deleted = true;
+            qMessage.delete();
+        }
     });
 
     setTimeout(() => {
@@ -108,6 +119,10 @@ function Interface(message, question, callback, type, options) {
             qMessage.edit(`<a:no_animated:670060124399730699> <@!${message.author.id}>, the menu closed because you did not respond within 5 minutes. ${type.match("report") ? `**Failed to report your ${type.split(".")[1]}.** Please follow ALL of the instructions in the given time to report the ${type.split(".")[1]} properly.` : ""}`);
             closed = true;
             callback(false);
+            if (!deleted && options.deleteSelf) {
+                deleted = true;
+                qMessage.delete();
+            }
         }
     }, 5 * 60 * 1000);
 
