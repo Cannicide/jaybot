@@ -279,6 +279,9 @@ function handleTicketing(message, user) {
             var bugDesc = "";
             var bugTitle = "";
 
+            var firstTitle = "";
+            var secondTitle = "";
+
             var orig = "https://cdn.discordapp.com/attachments/668485643487412237/691701166408728676/bug.png";
 
             collected.array().forEach((m) => {
@@ -314,11 +317,13 @@ function handleTicketing(message, user) {
                 //Build description from individual messages
 
                 if (bugDesc.length != 0) {
-                    bugTitle = bugDesc;
+                    firstTitle = bugDesc;
+                    bugTitle = firstTitle;
                     bugDesc += "\n";
                 }
 
                 bugDesc += m.content;
+                secondTitle = bugDesc;
 
                 //Delete individual messages
                 if (!needsCustomURL) m.delete({reason:"Message collection for Bug Ticketing System."});
@@ -329,7 +334,14 @@ function handleTicketing(message, user) {
             setTimeout(() => {
 
                 //Build title
-                bugTitle = bugTitle.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
+                bugTitle = firstTitle.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
+
+                if (bugTitle == ".") {
+                    bugTitle = secondTitle.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
+
+                    if (bugTitle == ".") bugTitle = "Bug Report";
+                }
+
                 if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
 
                 //Now create a bug report embed to be posted to the #bugs channel
