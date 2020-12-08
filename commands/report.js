@@ -281,7 +281,15 @@ function handleTicketing(message, user) {
     collector.on("end", (collected) => {
         if (collected.size == 0) {
             //User did not respond in time
-            message.channel.send(`<a:no_animated:670060124399730699> <@!${user.id}>, you did not respond within 5 minutes. **Failed to report your bug.** Please follow the instructions in the given time to report the bug properly.`);
+            message.channel.send(`<a:no_animated:670060124399730699> <@!${user.id}>, you did not respond within 5 minutes. **Failed to report your bug.** Please follow the instructions in the given time to report the bug properly.`)
+            .then(m => {
+
+                //Auto-delete error message after 10 seconds.
+                setTimeout(() => {
+                    m.delete();
+                }, 10 * 1000)
+
+            });
         }
         else {
             //User did respond with 1-2 messages, combine all of them into a bug report.
