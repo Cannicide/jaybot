@@ -403,6 +403,14 @@ function handleTicketing(message, user) {
 
             }, 15000);
 
+            //Send thank you message for reporting bug, and delete after 5 seconds
+            message.channel.send(new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Your bug report has been submitted! Thank you for submitting a ticket."))
+            .then(thanks => {
+                setTimeout(() => {
+                    thanks.delete();
+                }, 5000)
+            });
+
         }
 
         //Delete the request message
@@ -411,14 +419,6 @@ function handleTicketing(message, user) {
         //Remove the user's perms to send messages in channel
         overwrites.splice(overwrites.findIndex(o => o.id == user.id), 1);
         message.channel.overwritePermissions(overwrites, 'Member has finished using Bug Ticketing System.');
-
-        //Send thank you message for reporting bug, and delete after 5 seconds
-        message.channel.send(new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Your bug report has been submitted! Thank you for submitting a ticket."))
-        .then(thanks => {
-            setTimeout(() => {
-                thanks.delete();
-            }, 5000)
-        });
 
     });
 
