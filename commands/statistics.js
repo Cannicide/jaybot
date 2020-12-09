@@ -2,7 +2,7 @@ var ping = require("minecraft-server-util").status;
 var Command = require("../command");
 var Interface = require("../interface");
 
-function getServerInfo(callback) {
+function getServerInfo(callback, err) {
 
     var info = {
         players: 0,
@@ -19,6 +19,7 @@ function getServerInfo(callback) {
         })
         .catch((error) => {
             console.log(error);
+            if (err) err();
         });
 }
 
