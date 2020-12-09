@@ -145,7 +145,7 @@ function ReactionInterface(message, question, reactions, callback) {
             if (previous) previous = previous.then(r => {return m.react(reaction)})
             else previous = m.react(reaction);
 
-            let collector = m.createReactionCollector((r, user) => r.emoji.name === reaction && user.id === message.author.id, { time: 120000 });
+            let collector = m.createReactionCollector((r, user) => (r.emoji.name === reaction || r.emoji.id === reaction) && user.id === message.author.id, { time: 120000 });
 
             collector.on("collect", r => {
                 r.users.remove(message.author);

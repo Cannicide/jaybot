@@ -176,7 +176,12 @@ client.on('message', message => {
 
 client.on("messageReactionAdd", (r, user) => {
     var intp = new Interpreter();
-    intp.interpretReaction(r, user);
+    intp.interpretReaction(r, user, true);
+});
+
+client.on("messageReactionRemove", (r, user) => {
+    var intp = new Interpreter();
+    intp.interpretReaction(r, user, false);
 });
 
 //Added token

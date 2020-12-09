@@ -2,6 +2,7 @@
 
 var report = require("./commands/report");
 var evg = require("./evg");
+var polls = require("./commands/poll");
 
 function Interpreter(message) {
 
@@ -43,7 +44,7 @@ function Interpreter(message) {
 
     }
 
-    this.interpretReaction = (reaction, user) => {
+    this.interpretReaction = (reaction, user, isAdding) => {
 
         if (user.bot) return;
 
@@ -60,9 +61,17 @@ function Interpreter(message) {
         //Check the purpose of the interpreter, i.e. if it is a poll or if it is a bug ticket
         if (inCache.type == "poll") {
             //Poll stuff
-            console.log("Poll stuff");
+            
+            //Check whether we are removing or adding the reaction
+            if (isAdding) {
+                polls.votes.add(reaction, user);
+            }
+            else {
+                polls.votes.retract(reaction, user);
+            }
+
         }
-        else if (inCache.type == "bug-ticket") {
+        else if (inCache.type == "bug-ticket" && isAdding) {
             //Bug ticket stuff
 
             //Remove the users' reaction if not a bot
