@@ -420,6 +420,21 @@ function pollProgress(message, args) {
         var type = emotes.yn[0] == poll.id[0] ? "yn" : "mc";
         var response = "";
 
+            var choice = "No votes are in";
+            var maxVotes = 0;
+
+            Object.keys(votes).forEach((key, index) => {
+                if (votes[key] > maxVotes) {
+                    choice = `${emotes.full[type][index]} (**${poll.choices[index]}**)`;
+                    maxVotes = votes[key];
+                }
+                else if (votes[key] == maxVotes) {
+                    choice += ", " + `${emotes.full[type][index]} (**${poll.choices[index]}**)`;
+                }
+            });
+
+        response = `Leading: ${choice}\n\n`;
+
         choices.forEach((choice, index) => {
             response += `${emotes.full[type][index]} (${poll.choices[index]}): ${votes[choice]} votes\n`;
         });
@@ -472,7 +487,39 @@ function endPoll(message, args) {
 
         if (polls.fetch(index).starter != message.author.id && !message.member.hasPermission("ADMINISTRATOR")) return message.channel.send(`Sorry <!@${message.author.id}>, you do not have permission to end that poll.`).then(m => m.delete({timeout: 5000}));
 
-        polls.remove(index);
+        var id = polls.fetch(index).messageID;
+        var channelID = polls.fetch(index).channelID;
+
+        message.guild.channels.cache.get(channelID).messages.fetch(id).then(m => {
+
+            var opts = polls.fetch(index).votes;
+            var choice = "";
+            var maxVotes = -1;
+
+            Object.keys(opts).forEach((key, keyindex) => {
+                if (opts[key] > maxVotes) {
+                    if (!isNaN(key)) var type = "yn";
+                    else var type = "mc";
+
+                    choice = `**${polls.fetch(index).choices[keyindex]}** (${emotes.full[type][keyindex]})`;
+                    maxVotes = opts[key];
+                }
+                else if (opts[key] == maxVotes) {
+                    if (!isNaN(key)) var type = "yn";
+                    else var type = "mc";
+
+                    choice += `, **${polls.fetch(index).choices[keyindex]}** (${emotes.full[type][keyindex]})`;
+                }
+            });
+
+            var embed = m.embeds[0];
+            embed.description = `Poll has ended.\n\n${choice} received the majority of votes.`;
+
+            m.edit(embed);
+            m.reactions.removeAll();
+            polls.remove(index);
+        });
+
         message.channel.send("Removed the poll.").then(m => {
             m.delete({timeout: 5000});
             message.delete({timeout: 5000});
