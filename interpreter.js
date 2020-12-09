@@ -52,7 +52,7 @@ function Interpreter(message) {
         var emoteID = reaction.emoji.id;
 
         var cache = Reactions.get();
-        var inCache = cache.find(entry => (entry.name == emote || entry.id == emoteID) && entry.messageID == message.id);
+        var inCache = cache.find(entry => (entry.name == emote || entry.id == emoteID || (Array.isArray(entry.name) && entry.name.includes(emote)) || (Array.isArray(entry.id) && entry.id.includes(emoteID))) && entry.messageID == message.id);
 
         //The given message is not to be interpreted by the interpreter if not stored as such
         if (!inCache) return;
