@@ -78,11 +78,11 @@ const polls = {
         //Get index of poll data
         var index = polls.findIndex(sorted_index);
 
-        //Remove poll-end data
-        cache.splice(cache.findIndex(item => item.messageID == cache[index].messageID && item.type == "poll-end"), 1);
-
         //Remove poll data
         cache.splice(index, 1);
+
+        //Remove poll-end data
+        cache.splice(index - 1, 1);
 
         Reactions.set(cache);
     },
