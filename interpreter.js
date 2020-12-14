@@ -60,7 +60,7 @@ function Interpreter(message) {
 
         //Check the purpose of the interpreter, i.e. if it is a poll or if it is a bug ticket
         if (inCache.type == "poll") {
-            //Poll stuff
+            //Vote on poll
             
             //Check whether we are removing or adding the reaction
             if (isAdding) {
@@ -68,6 +68,15 @@ function Interpreter(message) {
             }
             else {
                 polls.votes.retract(reaction, user);
+            }
+
+        }
+        else if (inCache.type == "poll-end") {
+            //End poll
+            
+            //If we are adding the trash reaction, end the poll
+            if (isAdding) {
+                polls.polls.endByReaction(reaction, user);
             }
 
         }

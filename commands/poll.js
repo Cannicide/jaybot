@@ -15,7 +15,14 @@ const emotes = {
     gui: {
         yn: "785989202387009567",
         mc: "🔠",
-        numbers: ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
+        numbers: ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"],
+        trash: "788111135609192459",
+        progress: {
+            left: "<:left_progress:788105722097172490>",
+            middle: "<:middle_progress:788105722083803166>",
+            right: "<:right_progress:788105722210680842>",
+            empty: "<:no_progress:788105722017087508>"
+        }
     }
 }
 
@@ -68,7 +75,13 @@ const polls = {
         //Remove poll data from reactions.json
         var cache = Reactions.get();
 
+        //Get index of poll data
         var index = polls.findIndex(sorted_index);
+
+        //Remove poll-end data
+        cache.splice(cache.findIndex(item => item.messageID == cache[index].messageID && item.type == "poll-end"), 1);
+
+        //Remove poll data
         cache.splice(index, 1);
 
         Reactions.set(cache);
@@ -92,7 +105,7 @@ const polls = {
         var cache = Reactions.get();
         var messageID = polls.fetch(sorted_index).messageID;
 
-        var index = cache.findIndex(item => item.messageID == messageID);
+        var index = cache.findIndex(item => item.messageID == messageID && item.type == "poll");
         return index;
     },
     findSortedIndex: (messageID) => {
@@ -134,6 +147,100 @@ const polls = {
 
             Reactions.set(cache);
         }
+    },
+    gui: {
+        addTrash: (message, user) => {
+            var cache = Reactions.get();
+
+            var item = {
+                name: "",
+                id: emotes.gui.trash,
+                type: "poll-end",
+                messageID: message.id,
+                channelID: message.channel.id
+            };
+
+            cache.push(item);
+            Reactions.set(cache);
+        },
+        createProgressBar: (percent) => {
+            //Creates a 10-emote progress bar out of 4 different types of emotes
+
+            var output = "";
+
+            //Round to the nearest ten percent
+            percent = Math.round(percent / 10) * 10;
+
+            if (percent == 0) {
+                //Simple empty bar
+
+                output = emotes.gui.progress.empty.repeat(10);
+            }
+            else if (percent == 100) {
+                //Simple full bar
+
+                output = emotes.gui.progress.left + emotes.gui.progress.middle.repeat(8) + emotes.gui.progress.right;
+            }
+            else {
+                //Partially-filled bar
+
+                //Begin the output with left side of progress bar (1/10 emotes used)
+                output = emotes.gui.progress.left;
+
+                //Number of middle progress bar sections ([x + 1]/10 emotes used)
+                var middleAmount = (percent / 10) - 1;
+
+                //Number of empty progress bar sections ([9 - x + x + 1]/10 or 10/10 emotes used)
+                var emptyAmount = 9 - middleAmount;
+
+                output += emotes.gui.progress.middle.repeat(middleAmount) + emotes.gui.progress.empty.repeat(emptyAmount);
+            }
+
+            return output;
+
+        },
+        createPollDisplay: (choices, allVotes) => {
+            //Creates the content of the poll message embed
+
+            //The fields of the embed
+            var formatted = [];
+
+            //Check if this is the initial display
+            if (typeof allVotes == "string") {
+                //Use just the choices array; and use allVotes as type
+
+                choices.forEach((item, index) => {
+                    formatted.push({
+                        name: `${emotes.full[allVotes][index]} ${item}`,
+                        value: `${polls.gui.createProgressBar(0)} | 0% (0 votes)`
+                    });
+                });
+            }
+            else {
+                //Use the allVotes dictionary and the choices array;
+
+                var votes = Object.values(allVotes);
+                var type = emotes.yn[0] == Object.keys(allVotes)[0] ? "yn" : "mc";
+                var percent, totalVotes;
+
+                totalVotes = votes.reduce((total, num) => total + Number(num));
+
+                if (totalVotes == 0) percent = 0;
+
+                votes.forEach((choice, index) => {
+
+                    if (totalVotes != 0) percent = Math.round(Number(choice) / totalVotes * 100);
+
+                    formatted.push({
+                        name: `${emotes.full[type][index]} ${choices[index]}`,
+                        value: `${polls.gui.createProgressBar(percent)} | ${percent}% (${choice} votes)`
+                    });
+                });
+            }
+
+            return formatted;
+
+        }
     }
 }
 
@@ -165,13 +272,11 @@ function createPoll(message, args) {
         function generatePoll() {
             var previous = false;
 
-            var formattedChoices = "";
-            choices.forEach((item, index) => {
-                formattedChoices += `${emotes.full[type][index]} ${item}\n`;
-            });
+            var formattedChoices = polls.gui.createPollDisplay(choices, type);
 
-            var embed = new Interface.Embed(message, false, [], formattedChoices);
-            embed.embed.title = question;
+            var embed = new Interface.Embed(message, false, formattedChoices, "");
+            embed.embed.title = "📊 " + question;
+            embed.embed.footer.text = `${message.client.user.username} • Select ${maxChoices} choice(s)`;
 
             message.channel.send(embed).then(m => {
                 //React with an emote for each choice, depending on the poll-type
@@ -179,6 +284,12 @@ function createPoll(message, args) {
                     if (previous) previous = previous.then(r => {return m.react(emotes[type][index])});
                     else previous = m.react(emotes[type][index]);
                 });
+
+                //Add trash emote to allow ending poll easily
+                previous.then(() => {m.react(emotes.gui.trash)})
+
+                //Add trash to interpreter
+                polls.gui.addTrash(m, message.author);
 
                 //Create poll using polls.add()
                 var result = polls.add(m, question, choices, maxChoices, type, message.author);
@@ -315,13 +426,11 @@ function createPoll(message, args) {
 
             var previous = false;
 
-            var formattedChoices = "";
-            choices.forEach((item, index) => {
-                formattedChoices += `${emotes.full[type][index]} ${item}\n`;
-            });
+            var formattedChoices = polls.gui.createPollDisplay(choices, type);
 
-            var embed = new Interface.Embed(message, false, [], formattedChoices);
-            embed.embed.title = question;
+            var embed = new Interface.Embed(message, false, formattedChoices, "");
+            embed.embed.title = "📊 " + question;
+            embed.embed.footer.text = `${message.client.user.username} • Select ${maxChoices} choice(s)`;
 
             message.channel.send(embed).then(m => {
                 //React with an emote for each choice, depending on the poll-type
@@ -329,6 +438,12 @@ function createPoll(message, args) {
                     if (previous) previous = previous.then(r => {return m.react(emotes[type][index])});
                     else previous = m.react(emotes[type][index]);
                 });
+
+                //Add trash emote to allow ending poll easily
+                previous.then(() => {m.react(emotes.gui.trash)})
+
+                //Add trash to interpreter
+                polls.gui.addTrash(m, message.author);
 
                 //Create poll using polls.add()
                 var result = polls.add(m, question, choices, maxChoices, type, message.author);
@@ -382,6 +497,15 @@ function handleAddVote(reaction, user) {
         polls.votes.add(index, reaction.emoji.name, user, reaction);
     }
 
+    //Fetch poll using index
+    var poll = polls.fetch(index);
+
+    //Edit poll message with new results
+    var embed = reaction.message.embeds[0];
+    embed.fields = polls.gui.createPollDisplay(poll.choices, poll.votes);
+
+    reaction.message.edit(embed);
+
 }
 
 function handleRetractVote(reaction, user) {
@@ -402,6 +526,15 @@ function handleRetractVote(reaction, user) {
         polls.votes.remove(index, reaction.emoji.name, user);
     }
 
+    //Fetch poll using index
+    var poll = polls.fetch(index);
+
+    //Edit poll message with new results
+    var embed = reaction.message.embeds[0];
+    embed.fields = polls.gui.createPollDisplay(poll.choices, poll.votes);
+
+    reaction.message.edit(embed);
+
 }
 
 function pollProgress(message, args) {
@@ -416,9 +549,8 @@ function pollProgress(message, args) {
         var poll = polls.fetch(index);
         var votes = poll.votes;
 
-        var choices = Object.keys(votes);
         var type = emotes.yn[0] == poll.id[0] ? "yn" : "mc";
-        var response = "";
+        var response = [];
 
             var choice = "No votes are in";
             var maxVotes = 0;
@@ -433,16 +565,10 @@ function pollProgress(message, args) {
                 }
             });
 
-        response = `Leading: ${choice}\n\n`;
+        response = polls.gui.createPollDisplay(poll.choices, votes);
+        response.unshift({name: "Leading", value: choice});
 
-        choices.forEach((choice, index) => {
-            response += `${emotes.full[type][index]} (${poll.choices[index]}): ${votes[choice]} votes\n`;
-        });
-
-        var embed = new Interface.Embed(message, false, [{
-            name: "Votes",
-            value: response
-        }], "");
+        var embed = new Interface.Embed(message, false, response, "");
         embed.embed.title = poll.question;
 
         message.channel.send(embed);
@@ -473,6 +599,51 @@ function listPolls(message) {
     embed.embed.title = "Poll List";
 
     message.channel.send(embed);
+
+}
+
+function endPollByReaction(reaction, user) {
+    //Ends a specified poll using the trash reaction
+
+    //Remove the reaction
+    reaction.users.cache.array().forEach((u) => {
+        if (u.bot) return;
+        reaction.users.remove(u);
+    });
+
+    //Get the sorted_index of the poll
+    var index = polls.findSortedIndex(reaction.message.id);
+
+    //Check if the reaction user is the starter of the poll, and if they are admin
+    if ((!polls.fetch(index) || polls.fetch(index).starter != user.id) && !reaction.message.guild.member(user.id).hasPermission("ADMINISTRATOR")) return;
+
+    var opts = polls.fetch(index).votes;
+    var choice = "";
+    var maxVotes = -1;
+
+    Object.keys(opts).forEach((key, keyindex) => {
+        if (opts[key] > maxVotes) {
+            if (!isNaN(key)) var type = "yn";
+            else var type = "mc";
+
+            choice = `**${polls.fetch(index).choices[keyindex]}** (${emotes.full[type][keyindex]})`;
+            maxVotes = opts[key];
+        }
+        else if (opts[key] == maxVotes) {
+            if (!isNaN(key)) var type = "yn";
+            else var type = "mc";
+
+            choice += `, **${polls.fetch(index).choices[keyindex]}** (${emotes.full[type][keyindex]})`;
+        }
+    });
+
+    var embed = reaction.message.embeds[0];
+    embed.description = `Poll has ended.\n\n${choice} received the majority of votes (${maxVotes}).`;
+    embed.fields = [];
+
+    reaction.message.edit(embed);
+    reaction.message.reactions.removeAll();
+    polls.remove(index);
 
 }
 
@@ -513,7 +684,8 @@ function endPoll(message, args) {
             });
 
             var embed = m.embeds[0];
-            embed.description = `Poll has ended.\n\n${choice} received the majority of votes.`;
+            embed.description = `Poll has ended.\n\n${choice} received the majority of votes (${maxVotes}).`;
+            embed.fields = [];
 
             m.edit(embed);
             m.reactions.removeAll();
@@ -599,7 +771,8 @@ module.exports = {
         progress: pollProgress,
         list: listPolls,
         create: createPoll,
-        end: endPoll
+        endByMessage: endPoll,
+        endByReaction: endPollByReaction
     },
     votes: {
         add: handleAddVote,
