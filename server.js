@@ -82,6 +82,9 @@ client.on('ready', () => {
     var intp = new Interpreter();
     intp.fetchReactionInterpreters(client);
 
+    //Setup giveaway scheduler
+    require("./commands/giveaway.js").giveawayScheduler(client);
+
 });
 
 client.on('message', message => {

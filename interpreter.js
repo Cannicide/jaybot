@@ -100,7 +100,9 @@ function Interpreter(message) {
 
         cache.forEach(entry => {
             //Fetch and cache all messages that need their reactions interpreted
-            client.channels.cache.get(entry.channelID).messages.fetch(entry.messageID, true);
+            client.channels.fetch(entry.channelID).then(channel => {
+                channel.messages.fetch(entry.messageID, true);
+            });
         });
         
     }

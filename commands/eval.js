@@ -5,6 +5,15 @@ const evg = require("../evg");
 const Reactions = new evg("reactions");
 const Interface = require("../interface");
 
+const utilities = {
+    drawGiveaway: (message) => {
+        require("./giveaway").drawWinners(message.client, Reactions.get().find(element => element.type == "giveaway"));
+    },
+    timeToMs: (time) => {
+        return require("./giveaway").convertToTime(time);
+    }
+}
+
 module.exports = new Command("eval", async (message, args) => {
 
     if (message.member.user.id != "274639466294149122") return message.channel.send("Only Cannicide can use this command!");
