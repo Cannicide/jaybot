@@ -6,7 +6,6 @@ const plrepFormat = "https://zhorde.net/threads/how-to-report-a-player.875/";
 var Command = require("../command");
 var Interface = require("../interface");
 var Reactions = new (require("../evg"))("reactions");
-var fetch = require("node-fetch");
 
 var reportTypes = ["Players", "Bugs", "Safespots"];
 var message;
@@ -182,27 +181,27 @@ function bugcolon(message, args, matchesType) {
     bugReport.embed.title = bugTitle;
 
     //Insert bugs to trello automagically
-    if (matchesType == "Bugs") {
+    // if (matchesType == "Bugs") {
 
-        var Trello = require('trello-node-api')(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
-        var data = {
-            name: bugTitle,
-            desc: bugDesc + ` [Reported by ${message.author.tag}]`,
-            pos: 'bottom',
-            idList: process.env.BUGS_LIST, //REQUIRED
-            due: null,
-            dueComplete: false,
-            idMembers: [],
-            idLabels: [],
-            urlSource: bugImage
-        };
+    //     var Trello = require('trello-node-api')(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
+    //     var data = {
+    //         name: bugTitle,
+    //         desc: bugDesc + ` [Reported by ${message.author.tag}]`,
+    //         pos: 'bottom',
+    //         idList: process.env.BUGS_LIST, //REQUIRED
+    //         due: null,
+    //         dueComplete: false,
+    //         idMembers: [],
+    //         idLabels: [],
+    //         urlSource: bugImage
+    //     };
 
-        Trello.card.create(data).then(function (response) {
-            //console.log('Trello card creation response ', response);
-        }).catch(function (error) {
-            console.log('Trello card creation error:', error);
-        });
-    }
+    //     Trello.card.create(data).then(function (response) {
+    //         //console.log('Trello card creation response ', response);
+    //     }).catch(function (error) {
+    //         console.log('Trello card creation error:', error);
+    //     });
+    // }
 
     if (matchesType == "Bugs") message.guild.channels.cache.get(message.guild.channels.cache.find(c => c.name == "bugs").id).send(bugReport);
     else if (matchesType == "Safespots") message.guild.channels.cache.get(message.guild.channels.cache.find(c => c.name == "safespots").id).send(bugReport);
@@ -320,14 +319,16 @@ function handleTicketing(message, user) {
                     bugImage = attachment[0] ? attachment[0].url : orig;
 
                     if (bugImage != orig && (!evidence || evidence == orig)) {
-                        var url = `https://cannicideapi.glitch.me/upload/000000000000000000/?url=${bugImage}`;
+                        evidence = bugImage;
                         needsCustomURL = true;
 
-                        fetch(url).then(res => res.text())
-                        .then(body => {
-                            evidence = body;
+                        m.client.guilds.cache.get("668485643487412234").channels.cache.get("728320173009797190").send({files: [
+                            evidence
+                        ]}).then(imageMsg => {
+                            
+                            evidence = (imageMsg.attachments).array()[0].url;
                             m.delete({reason:"Message collection for Bug Ticketing System."});
-                        })
+                        });
                     }
                     else if (bugImage == orig && (!evidence || evidence == orig)) evidence = orig;
 
