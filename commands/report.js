@@ -356,7 +356,7 @@ function handleTicketing(message, user) {
 
             });
 
-            //5 second timeout to allow for uploading of evidence to CannicideAPI
+            //2.5 second timeout to allow for uploading of evidence to CannicideAPI
             setTimeout(() => {
 
                 //Build title
@@ -410,7 +410,7 @@ function handleTicketing(message, user) {
                     console.log('Trello card creation error:', error);
                 });
 
-            }, 15000);
+            }, 2500);
 
             //Send thank you message for reporting bug, and delete after 5 seconds
             message.channel.send(new Interface.Embed({author:{id:user.id},client:message.client}, {desc:"Your bug report has been submitted! Thank you for submitting a ticket."}))
@@ -471,7 +471,10 @@ module.exports = {
         Interpreter.register({
             type: "reaction",
             filter: (inCache, isAdding) => inCache.type == "bug-ticket" && isAdding,
-            response: (r, u) => this.handleTicketing(r.message, u)
+            response: (r, u) => {
+                r.users.remove(u);
+                this.ticket(r.message, u);
+            }
         });
     }
 }

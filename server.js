@@ -53,6 +53,10 @@ client.once('ready', () => {
     statistics.logger(client);
     statistics.scheduler(client);
 
+    //Setup bug ticketer interpreter
+    var report = require("./commands/report");
+    report.initialize();
+
     //Setup giveaway scheduler
     require("./commands/giveaway.js").giveawayScheduler(client);
 

@@ -9,7 +9,7 @@ module.exports = new Command("banappeal", {
     aliases: ["banappeals", "ban-appeal", "ban-appeals"]
 }, (message) => {
 
-    let thumb = "https://cdn.discordapp.com/attachments/372124612647059476/431626525809573898/ZHFinal.png";
+    let thumb = message.guild.iconURL({dynamic: true});
     message.channel.embed({
         fields: [
             {

@@ -136,21 +136,20 @@ function scheduler(client) {
             var msg = false;
             const category = guild ? guild.channels.cache.get("728978616905367602") : false;
 
-            const oldChannel = category.children.first();
-            const pos = oldChannel.position;
+            const oldChannel = category.children.find(c => c.position == 0);
 
             //Cloning method bypasses channel renaming limits
             if (guild && oldChannel && info.players) msg = `${info.players} ${info.players == 1 ? "person is" : "people are"}`;
             if (oldChannel && msg && oldChannel.name != msg) {
                 const channel = await oldChannel.clone({name: msg});
-                channel.setPosition(pos).catch(err => console.log(err));; 
+                channel.setPosition(0).catch(err => console.log(err));; 
 
                 oldChannel.delete();
             }
 
         });
 
-    }, 5 * 60 * 1000);
+    }, 1 * 60 * 1000);
 }
 
 module.exports = {
