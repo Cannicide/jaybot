@@ -144,7 +144,7 @@ function scheduler(client) {
                 const channel = await oldChannel.clone({name: msg});
                 channel.setPosition(0).catch(err => console.log(err));; 
 
-                oldChannel.delete();
+                setTimeout(() => {oldChannel.delete()}, 1000);
             }
 
         });
