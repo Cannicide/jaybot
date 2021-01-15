@@ -1,10 +1,9 @@
 //Command to randomly choose a map in a more advanced way than the in-game map chooser
 
 var Command = require("../command");
-var Interface = require("../interface");
 
 //Selections:
-const maps = ["Area 935", "Cold Dead", "Stygia", "Dawn of the Horde", "Dread Space", "Curse of the Horde", "Fallen", "Left to Rot", "Grains", "Hordelands", "Nowhere Fast", "Undead High", "6 Blocks Under", "Boziem Desert", "Anguith City", "Nuketown 2025", "Mansion of Massacre", "Cruise of Chaos", "Trench of Terror", "Shafted", "Mathus Station", "Knight of the Dead", "Sanctuary", "Shipwrecked", "Incarceration", "Cobas Calamity", "Sewers of Surprise", "Submerged"];
+const maps = ["Area 935", "Cold Dead", "Stygia", "Dawn of the Horde", "Dread Space", "Curse of the Horde", "Fallen", "Left to Rot", "Grains", "Hordelands", "Nowhere Fast", "Undead High", "6 Blocks Under", "Boziem Desert", "Anguith City", "Nuketown 2025", "Mansion of Massacre", "Cruise of Chaos", "Trench of Terror", "Shafted", "Knight of the Dead", "Sanctuary", "Shipwrecked", "Incarceration", "Cobas Calamity", "Sewers of Surprise", "Submerged"];
 const sagas = [
     {
         name: "Rise of the Horde",
@@ -89,11 +88,25 @@ function randomSaga() {
     return sagas[rand];
 }
 
-module.exports = new Command("map", (message, args) => {
+module.exports = new Command("map", {
+    desc: "An advanced random map selector for indecisive players.",
+    args: [
+        {
+            name: "map type",
+            optional: true
+        },
+        {
+            name: "list of maps separated by commas",
+            optional: true
+        }
+    ],
+    aliases: ["maps", "randommap", "randmap"]
+}, (message) => {
 
     var types = ["Normal Map", "Insane Map", "Map Saga"];
+    var args = message.args;
 
-    var response = new Interface.FancyMessage("Random Map Selector", "Which of the following would you like to play?", types, {
+    var response = new message.interface.FancyMessage("Random Map Selector", "Which of the following would you like to play?", types, {
         title: "#",
         bullet: "*"
     }).get();
@@ -154,27 +167,27 @@ module.exports = new Command("map", (message, args) => {
 
                 }
 
-                var embed = new Interface.Embed(message, "", [
-                    {
-                        name: `*The wheel shall decide your fate...*`,
-                        value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** Selecting...`
-                    }
-                ]);
-
-                embed.embed.title = spinnerEmote + " Random Map Selector";
-                embed.embed.image.url = wheel;
-
-                message.channel.send(embed).then(spinner => {
+                message.channel.embed({
+                    title: spinnerEmote + " Random Map Selector",
+                    image: wheel,
+                    fields: [
+                        {
+                            name: `*The wheel shall decide your fate...*`,
+                            value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** Selecting...`
+                        }
+                    ]
+                }).then(spinner => {
                     setTimeout(() => {
-                        embed = new Interface.Embed(message, "", [
-                            {
-                                name: `*The wheel hath decided...*`,
-                                value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** ${spinnerResp}`
-                            }
-                        ])
-
-                        embed.embed.title = spinnerEmote + " Random Map Selector";
-                        embed.embed.image.url = img;
+                        var embed = new message.interface.Embed(message, {
+                            fields: [
+                                {
+                                    name: `*The wheel hath decided...*`,
+                                    value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** ${spinnerResp}`
+                                }
+                            ],
+                            title: spinnerEmote + " Random Map Selector",
+                            image: img
+                        });
 
                         spinner.edit(embed);
                     }, 4000);
@@ -186,7 +199,7 @@ module.exports = new Command("map", (message, args) => {
             }
     }
     else {
-        var chooser = new Interface.Interface(message, response, (choice, menu) => {
+        message.channel.textInterface(response, (choice, menu) => {
 
             if (!choice){}
             else {
@@ -231,27 +244,27 @@ module.exports = new Command("map", (message, args) => {
                         img = wheels.find(m => m.name == "Area 935").image;
                     }
 
-                    var embed = new Interface.Embed(message, "", [
-                        {
-                            name: `*The wheel shall decide your fate...*`,
-                            value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** Selecting...`
-                        }
-                    ]);
-
-                    embed.embed.title = spinnerEmote + " Random Map Selector";
-                    embed.embed.image.url = wheel;
-
-                    message.channel.send(embed).then(spinner => {
+                    message.channel.embed({
+                        title: spinnerEmote + " Random Map Selector",
+                        image: wheel,
+                        fields: [
+                            {
+                                name: `*The wheel shall decide your fate...*`,
+                                value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** Selecting...`
+                            }
+                        ]
+                    }).then(spinner => {
                         setTimeout(() => {
-                            embed = new Interface.Embed(message, "", [
-                                {
-                                    name: `*The wheel hath decided...*`,
-                                    value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** ${spinnerResp}`
-                                }
-                            ])
-
-                            embed.embed.title = spinnerEmote + " Random Map Selector";
-                            embed.embed.image.url = img;
+                            var embed = new message.interface.Embed(message, {
+                                title: spinnerEmote + " Random Map Selector",
+                                image: img,
+                                fields: [
+                                    {
+                                        name: `*The wheel hath decided...*`,
+                                        value: `**Selected Map${matchesType == "Map Saga" ? " Saga" : ""}:** ${spinnerResp}`
+                                    }
+                                ]
+                            });
 
                             spinner.edit(embed);
                         }, 4000);
@@ -269,13 +282,4 @@ module.exports = new Command("map", (message, args) => {
         });
     }
 
-}, false, false, "An advanced random map selector for indecisive players.").attachArguments([
-    {
-        name: "map type",
-        optional: true
-    },
-    {
-        name: "list of maps separated by commas",
-        optional: true
-    }
-]);
+});

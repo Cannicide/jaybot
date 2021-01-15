@@ -1,4 +1,4 @@
-var Command = require("../command");
+/*var Command = require("../command");
 var Interface = require("../interface")
 
 module.exports = new Command("faq", (message, args) => {
@@ -34,4 +34,6 @@ module.exports = new Command("faq", (message, args) => {
         }
     });
 
-}, false, false, "View the most frequently asked questions, and their answers.");
+}, false, false, "View the most frequently asked questions, and their answers.");*/
+
+//FAQ is disabled for now; not enough useful information is available to me to create this feature

@@ -1,40 +1,42 @@
 //Easily get role information (namely any role's ID)
 
 var Command = require("../command");
-var Interface = require("../interface");
 
-module.exports = new Command("role", (message, args) => {
+module.exports = new Command("role", {
+    desc: "Easily get role information such as a role ID",
+    args: [
+        {
+            name: "role-name",
+            feedback: "Please specify the name of the role to get information about."
+        }
+    ]
+}, (message) => {
 
-    var given = args.join(" ");
+    var given = message.args.join(" ");
     var role = message.guild.roles.cache.find(r => r.name.toLowerCase() == given.toLowerCase());
 
     if (role) {
-        var embed = new Interface.Embed(message, "", [
-            {
-                name: "Role Name",
-                value: role.name
-            },
-            {
-                name: "Role ID",
-                value: role.id
-            },
-            {
-                name: "Role Color",
-                value: role.color
-            }
-        ]);
-
-        embed.embed.title = "Role Info";
-        message.channel.send(embed);
+        message.channel.embed({
+            fields: [
+                {
+                    name: "Role Name",
+                    value: role.name
+                },
+                {
+                    name: "Role ID",
+                    value: role.id
+                },
+                {
+                    name: "Role Color",
+                    value: role.color
+                }
+            ],
+            title: "Role Info"
+        });
 
     }
     else {
         message.reply(`could not find the specified role \`${given}\` in this guild.`);
     }
 
-}, false, false, "Easily get role information such as a role ID").attachArguments([
-    {
-        name: "role-name",
-        optional: false
-    }
-])
+});

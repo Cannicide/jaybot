@@ -1,7 +1,7 @@
 //Designed to be a fun test of the command permissions and argument attachment systems. [disabled]
 
-var Command = require("../command");
-var Interface = require("../interface");
+// var Command = require("../command");
+// var Interface = require("../interface");
 //var googleTTS = require("google-tts-api");
 
 /*module.exports = new Command("speak", (message, args) => {

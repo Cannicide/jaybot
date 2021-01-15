@@ -5,7 +5,8 @@ const plrepFormat = "https://zhorde.net/threads/how-to-report-a-player.875/";
 
 var Command = require("../command");
 var Interface = require("../interface");
-var Reactions = new (require("../evg"))("reactions");
+const Interpreter = require("../interpreter");
+var Reactions = require("../evg").remodel("reactions");
 
 var reportTypes = ["Players", "Bugs", "Safespots"];
 var message;
@@ -70,16 +71,21 @@ var reportFunction = (choice, menu) => {
                                         init3.edit(`✅ Successfully set an image/file/URL, or a default image if one was not attached, for the ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report.`);
 
                                         //Now post a bug report embed to the #bugs channel
-                                        let bugReport = new Interface.Embed(message, thumb, [
-                                            {
-                                                name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Description`,
-                                                value: bugDesc
-                                            },
-                                            {
-                                                name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Evidence`,
-                                                value: `[🔗](${bugImage})`
-                                            }
-                                        ]);
+                                        let bugReport = new Interface.Embed(message, {
+                                            thumbnail: thumb, 
+                                            fields: [
+                                                {
+                                                    name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Description`,
+                                                    value: bugDesc
+                                                },
+                                                {
+                                                    name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Evidence`,
+                                                    value: `[🔗](${bugImage})`
+                                                }
+                                            ],
+                                            image: bugImage.match(/\.(jpeg|jpg|gif|png)$/) ? bugImage : "",
+                                            title: bugTitle
+                                        });
 
                                         //Insert bugs to trello automagically
                                         if (matchesType == "Bugs") {
@@ -104,9 +110,6 @@ var reportFunction = (choice, menu) => {
                                             });
                                         }
 
-                                        bugReport.embed["image"]["url"] = bugImage.match(/\.(jpeg|jpg|gif|png)$/) ? bugImage : "";
-                                        bugReport.embed.title = bugTitle;
-
                                         if (matchesType == "Bugs") message.guild.channels.cache.get(message.guild.channels.cache.find(c => c.name == "bugs").id).send(bugReport);
                                         else if (matchesType == "Safespots") message.guild.channels.cache.get(message.guild.channels.cache.find(c => c.name == "safespots").id).send(bugReport);
                                         message.channel.send(`✅ Your ${matchesType.toLowerCase().substring(0, matchesType.length - 1)} report has been submitted, <@!${message.author.id}>`);
@@ -119,16 +122,19 @@ var reportFunction = (choice, menu) => {
             else if (matchesType == "Players") {
                 //Report a player
                 let thumb = "https://cdn.discordapp.com/attachments/372124612647059476/431626525809573898/ZHFinal.png";
-                let embed = new Interface.Embed(message, thumb, [
-                    {
-                        name: "Player Report Format",
-                        value: `To report a player, follow the [player report format](${plrepFormat}). Copy the template found in the post.`
-                    },
-                    {
-                        name: "Reporting the Player",
-                        value: `Create a new [player report thread](${plrepThread}) and paste the template. Provide detailed responses and solid evidence, following the format. Your report can only be seen by staff members, and they will review your report and take action as soon as possible.`
-                    }
-                ]);
+                let embed = new Interface.Embed(message, {
+                    thumbnail: thumb,
+                    fields: [
+                        {
+                            name: "Player Report Format",
+                            value: `To report a player, follow the [player report format](${plrepFormat}). Copy the template found in the post.`
+                        },
+                        {
+                            name: "Reporting the Player",
+                            value: `Create a new [player report thread](${plrepThread}) and paste the template. Provide detailed responses and solid evidence, following the format. Your report can only be seen by staff members, and they will review your report and take action as soon as possible.`
+                        }
+                    ]
+                });
 
                 message.channel.send(embed);
             }
@@ -166,19 +172,21 @@ function bugcolon(message, args, matchesType) {
     if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
 
     //Now post a bug report embed to the #bugs channel
-    let bugReport = new Interface.Embed(message, orig, [
-        {
-            name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Description`,
-            value: bugDesc
-        },
-        {
-            name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Evidence`,
-            value: `[🔗](${bugImage})`
-        }
-    ]);
-
-    bugReport.embed["image"]["url"] = bugImage.match(/\.(jpeg|jpg|gif|png)$/) ? bugImage : "";
-    bugReport.embed.title = bugTitle;
+    let bugReport = new Interface.Embed(message, {
+        thumbnail: orig,
+        fields: [
+            {
+                name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Description`,
+                value: bugDesc
+            },
+            {
+                name: `${matchesType.toUpperCase().substring(0, 1) + matchesType.toLowerCase().substring(1, matchesType.length - 1)} Evidence`,
+                value: `[🔗](${bugImage})`
+            }
+        ],
+        image: bugImage.match(/\.(jpeg|jpg|gif|png)$/) ? bugImage : "",
+        title: bugTitle
+    });
 
     //Insert bugs to trello automagically
     // if (matchesType == "Bugs") {
@@ -215,27 +223,26 @@ function sendTicketingMessage(message, args) {
     //Ensure the channel is a bug reports channel before continuing
     if (!message.channel.name.toLowerCase().match("bug")) return message.channel.send("You can only do this in bug-reporting channels!");
 
-    var cache = Reactions.get();
-    var request = new Interface.Embed(message, false, [], "Click 🎟️ to report a bug!");
+    var cache = Reactions;
+    var request = new Interface.Embed(message, {desc:"Click 🎟️ to report a bug!",title:"Bug Reports"});
 
-    request.embed.author = {}
-    request.embed.title = "Bug Reports";
+    request.embed.footer = {};
 
     message.channel.send(request).then(m => {
 
-        if (cache.find(c => c.type == "bug-ticket")) cache.splice(cache.findIndex(c => c.type == "bug-ticket"), 1);
+        if (cache.find(c => c.type == "bug-ticket")) cache.splice(cache.values().findIndex(c => c.type == "bug-ticket"));
 
-        cache.push({
+        var item = {
             name: "🎟️",
             id: "ticket-emoji",
             type: "bug-ticket",
             messageID: m.id,
             channelID: m.channel.id
-        });
+        };
 
-        m.react("🎟️");
-        Reactions.set(cache);
+        message.interpreter.addReaction([item.name], item)
 
+        m.react(item.name);
         message.delete();
 
     });
@@ -256,8 +263,7 @@ function handleTicketing(message, user) {
     })
 
     //Create request message
-    var request = new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Thank you for opening a ticket, please describe your bug in two or less messages below.\nAttach an image/link to include it in the report.\nYour report will automatically be saved to a hidden channel.\n\nClick 📨 to submit your report!");
-    request.embed.title = "Bug Ticket";
+    var request = new Interface.Embed({author:{id:user.id},client:message.client}, {desc:"Thank you for opening a ticket, please describe your bug in two or less messages below.\nAttach an image/link to include it in the report.\nYour report will automatically be saved to a hidden channel.\n\nClick 📨 to submit your report!",title:"Bug Ticket"});
 
     //Establish collector
     var collector;
@@ -365,19 +371,21 @@ function handleTicketing(message, user) {
                 if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
 
                 //Now create a bug report embed to be posted to the #bugs channel
-                let bugReport = new Interface.Embed({author:{id:user.id},client:message.client}, orig, [
-                    {
-                        name: `Bug Description`,
-                        value: bugDesc
-                    },
-                    {
-                        name: `Bug Evidence`,
-                        value: `[🔗](${evidence})`
-                    }
-                ]);
-
-                bugReport.embed["image"]["url"] = evidence.match(/\.(jpeg|jpg|gif|png)$/) ? evidence : "";
-                bugReport.embed.title = bugTitle;
+                let bugReport = new Interface.Embed({author:{id:user.id},client:message.client}, {
+                    thumbnail: orig,
+                    fields: [
+                        {
+                            name: `Bug Description`,
+                            value: bugDesc
+                        },
+                        {
+                            name: `Bug Evidence`,
+                            value: `[🔗](${evidence})`
+                        }
+                    ],
+                    image: evidence.match(/\.(jpeg|jpg|gif|png)$/) ? evidence : "",
+                    title: bugTitle
+                });
 
                 //Send the bug report embed to #bugs
                 message.guild.channels.cache.get(message.guild.channels.cache.find(c => c.name == "bugs").id).send(bugReport);
@@ -405,7 +413,7 @@ function handleTicketing(message, user) {
             }, 15000);
 
             //Send thank you message for reporting bug, and delete after 5 seconds
-            message.channel.send(new Interface.Embed({author:{id:user.id},client:message.client}, false, [], "Your bug report has been submitted! Thank you for submitting a ticket."))
+            message.channel.send(new Interface.Embed({author:{id:user.id},client:message.client}, {desc:"Your bug report has been submitted! Thank you for submitting a ticket."}))
             .then(thanks => {
                 setTimeout(() => {
                     thanks.delete();
@@ -426,7 +434,9 @@ function handleTicketing(message, user) {
 }
 
 module.exports = {
-    commands: [new Command("report", (msg, args) => {
+    commands: [new Command("report", {
+        desc: "Report bugs, safespots, and players."
+    }, (msg) => {
 
         var response = new Interface.FancyMessage("Report Issues", "Which of the following would you like to report?", reportTypes, {
             title: "#",
@@ -445,12 +455,23 @@ module.exports = {
             var report = new Interface.Interface(msg, response, reportFunction, "report.issue");
         }
 
-    }, false, false, "Report bugs, safespots, and players."),
-    new Command("ticketer", (msg, args) => {
+    }),
+    new Command("ticketer", {
+        perms: ["ADMINISTRATOR"],
+        desc: "Admin-only tool to generate our bug-ticketing system."
+    }, (msg) => {
 
-        sendTicketingMessage(msg, args);
+        sendTicketingMessage(msg, msg.args);
 
-    }, {perms:["ADMINISTRATOR"]}, false, "Admin-only tool to generate our bug-ticketing system.")],
+    })],
     colon: bugcolon,
-    ticket: handleTicketing
+    ticket: handleTicketing,
+    initialize: function() {
+        //Setup bug ticketing reaction
+        Interpreter.register({
+            type: "reaction",
+            filter: (inCache, isAdding) => inCache.type == "bug-ticket" && isAdding,
+            response: (r, u) => this.handleTicketing(r.message, u)
+        });
+    }
 }

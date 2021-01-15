@@ -71,7 +71,7 @@ function EmbedMessage(message, {thumbnail, fields, desc, title, footer, icon, im
         "author": {},
         "fields": fields || [],
         "image": {url:image} || {},
-        "video": video || {},
+        "video": {url:video} || {},
         "description": desc || "",
         "title": title || ""
       }
