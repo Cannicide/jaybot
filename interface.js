@@ -59,7 +59,7 @@ function EmbedMessage(message, {thumbnail, fields, desc, title, footer, icon, im
     if (!Array.isArray(footer)) footer = [footer];
 
     var embed = {embed: {
-        "color": tuser.toString().substring(2, 8),
+        "color": message.guild ? message.member.displayHexColor : tuser.toString().substring(2, 8),
         "timestamp": !noTimestamp ? new Date() : false,
         "footer": {
           "icon_url": icon || tuser.avatarURL(),
