@@ -20,7 +20,7 @@ const db = require("quick.db");
  */
 function LegacyEvg(filename, isTable, ignoreErrors) {
 
-    var storageSrc = __dirname + "/" + filename + ".json";
+    var storageSrc = __dirname + "/storage/" + filename + ".json";
 
     function getLS() {
 
@@ -233,9 +233,9 @@ function Evg(tablePath, parentPath) {
    */
   this.importJSON = (filename, del) => {
     var filepath = __dirname + "/storage/" + filename + ".json";
-    if (!json || !fs.existsSync(filepath)) return this;
+    if (!fs.existsSync(filepath)) return this;
     
-    var legacy = new LegacyEvg(filename, false, "ignore errors");
+    var legacy = new LegacyEvg(filename, false, false);
     var json = legacy.get();
 
     if (typeof json === "object" && !Array.isArray(json)) {

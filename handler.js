@@ -183,27 +183,30 @@ function ExtendedClient({intents, name, presences, logs}) {
 
     //Cycles the presence every 10 minutes
     presenceInterval = setInterval(setPresence, 10 * 60 * 1000);
-    setPresence("immediate update");
+    
+    setPresence("immediate action");
 
   }
 
-  client.presenceCycler(presences);
+  client.once("ready", () => {
+    client.presenceCycler(presences);
 
-  const logGuild = logs ? client.guilds.cache.get(logs.guildID) : false;
-  const logChannel = logs && logGuild ? logGuild.channels.cache.get(logGuild.channels.cache.find(c => c.name == logs.channelName).id) : false;
+    const logGuild = logs ? client.guilds.cache.get(logs.guildID) : false;
+    const logChannel = logs && logGuild ? logGuild.channels.cache.get(logGuild.channels.cache.find(c => c.name == logs.channelName).id) : false;
 
-  client.logs = {
-      guild: logGuild,
-      channel: logChannel,
-      send: (message) => {
-        if (!logChannel) return console.log(message);
-        logChannel.send(message);
-      },
-      edit: (messageID, message) => {
-        if (!logChannel) return console.log(message);
-        logChannel.messages.fetch(messageID).then(m => m.edit(message));
-      }
-  }
+    client.logs = {
+        guild: logGuild,
+        channel: logChannel,
+        send: (message) => {
+          if (!logChannel) return console.log(message);
+          logChannel.send(message);
+        },
+        edit: (messageID, message) => {
+          if (!logChannel) return console.log(message);
+          logChannel.messages.fetch(messageID).then(m => m.edit(message));
+        }
+    }
+  });
 
   return client;
 
