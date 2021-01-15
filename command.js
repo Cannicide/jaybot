@@ -244,17 +244,34 @@ function Command(name, {perms = false, roles = false, invisible = false, desc = 
            * @param {Boolean} [options.useTimestamp] - Whether or not to include the timestamp in the Embed.
            */
             advChannel.embed = (options) => {
-              advChannel.send(new Interface.Embed(advMessage, options));
+              return advChannel.send(new Interface.Embed(advMessage, options));
             };
 
+            /**
+             * Directly creates a MessageInterface with a question and callback.
+             * @param {*} question - Question to ask the user.
+             * @param {*} callback - Function to respond to the user.
+             */
             advChannel.textInterface = (question, callback) => {
               new Interface.Interface(advMessage, question, callback);
             }
 
+            /**
+             * Directly creates a ReactionInterface with a question, reactions, and callback.
+             * @param {*} question - Question to ask the user.
+             * @param {*} reactions - Reactions representing user input.
+             * @param {*} callback - Function to respond to the user.
+             */
             advChannel.reactionInterface = (question, reactions, callback) => {
               new Interface.ReactionInterface(advMessage, question, reactions, callback);
             }
 
+            /**
+             * Directly creates a Paginator interface with specified options, page elements, and # per page.
+             * @param {*} options - Options for the paginator.
+             * @param {*} elements - All elements to be paginated through.
+             * @param {*} perPage - Number of elements per page.
+             */
             advChannel.paginate = (options, elements, perPage) => {
               let embed = new Interface.Embed(advMessage, options);
               new Interface.Paginator(message, embed, elements, perPage);

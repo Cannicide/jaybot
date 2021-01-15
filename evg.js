@@ -232,13 +232,13 @@ function Evg(tablePath, parentPath) {
    * @param {boolean} [del] - Delete the JSON file after importing (one-time import)
    */
   this.importJSON = (filename, del) => {
+    var filepath = __dirname + "/storage/" + filename + ".json";
+    if (!json || !fs.existsSync(filepath)) return this;
+    
     var legacy = new LegacyEvg(filename, false, "ignore errors");
     var json = legacy.get();
 
-    var filepath = __dirname + "/storage/" + filename + ".json";
-
-    if (!json || !fs.existsSync(filepath)) return this;
-    else if (typeof json === "object" && !Array.isArray(json)) {
+    if (typeof json === "object" && !Array.isArray(json)) {
       Object.keys(json).forEach(key => !this.has(key) ? this.set(key, json[key]) : "");
     }
     else if (Array.isArray(json)) {
