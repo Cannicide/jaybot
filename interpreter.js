@@ -115,6 +115,9 @@ function Interpreter() {
 
         obj.name = obj.name || [];
         obj.id = obj.id || [];
+        
+        if (!Array.isArray(obj.name)) obj.name = [obj.name];
+        if (!Array.isArray(obj.id)) obj.id = [obj.id];
 
         emojis.forEach(emote => {
           if (isNaN(emote)) {

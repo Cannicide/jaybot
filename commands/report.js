@@ -241,8 +241,8 @@ function sendTicketingMessage(message, args) {
         };
 
         message.interpreter.addReaction([item.name], item)
-
-        m.react(item.name);
+      
+        m.react("🎟️");
         message.delete();
 
     });
@@ -472,7 +472,13 @@ module.exports = {
             type: "reaction",
             filter: (inCache, isAdding) => inCache.type == "bug-ticket" && isAdding,
             response: (r, u) => {
-                r.users.remove(u);
+                
+                //Remove the users' reaction if not a bot
+                r.users.cache.array().forEach((user) => {
+                    if (user.bot) return;
+                    r.users.remove(user);
+                });
+              
                 this.ticket(r.message, u);
             }
         });
