@@ -457,7 +457,7 @@ module.exports = {
 
     }),
     new Command("ticketer", {
-        perms: ["ADMINISTRATOR"],
+        roles: ["Admin", "Developer", "Bot Developer", "System Administrator", "Manager", "Owner"],
         desc: "Admin-only tool to generate our bug-ticketing system."
     }, (msg) => {
 
