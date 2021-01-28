@@ -141,10 +141,10 @@ function scheduler(client) {
             //Cloning method bypasses channel renaming limits
             if (guild && oldChannel && (info.players || info.players == 0)) msg = `${info.players} ${info.players == 1 ? "person is" : "people are"}`;
             if (oldChannel && msg && oldChannel.name != msg) {
-                const channel = await oldChannel.clone({name: msg});
+                const channel = await oldChannel.clone({name: msg, reason: "[Statistics]"});
                 channel.setPosition(0).catch(err => console.log(err));; 
 
-                setTimeout(() => {oldChannel.delete()}, 1000);
+                setTimeout(() => {oldChannel.delete("[Statistics]")}, 1000);
             }
 
         });
