@@ -139,7 +139,7 @@ function scheduler(client) {
             const oldChannel = category.children.find(c => c.position == 0);
 
             //Cloning method bypasses channel renaming limits
-            if (guild && oldChannel && info.players) msg = `${info.players} ${info.players == 1 ? "person is" : "people are"}`;
+            if (guild && oldChannel && (info.players || info.players == 0)) msg = `${info.players} ${info.players == 1 ? "person is" : "people are"}`;
             if (oldChannel && msg && oldChannel.name != msg) {
                 const channel = await oldChannel.clone({name: msg});
                 channel.setPosition(0).catch(err => console.log(err));; 
