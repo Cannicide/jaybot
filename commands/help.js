@@ -12,7 +12,7 @@ module.exports = new Command("help", {
       flag: "Displays only basic command info."
     }
   ],
-  aliases: ["bothelp", "zhordebot", "zhorde"]
+  aliases: ["bothelp", "zhordebot", "zhorde", "panacea"]
 }, (message) => {
 
     var cmds = new Command(false, {}).getCommands();
@@ -122,7 +122,7 @@ module.exports = new Command("help", {
 
       message.channel.paginate({
         title: "**Commands**",
-        desc: "ZhordeBot is the official Zombie Horde Discord Bot, created by Cannicide#2753.",
+        desc: "Panacea is the official Zombie Horde Discord Bot, created by Cannicide#2753.",
         fields: pages.slice(0, 2),
         thumbnail: thumb
       }, pages, 2);

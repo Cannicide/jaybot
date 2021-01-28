@@ -36,7 +36,7 @@ var stats = new Command("statistics", {
         var memPercent = memOnline / memTotal * 100;
 
         message.channel.embed({
-            desc: "View all statistics [here](https://zh-bot.glitch.me/statistics)",
+            desc: "View all statistics [here](https://panaceabot.glitch.me/statistics)",
             title: "**Statistics**",
             thumbnail: message.guild.iconURL({dynamic: true}),
             fields: [
@@ -54,7 +54,7 @@ var stats = new Command("statistics", {
     }, (err) => {
 
         message.channel.embed({
-            desc: "The server appears to be down.\nView all statistics [here](https://zh-bot.glitch.me/statistics)",
+            desc: "The server appears to be down.\nView all statistics [here](https://panaceabot.glitch.me/statistics)",
             title: "**Statistics**",
             thumbnail: message.guild.iconURL({dynamic: true})
         });

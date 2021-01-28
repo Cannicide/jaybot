@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Zhorde Bot | Statistics</title>
+        <title>Panacea | Statistics</title>
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
 		<link rel="icon" type="image/x-icon" href="https://media.discordapp.net/attachments/668486291033292801/668486641572118561/ZHBotServer.png" />
@@ -8,8 +8,8 @@
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/overcast/jquery-ui.css" />
 		<meta name="description" content="Graphical representations of Zhorde discord and minecraft statistics compiled every hour since 6/17/2020 by the Zhorde Discord Bot." />
 		<meta property="og:description" content="Graphical representations of Zhorde discord and minecraft statistics compiled every hour since 6/17/2020 by the Zhorde Discord Bot." />
-		<meta property="og:title" content="Zhorde Bot | Statistics" />
-        <meta property="og:url" content="https://zh-bot.glitch.me/statistics" />
+		<meta property="og:title" content="Panacea | Statistics" />
+        <meta property="og:url" content="https://panaceabot.glitch.me/statistics" />
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
         <style>
             body {
@@ -122,9 +122,9 @@
             Created by Cannicide#2753
         </div>
         <div class="leftside">
-            <img id="info-icon" src="https://cdn.glitch.com/71f6d3c6-0b04-4012-9c67-afb1f4a20d07%2Finfo-icon.png?v=1597004879028"> <p id="rawjson">View raw JSON data <a href="https://zh-bot.glitch.me/statistics/json" target="_blank">here</a></p>
+            <img id="info-icon" src="https://cdn.glitch.com/71f6d3c6-0b04-4012-9c67-afb1f4a20d07%2Finfo-icon.png?v=1597004879028"> <p id="rawjson">View raw JSON data <a href="https://panaceabot.glitch.me/statistics/json" target="_blank">here</a></p>
         </div>
-        <img class="logo" src="https://media.discordapp.net/attachments/668486291033292801/668486641572118561/ZHBotServer.png" onclick="location.href = 'https:/' + '/zh-bot.glitch.me/statistics';" />
+        <img class="logo" src="https://media.discordapp.net/attachments/668486291033292801/668486641572118561/ZHBotServer.png" onclick="location.href = 'https:/' + '/panaceabot.glitch.me/statistics';" />
     </body>
     <script>
         //Get current date:
@@ -190,8 +190,8 @@
         //Data url
         var dataurl;
 
-        if (location.href.startsWith("https")) dataurl = "https://zh-bot.glitch.me/statistics/json";
-        else dataurl = "http://zh-bot.glitch.me/statistics/json";
+        if (location.href.startsWith("https")) dataurl = "https://panaceabot.glitch.me/statistics/json";
+        else dataurl = "http://panaceabot.glitch.me/statistics/json";
 
         //Fetch statistics data
         $.ajax({
