@@ -127,6 +127,8 @@ function logStatistics(client) {
 
 //Scheduler automatically updates parts of the discord with minecraft/guild info and stats
 function scheduler(client) {
+    var previousName = false;
+
     setInterval(() => {
 
         getServerInfo(async (info) => {
@@ -136,16 +138,56 @@ function scheduler(client) {
             var msg = false;
             const category = guild ? guild.channels.cache.get("728978616905367602") : false;
 
-            const oldChannel = category.children.find(c => c.position == 0);
+            const channelPerms = [
+                {
+                    //@everyone
+                    id: "351824506773569541",
+                    deny: ["CONNECT", "SPEAK"],
+                    allow: ["VIEW_CHANNEL"]
+                },
+                {
+                    //@System Administrator
+                    id: "627599099184807966",
+                    allow: ["CONNECT", "SPEAK"]
+                }
+            ];
 
-            //Cloning method bypasses channel renaming limits
-            if (guild && oldChannel && (info.players || info.players == 0)) msg = `${info.players} ${info.players == 1 ? "person is" : "people are"}`;
-            if (oldChannel && msg && oldChannel.name != msg) {
-                const channel = await oldChannel.clone({name: msg, reason: "[Statistics]"});
-                channel.setPosition(0).catch(err => console.log(err));; 
+            //Bypasses channel renaming limits and avoids random Discord API channel dupe glitches
+            if (guild && (info.players || info.players == 0)) msg = `${info.players} ${info.players == 1 ? "person is" : "people are"}`;
+            if (msg && msg != previousName) {
 
-                setTimeout(() => {oldChannel.delete("[Statistics]")}, 1000);
+                //Remove all channels in category
+                category.children.each(channel => channel.delete("[Statistics]"));
+
+                previousName = msg;
+
+                //Create new channel for # players online
+                guild.channels.create(msg, {
+                    parent: category,
+                    permissionOverwrites: channelPerms,
+                    reason: "[Statistics]"
+                })
+                .then(channel => {
+                    //Then create new channel for "playing ZombieHorde.net!"
+                    guild.channels.create("playing ZombieHorde.net!", {
+                        parent: category,
+                        permissionOverwrites: channelPerms,
+                        reason: "[Statistics]"
+                    });
+                });
+
             }
+
+            // const oldChannel = category.children.find(c => c.position == 0);
+
+            // //Cloning method bypasses channel renaming limits
+            // if (guild && oldChannel && (info.players || info.players == 0)) msg = `${info.players} ${info.players == 1 ? "person is" : "people are"}`;
+            // if (oldChannel && msg && oldChannel.name != msg) {
+            //     const channel = await oldChannel.clone({name: msg, reason: "[Statistics]"});
+            //     channel.setPosition(0).catch(err => console.log(err));; 
+
+            //     setTimeout(() => {oldChannel.delete("[Statistics]")}, 1000);
+            // }
 
         });
 
