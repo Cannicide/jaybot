@@ -165,6 +165,7 @@ function scheduler(client) {
                 guild.channels.create(msg, {
                     parent: category,
                     permissionOverwrites: channelPerms,
+                    type: "voice",
                     reason: "[Statistics]"
                 })
                 .then(channel => {
@@ -172,6 +173,7 @@ function scheduler(client) {
                     guild.channels.create("playing ZombieHorde.net!", {
                         parent: category,
                         permissionOverwrites: channelPerms,
+                        type: "voice",
                         reason: "[Statistics]"
                     });
                 });
