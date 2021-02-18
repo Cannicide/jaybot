@@ -100,5 +100,42 @@ client.on("messageReactionRemove", (r, user) => {
     Interpreter.reaction(r, user, false);
 });
 
+//Handle member joins
+client.on("guildMemberAdd", member => {
+
+    var content = `This is the official updated and remastered continuation of the *ORIGINAL* Zhorde you knew and loved back in 2013. It still features core mechanics such as a variety of maps, kits, and looting, with the addition of several newer features such as perks, multiple prestiges, and several minigames.
+    
+    The server ip is **zombiehorde.net**
+    Our website is [https://www.zhorde.net/](https://www.zhorde.net/)
+    
+    Have any questions? Feel free to contact a staff member! We're happy to help!`;
+
+    var title = `Welcome to **Zombie Horde**!`;
+
+    var icon = member.guild.iconURL({dynamic: true});
+
+    var fakeMessage = {
+        author: {id: member.id},
+        client: client,
+        guild: member.guild,
+        member: member
+    }
+
+    var Embed = require("./interface").Embed;
+    var sender = new Embed(fakeMessage, {
+        desc: content,
+        title: title,
+        thumbnail: icon
+    });
+    sender.embed.color = 769332;
+    sender.embed.url = `https://discordapp.com/channels/${member.guild.id}`;
+    
+    member.send(sender).catch(() => {
+        //Unable to DM the user
+        client.logs.send("Unable to send user a welcome DM in: " + member.guild.name);
+    });
+
+});
+
 //Added token
 client.login(process.env.TOKEN);
