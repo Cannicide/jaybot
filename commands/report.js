@@ -263,7 +263,7 @@ function handleTicketing(message, user) {
     })
 
     //Create request message
-    var request = new Interface.Embed({author:{id:user.id},client:message.client}, {desc:"Thank you for opening a ticket, please describe your bug in two or less messages below.\nAttach an image/link to include it in the report.\nYour report will automatically be saved to a hidden channel.\n\nClick 📨 to submit your report!",title:"Bug Ticket"});
+    var request = new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {desc:"Thank you for opening a ticket, please describe your bug in two or less messages below.\nAttach an image/link to include it in the report.\nYour report will automatically be saved to a hidden channel.\n\nClick 📨 to submit your report!",title:"Bug Ticket"});
 
     //Establish collector
     var collector;
@@ -371,7 +371,7 @@ function handleTicketing(message, user) {
                 if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
 
                 //Now create a bug report embed to be posted to the #bugs channel
-                let bugReport = new Interface.Embed({author:{id:user.id},client:message.client}, {
+                let bugReport = new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {
                     thumbnail: orig,
                     fields: [
                         {
@@ -413,7 +413,7 @@ function handleTicketing(message, user) {
             }, 2500);
 
             //Send thank you message for reporting bug, and delete after 5 seconds
-            message.channel.send(new Interface.Embed({author:{id:user.id},client:message.client}, {desc:"Your bug report has been submitted! Thank you for submitting a ticket."}))
+            message.channel.send(new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {desc:"Your bug report has been submitted! Thank you for submitting a ticket."}))
             .then(thanks => {
                 setTimeout(() => {
                     thanks.delete();
