@@ -115,7 +115,7 @@
                 <button id="discord-stats">Discord Stats Only</button><button id="both-stats" class="stats-selected">Show Both Stats</button><button id="mc-stats">MC Stats Only</button><br>
             </div>
             <div class="time-container">
-                <button id="chart-eternity">Stats Since 6/17/2020</button><button id="chart-weekly" class="chart-selected">Weekly Statistics</button><button id="chart-daily">Daily Statistics <a id="spec-date"></a></button>
+                <button id="chart-eternity">Stats Since 3/7/2021</button><button id="chart-weekly" class="chart-selected">Weekly Statistics</button><button id="chart-daily">Daily Statistics <a id="spec-date"></a></button>
             </div>
         </div>
         <div class="credit">
@@ -127,6 +127,10 @@
         <img class="logo" src="https://media.discordapp.net/attachments/668486291033292801/668486641572118561/ZHBotServer.png" onclick="location.href = 'https:/' + '/panaceapp.glitch.me/statistics';" />
     </body>
     <script>
+      
+        //Original statistics data first collected: 6/17/2020
+        //New statistics data first collected: 3/7/2021
+      
         //Get current date:
         var fulldate = new Date().toLocaleString('en-US', {
             timeZone: 'America/New_York'
@@ -180,7 +184,7 @@
 
         
         //Global stats variables
-        var stats;
+        var stats = {};
         //Timemodes (0 = all time, 1 = past week, 2 = one day), statsmodes (0 = discord only, 1 = both, 2 = mc only)
         var timemode = 1, statsmode = 1;
         //Selected day for timemode 2 (daily stats)
@@ -198,7 +202,10 @@
             url: dataurl,
             cache: false
         }).done((text) => {
-            stats = text;
+            
+            text.forEach(entry => {
+                stats[entry.key] = entry.value;
+            });
 
             //Builds weekly (default, stats for past 7 days) chart
             function chartWeekly() {
@@ -259,15 +266,15 @@
                     data: {
                         labels: labels,
                         datasets: [
-                            (statsmode == 0 || statsmode == 1 ? {
-                                label: "# Discorders Online",
-                                data: discOnline,
-                                backgroundColor: "#7289DA"
-                            } : {}),
                             (statsmode == 1 || statsmode == 2 ? {
                                 label: "# Minecrafters Online",
                                 data: mcOnline,
                                 backgroundColor: "limegreen"
+                            } : {}),
+                            (statsmode == 0 || statsmode == 1 ? {
+                                label: "# Discorders Online",
+                                data: discOnline,
+                                backgroundColor: "#7289DA"
                             } : {})
                         ]
                     },
@@ -277,8 +284,8 @@
                             enabled: true,
                             callbacks: {
                                 label: (tooltipItem, data) => {
-                                    var resp = [tooltipItem.value + (tooltipItem.datasetIndex == 0 ? " Discorders" : " Minecrafters")];
-                                    if (tooltipItem.datasetIndex == 0) {
+                                    var resp = [tooltipItem.value + (tooltipItem.datasetIndex == 1 ? " Discorders" : " Minecrafters")];
+                                    if (tooltipItem.datasetIndex == 1) {
                                         resp.push(discPercent[tooltipItem.index] + "% Online");
                                         resp.push(totalDisc[tooltipItem.index] + " Total Members");
                                     }
@@ -358,15 +365,15 @@
                     data: {
                         labels: labels,
                         datasets: [
-                            (statsmode == 0 || statsmode == 1 ? {
-                                label: "# Discorders Online",
-                                data: discOnline,
-                                backgroundColor: "#7289DA"
-                            } : {}),
                             (statsmode == 1 || statsmode == 2 ? {
                                 label: "# Minecrafters Online",
                                 data: mcOnline,
                                 backgroundColor: "limegreen"
+                            } : {}),
+                            (statsmode == 0 || statsmode == 1 ? {
+                                label: "# Discorders Online",
+                                data: discOnline,
+                                backgroundColor: "#7289DA"
                             } : {})
                         ]
                     },
@@ -376,8 +383,8 @@
                             enabled: true,
                             callbacks: {
                                 label: (tooltipItem, data) => {
-                                    var resp = [tooltipItem.value + (tooltipItem.datasetIndex == 0 ? " Discorders" : " Minecrafters")];
-                                    if (tooltipItem.datasetIndex == 0) {
+                                    var resp = [tooltipItem.value + (tooltipItem.datasetIndex == 1 ? " Discorders" : " Minecrafters")];
+                                    if (tooltipItem.datasetIndex == 1) {
                                         resp.push(discPercent[tooltipItem.index] + "% Online");
                                         resp.push(totalDisc[tooltipItem.index] + " Total Members");
                                     }
@@ -409,7 +416,7 @@
             //Builds chart showing the hours of a single given day
             function chartDaily(sel) {
 
-                if (!sel) var date = prompt("Enter a date (in form m/d/yyyy, ex: 6/17/2020) to display the hourly statistics for that day.");
+                if (!sel) var date = prompt("Enter a date (in form m/d/yyyy, ex: 3/7/2020) to display the hourly statistics for that day.");
                 else date = selday;
 
                 if (!date || !date.match("/")) {
@@ -483,15 +490,15 @@
                     data: {
                         labels: labels,
                         datasets: [
-                            (statsmode == 0 || statsmode == 1 ? {
-                                label: "# Discorders Online",
-                                data: discOnline,
-                                backgroundColor: "#7289DA"
-                            } : {}),
                             (statsmode == 1 || statsmode == 2 ? {
                                 label: "# Minecrafters Online",
                                 data: mcOnline,
                                 backgroundColor: "limegreen"
+                            } : {}),
+                            (statsmode == 0 || statsmode == 1 ? {
+                                label: "# Discorders Online",
+                                data: discOnline,
+                                backgroundColor: "#7289DA"
                             } : {})
                         ]
                     },
@@ -501,8 +508,8 @@
                             enabled: true,
                             callbacks: {
                                 label: (tooltipItem, data) => {
-                                    var resp = [tooltipItem.value + (tooltipItem.datasetIndex == 0 ? " Discorders" : " Minecrafters")];
-                                    if (tooltipItem.datasetIndex == 0) {
+                                    var resp = [tooltipItem.value + (tooltipItem.datasetIndex == 1 ? " Discorders" : " Minecrafters")];
+                                    if (tooltipItem.datasetIndex == 1) {
                                         resp.push(discPercent[tooltipItem.index] + "% Online");
                                         resp.push(totalDisc[tooltipItem.index] + " Total Members");
                                     }
