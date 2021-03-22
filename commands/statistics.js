@@ -105,7 +105,7 @@ function logStatistics(client) {
             evg.set(date, {});
           }
 
-        if (time.mins == 0 && !(time.hours in evg.get(date))) {
+        if (time.mins == 0) {
             getServerInfo((info) => {
 
                 var guild = client.guilds.cache.find(g => g.id == "351824506773569541");

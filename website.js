@@ -1,4 +1,4 @@
-
+var stats = require("./evg").resolve("statistics");
 
 function setup(app, disc) {
     const bodyParser = require("body-parser");
@@ -25,7 +25,8 @@ function setup(app, disc) {
   });
   
   app.get("/statistics/json", (req, res) => {
-      res.sendFile(__dirname + "/storage/statistics.json");
+    //   res.sendFile(__dirname + "/storage/statistics.json");
+    res.send(stats.all());
   });
 
   app.get("/statistics/", (req, res) => {
@@ -117,7 +118,6 @@ function setup(app, disc) {
 
         //Filter out statistics channel modification
         entries = entries.filter(entry => !(["CHANNEL_CREATE", "CHANNEL_DELETE"].includes(entry.action) && entry.executor == "668488976625303595"));
-        // entries = entries.filter(entry => !(entry.reason == "[Statistics]" && entry.executor == "668488976625303595"));
 
         if (entries.length < limit) {
             limitOverflow = limit - entries.length;
