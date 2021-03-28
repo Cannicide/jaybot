@@ -10,7 +10,7 @@ function getServerInfo(callback, err) {
         version: "",
     }
 
-    ping("server.zombiehorde.net")
+    ping("zombiehorde.net")
         .then((response) => {
             info.players = response.onlinePlayers;
             info.icon = response.favicon;
