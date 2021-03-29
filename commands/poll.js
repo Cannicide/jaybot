@@ -245,10 +245,30 @@ function createPoll(message, args) {
 
     //Check to make sure there aren't more than 10 maximum polls running at once
     //Admins can bypass this restriction
-    if (polls.array().length >= 10 && !message.member.hasPermission("ADMINISTRATOR")) return message.channel.send("Apologies, but there can only be a maximum of 10 polls running at once.").then(m => m.delete({timeout: 5000}));
+    //THIS RESTRICTION IS NO LONGER NECESSARY, THANKS TO POLL LIST PAGINATION
+    // if (polls.array().length >= 10 && !message.member.hasPermission("ADMINISTRATOR")) return message.channel.send("Apologies, but there can only be a maximum of 10 polls running at once.").then(m => m.delete({timeout: 5000}));
+
+    //Help embed
+    var helpEmbed = new Interface.Embed(message, {
+        fields: [
+
+            {
+                name: "How to Create a Poll",
+                value: "Specify only the poll's question and choices. Max votable choices and poll type can be selected afterwards.\n\nFormat: ```\n/poll <Question> | <Choice 1, Choice 2, etc.>```Ex: ```fix\n/poll What is your favorite fruit? | Apples, Pears, Bananas```"
+            }
+
+        ],
+        title: "Poll Creation"
+    });
 
     //Get the args of the message (separated by pipe char)
-    args = args.join(" ").split(" | ");
+    args = args ? args.join(" ").split(" | ") : false;
+
+    if (!args || args == "" || args.length < 2) {
+        //Explain how to create a poll -- specifying all args or just specifying the question/choices
+
+        return message.channel.send(helpEmbed);
+    }
 
     //Check how many args the message has --
     //If it has 2 (just the question and choices supplied), then create an interface to get rest of info
@@ -309,51 +329,50 @@ function createPoll(message, args) {
             maxChoices = 1;
             var instances = 0;
 
-            var embedded = new Interface.Embed(message, {
-                desc: `<:yeanay:${emotes.gui.yn}> Yea/Nay Poll\n${emotes.gui.mc} Multiple Choice Poll`,
-                title: "Select a Poll Type"
-            });
+            var yeawords = ["yea", "yay", "yes", "yep"];
+            var naywords = ["nay", "nah", "no", "nope"];
 
-            new Interface.ReactionInterface(message, embedded, [emotes.gui.yn, emotes.gui.mc], (menu, reaction) => {
+            var firstYeaSecondNay = yeawords.includes(choices[0].toLowerCase()) && naywords.includes(choices[1].toLowerCase());
+            var secondYeaFirstNay = naywords.includes(choices[0].toLowerCase()) && yeawords.includes(choices[1].toLowerCase());
 
-                if (instances >= 1) return;
-                instances++;
+            if (firstYeaSecondNay) {
+                //Choices are for sure yea/nay
+                type = "yn";
+                generatePoll();
+            }
+            else if (secondYeaFirstNay) {
+                //Choices are yea/nay but in the wrong order
+                type = "mc";
+                generatePoll();
+            }
+            else {
+                //Ask whether to use yea/nay or multiple choice
 
-                if (reaction.emoji.id == emotes.gui.yn) {
-                    //Chose yea/nay
-                    type = "yn";
-                }
-                else {
-                    //Chose multiple choice
-                    type = "mc";
-                }
+                var embedded = new Interface.Embed(message, {
+                    desc: `<:yeanay:${emotes.gui.yn}> Yea/Nay Poll\n${emotes.gui.mc} Multiple Choice Poll`,
+                    title: "Select a Poll Type"
+                });
 
-                menu.delete();
+                new Interface.ReactionInterface(message, embedded, [emotes.gui.yn, emotes.gui.mc], (menu, reaction) => {
 
-                if (choices.length > 10) {
-                    //Error message
-                    var embed = new Interface.Embed(message, {
-                        fields: [
+                    if (instances >= 1) return;
+                    instances++;
 
-                            {
-                                name: "The Q&A Method",
-                                value: "Specify only the poll's question and choices.\n\nFormat: ```\n/poll create <Question> | <Choice 1, Choice 2, etc.>```Ex: ```fix\n/poll create What is your favorite fruit? | Apples, Pears, Bananas```"
-                            },
-                            {
-                                name: "The Full Method",
-                                value: "Specify the poll-type (yea/nay or multiple choice), question, choices, and (optional) max-choices-per-user.\n\nFormat: ```\n/poll create <yn OR mc> | <Question> | <Choice 1, Choice 2, etc.> | [max-choices]```Ex: ```fix\n/poll create yn | Do you like apples? | I love apples, I hate apples | 1```"
-                            }
-                
-                        ],
-                        title: "Poll Creation",
-                        desc: "There are two methods of creating a poll. If you attempted to create a poll and are seeing this message, you attempted one of these methods incorrectly. See below for explanations and examples."
-                    });
-            
-                    message.channel.send(embed);
-                }
-                else generatePoll();
+                    if (reaction.emoji.id == emotes.gui.yn) {
+                        //Chose yea/nay
+                        type = "yn";
+                    }
+                    else {
+                        //Chose multiple choice
+                        type = "mc";
+                    }
 
-            });
+                    menu.delete();
+                    generatePoll();
+
+                });
+
+            }
         }
         else {
             //Can only be multiple choice (more than 2 choices provided), so maxChoices could possibly be higher than 1
@@ -379,115 +398,13 @@ function createPoll(message, args) {
                 
                 if (choices.length > 10) {
                     //Error message
-                    var embed = new Interface.Embed(message, {
-                        fields: [
-
-                            {
-                                name: "The Q&A Method",
-                                value: "Specify only the poll's question and choices.\n\nFormat: ```\n/poll create <Question> | <Choice 1, Choice 2, etc.>```Ex: ```fix\n/poll create What is your favorite fruit? | Apples, Pears, Bananas```"
-                            },
-                            {
-                                name: "The Full Method",
-                                value: "Specify the poll-type (yea/nay or multiple choice), question, choices, and (optional) max-choices-per-user.\n\nFormat: ```\n/poll create <yn OR mc> | <Question> | <Choice 1, Choice 2, etc.> | [max-choices]```Ex: ```fix\n/poll create yn | Do you like apples? | I love apples, I hate apples | 1```"
-                            }
-                
-                        ],
-                        desc: "There are two methods of creating a poll. If you attempted to create a poll and are seeing this message, you attempted one of these methods incorrectly. See below for explanations and examples.",
-                        title: "Poll Creation"
-                    });
-            
-                    message.channel.send(embed);
+                    message.channel.send(helpEmbed);
                 }
                 else generatePoll();
 
             })
         }
 
-    }
-    else if (args && args.length >= 3) {
-        //Create poll using poll-type, question, and choices info. Use max choices per user if provided (it's optional).
-
-        //Set each variable to its respective value
-        var type = args[0];
-        var question = args[1];
-        var choices = args[2].split(", ");
-        var maxChoices = args[3] || 1;
-
-        //Determine type:
-        if (type == "y/n" || type == "yea/nay") type = "yn";
-        if (type == "multiple choice") type = "mc";
-
-        if (type == "yn") maxChoices = 1;
-        if (maxChoices > choices.length) maxChoices = choices.length;
-
-        //Check to make sure poll-type is valid. If not, set args to false such that the explanation message is triggered
-        if (type != "yn" && type != "mc") {
-            //Invalid type
-            args = false;
-        }
-        else if ((type == "yn" && choices.length > 2) || (type == "mc" && choices.length > 10)) {
-            //Invalid amount of choices
-            args = false;
-        }
-        else {
-            //Valid type
-
-            var previous = false;
-
-            var formattedChoices = polls.gui.createPollDisplay(choices, type);
-
-            var embed = new Interface.Embed(message, {
-                fields: formattedChoices,
-                title: "📊 " + question,
-                footer: [message.client.user.username, `Select ${maxChoices} choice(s)`]
-            });
-
-            message.channel.send(embed).then(m => {
-                //React with an emote for each choice, depending on the poll-type
-                choices.forEach((choice, index) => {
-                    if (previous) previous = previous.then(r => {return m.react(emotes[type][index])});
-                    else previous = m.react(emotes[type][index]);
-                });
-
-                //Add trash emote to allow ending poll easily
-                previous.then(() => {m.react(emotes.gui.trash)})
-
-                //Add trash to interpreter
-                polls.gui.addTrash(m, message.author);
-
-                //Create poll using polls.add()
-                var result = polls.add(m, question, choices, maxChoices, type, message.author);
-
-                //Auto-delete poll message after a few seconds for aesthetic.
-                message.delete({timeout: 2500})
-
-                //Check if polls.add() returns true; if it doesn't, delete the poll message (m)
-                if (!result) m.delete();
-            });
-        }
-    }
-
-    if (!args || args == "" || args.length < 2) {
-        //Explain both ways of how to create a poll -- specifying all args or just specifying the question/choices
-
-        var embed = new Interface.Embed(message, {
-            fields: [
-
-                {
-                    name: "The Q&A Method",
-                    value: "Specify only the poll's question and choices.\n\nFormat: ```\n/poll create <Question> | <Choice 1, Choice 2, etc.>```Ex: ```fix\n/poll create What is your favorite fruit? | Apples, Pears, Bananas```"
-                },
-                {
-                    name: "The Full Method",
-                    value: "Specify the poll-type (yea/nay or multiple choice), question, choices, and (optional) max-choices-per-user.\n\nFormat: ```\n/poll create <yn OR mc> | <Question> | <Choice 1, Choice 2, etc.> | [max-choices]```Ex: ```fix\n/poll create yn | Do you like apples? | I love apples, I hate apples | 1```"
-                }
-    
-            ],
-            desc: "There are two methods of creating a poll. If you attempted to create a poll and are seeing this message, you attempted one of these methods incorrectly. See below for explanations and examples.",
-            title: "Poll Creation"
-        });
-
-        message.channel.send(embed);
     }
 
 }
@@ -598,24 +515,30 @@ function pollProgress(message, args) {
 
 }
 
-function listPolls(message) {
+async function listPolls(message) {
     //List all of the current polls (by their sorted_index) - no need for guild checks since only one guild is being used
 
     var list = polls.array();
-    var response = "";
+    var desc = false;
+    var fields = [];
+    var index = 0;
 
-    list.forEach((poll, index) => {
-        response += `**[${index}]** ${poll.question}\n`;
-    });
+    for (var poll of list) {
+        fields.push({
+            name: `**[${index++}]** ${poll.question}\n`,
+            value: `[Go to Message](https://discordapp.com/channels/${message.guild.id}/${poll.channelID}/${poll.messageID})\nStarted by: **${(await message.guild.members.fetch(poll.starter)).user.tag}**`
+        });
+    }
 
-    if (response == "") response = "No polls are currently running.";
+    if (fields.length < 1) desc = "No polls are currently running.";
 
-    var embed = new Interface.Embed(message, {
-        desc: response,
-        title: "Poll List"
-    },false, [], response);
+    var embed = {
+        desc: desc,
+        title: "Poll List",
+        fields: fields.slice(0, 2)
+    };
 
-    message.channel.send(embed);
+    message.channel.paginate(embed, fields, 3);
 
 }
 
@@ -726,21 +649,63 @@ function endPoll(message, args) {
 
 module.exports = {
     commands: [
-        new Command("poll", {
+        new Command("pollcreate", {
             roles: ["Iron VIP", "Gold VIP", "Blood VIP", "Staff", "Partner"],
             desc: "A command to create yea/nay and/or multiple-choice polls (max 10 votable options).",
             args: [
                 {
-                    name: "create | list | results | end",
-                    optional: false,
-                    feedback: "Please specify one of the following actions as an argument: create, list, results, end."
-                },
-                {
-                    name: "poll arguments | poll index",
+                    name: "poll arguments",
                     optional: true
                 }
             ],
-            aliases: ["polls"],
+            aliases: ["poll", "createpoll", "createpolls", "pollscreate"],
+            cooldown: 2
+        }, (message) => {
+
+            //Use Interface.Interface() here to get the following details for each poll:
+            // [poll-type, question, choices, max choices per user]
+
+            // or
+
+            //Use one-line syntax to get following details:
+            // poll-type | question | choices | max choices per user
+            
+            //This poll system will require a ReactionCollector and reaction interpreter mechanism
+
+            var args = message.args;
+            createPoll(message, args);
+
+        }),
+        new Command("polllist", {
+            roles: ["Iron VIP", "Gold VIP", "Blood VIP", "Staff", "Partner"],
+            desc: "A command to list all existing polls.",
+            aliases: ["polls", "pollslist", "listpoll", "listpolls"],
+            cooldown: 2
+        }, (message) => {
+
+            //Use Interface.Interface() here to get the following details for each poll:
+            // [poll-type, question, choices, max choices per user]
+
+            // or
+
+            //Use one-line syntax to get following details:
+            // poll-type | question | choices | max choices per user
+            
+            //This poll system will require a ReactionCollector and reaction interpreter mechanism
+
+            listPolls(message);
+
+        }),
+        new Command("pollprogress", {
+            roles: ["Iron VIP", "Gold VIP", "Blood VIP", "Staff", "Partner"],
+            desc: "A command to view the progress of any existing poll.",
+            args: [
+                {
+                    name: "poll index",
+                    optional: true
+                }
+            ],
+            aliases: ["pollsresult", "pollresult", "pollsresults", "pollresults", "pollsprogress"],
             cooldown: 2
         }, (message) => {
 
@@ -756,31 +721,35 @@ module.exports = {
 
 
             var args = message.args;
+            pollProgress(message, args);
+
+        }),
+        new Command("pollend", {
+            roles: ["Iron VIP", "Gold VIP", "Blood VIP", "Staff", "Partner"],
+            desc: "A command to end any existing poll that you either created yourself or have perms to end.",
+            args: [
+                {
+                    name: "poll index",
+                    optional: true
+                }
+            ],
+            aliases: ["pollsend", "endpoll", "endpolls"],
+            cooldown: 2
+        }, (message) => {
+
+            //Use Interface.Interface() here to get the following details for each poll:
+            // [poll-type, question, choices, max choices per user]
+
+            // or
+
+            //Use one-line syntax to get following details:
+            // poll-type | question | choices | max choices per user
+            
+            //This poll system will require a ReactionCollector and reaction interpreter mechanism
 
 
-            //First, set a var to args[0] to see what action to take (create poll | list polls | show results | end poll)
-            var action = args[0];
-
-            //Then, create newArgs consisting of all args except the action arg above
-            var newArgs = args.slice(1);
-
-            //Finally, check the value of the var with args[0] and call the respective methods for the requested action
-            switch (action.toLowerCase()) {
-                case "create":
-                    createPoll(message, newArgs);
-                break;
-                case "list":
-                    listPolls(message);
-                break;
-                case "results":
-                case "progress":
-                    pollProgress(message, newArgs);
-                break;
-                case "stop":
-                case "end":
-                    endPoll(message, newArgs);
-                break;
-            }
+            var args = message.args;
+            endPoll(message, args);
 
         })
     ],
