@@ -1,4 +1,3 @@
-
 /**
  * Creates a new FancyMessage, helping to make the Interface more interactive and aesthetically appealing.
  * @constructor
@@ -9,7 +8,7 @@
  * @param {"="|"#"} [options.title] - Customize title type
  * @param {"*"|"-"} [options.bullet] - Customize the bullet type
  */
-function FancyMessage(title, question, bullets, options) {
+ function FancyMessage(title, question, bullets, options) {
     options = options || {title: "=", bullet: "*"};
 
     if (options.title == "=") {
@@ -49,8 +48,9 @@ function FancyMessage(title, question, bullets, options) {
  * @param {String} [options.image] - The URL of the Embed's image.
  * @param {String} [options.video] - The URL of the Embed's video.
  * @param {Boolean} [options.noTimestamp] - Whether or not to remove the timestamp from the Embed.
+ * @param {String} [options.content] - The plain text content of the message itself.
  */
-function EmbedMessage(message, {thumbnail, fields, desc, title, footer, icon, image, video, noTimestamp}) {
+function EmbedMessage(message, {thumbnail, fields, desc, title, footer, icon, image, video, noTimestamp, content}) {
 
     let userID = message.author.id;
     var tuser = message.client.users.cache.find(m => m.id == userID);
@@ -78,6 +78,7 @@ function EmbedMessage(message, {thumbnail, fields, desc, title, footer, icon, im
     };
 
     if (!thumbnail) embed.embed.thumbnail = {};
+    if (content) embed.content = content;
 
     embed.remove = (property) => {
       delete embed.embed[property];
@@ -152,8 +153,9 @@ function Interface(message, question, callback, type, options) {
  * @param {Object} message - Discord message object
  * @param {String} question - Message to send and collect reactions from
  * @param {function(message, reaction)} callback - Callback to execute on collect
+ * @param {Number} [time] - Optional time in milliseconds to wait for reaction
  */
-function ReactionInterface(message, question, reactions, callback) {
+function ReactionInterface(message, question, reactions, callback, time, allUsers) {
 
     message.channel.send(question).then(m => {
 
@@ -164,7 +166,7 @@ function ReactionInterface(message, question, reactions, callback) {
             if (previous) previous = previous.then(r => {return m.react(reaction)})
             else previous = m.react(reaction);
 
-            let collector = m.createReactionCollector((r, user) => (r.emoji.name === reaction || r.emoji.id === reaction) && user.id === message.author.id, { time: 120000 });
+            let collector = m.createReactionCollector((r, user) => (r.emoji.name === reaction || r.emoji.id === reaction) && (allUsers || user.id === message.author.id), { time: time || 120000 });
 
             collector.on("collect", r => {
                 r.users.remove(message.author);
@@ -187,7 +189,7 @@ function ReactionInterface(message, question, reactions, callback) {
  * @param {String} elements[].value - Field content
  * @param {Number} perPage - Number of elements per page
  */
-function Paginator(message, embed, elements, perPage) {
+function Paginator(message, embed, elements, perPage, allUsers) {
 
     var insertions = 0;
     var pages = [];
@@ -208,6 +210,9 @@ function Paginator(message, embed, elements, perPage) {
     if (pages[pages.length - 1] != page && page.length != 0) pages.push(page);
     embed.embed.fields = pages[pageIndex];
 
+    embed.embed.footer = embed.embed.footer || {text: ""};
+    embed.embed.footer.text += " • " + (pages.length == 0 ? 0 : pageIndex + 1) + "/" + pages.length;
+
     new ReactionInterface(message, embed, ['⬅️', '➡️'], (m, r) => {
 
         if (r.emoji.name == '⬅️') {
@@ -219,6 +224,7 @@ function Paginator(message, embed, elements, perPage) {
             }
             else {
                 embed.embed.fields = pages[pageIndex];
+                embed.embed.footer.text = embed.embed.footer.text.substring(0, embed.embed.footer.text.lastIndexOf("•")) + "• " + (pageIndex + 1) + "/" + pages.length;
                 m.edit(embed);
             }
         }
@@ -231,11 +237,12 @@ function Paginator(message, embed, elements, perPage) {
             }
             else {
                 embed.embed.fields = pages[pageIndex];
+                embed.embed.footer.text = embed.embed.footer.text.substring(0, embed.embed.footer.text.lastIndexOf("•")) + "• " + (pageIndex + 1) + "/" + pages.length;
                 m.edit(embed);
             }
         }
 
-    });
+    }, 1000 * 60 * 60, allUsers);
 
 }
 
