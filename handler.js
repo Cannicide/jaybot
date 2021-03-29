@@ -38,12 +38,35 @@ function initialize(directory, prefix) {
         else if ("commands" in file) {
             file.commands.forEach((alias) => {
                 if (alias instanceof Command) requisites.push(alias);
-            })
+            });
+
+            if (typeof file.initialize === 'function') {
+              file.initialize();
+            }
         }
     });
 
     commands = requisites[requisites.length - 1].getCommands();
     return commands;
+
+}
+
+async function refreshCache() {
+
+  var totalMessagesFetched = 0;
+
+  for (var guild of client.guilds.cache.array()) {
+
+    for (var channel of guild.channels.cache.filter(c => c.type == "text").array()) {
+
+      var messages = await channel.messages.fetch();
+      totalMessagesFetched += messages.size;
+
+    }
+
+  };
+
+  console.log("Successfully fetched and cached " + totalMessagesFetched + " messages.");
 
 }
 
@@ -206,6 +229,8 @@ function ExtendedClient({intents, name, presences, logs}) {
           logChannel.messages.fetch(messageID).then(m => m.edit(message));
         }
     }
+
+    refreshCache();
   });
 
   return client;

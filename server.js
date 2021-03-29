@@ -45,8 +45,8 @@ client.once('ready', () => {
     });
 
     //Register poll interpreters:
-    const polls = require("./commands/poll");
-    polls.initialize();
+    // const polls = require("./commands/poll");
+    // polls.initialize();
 
     //Setup statistics logger and scheduler
     var statistics = require("./commands/statistics");
@@ -54,8 +54,8 @@ client.once('ready', () => {
     statistics.scheduler(client);
 
     //Setup bug ticketer interpreter
-    var report = require("./commands/report");
-    report.initialize();
+    // var report = require("./commands/report");
+    // report.initialize();
 
     //Setup giveaway scheduler
     require("./commands/giveaway.js").giveawayScheduler(client);
