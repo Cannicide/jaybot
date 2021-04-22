@@ -8,6 +8,189 @@ var Interface = require("../interface");
 const Interpreter = require("../interpreter");
 var Reactions = require("../evg").remodel("reactions");
 
+const identify = {
+    image: (url) => {
+        var exts = [
+            "ase",
+            "art",
+            "bmp",
+            "blp",
+            "cd5",
+            "cit",
+            "cpt",
+            "cr2",
+            "cut",
+            "dds",
+            "dib",
+            "djvu",
+            "egt",
+            "exif",
+            "gif",
+            "gpl",
+            "grf",
+            "icns",
+            "ico",
+            "iff",
+            "jng",
+            "jpeg",
+            "jpg",
+            "jfif",
+            "jp2",
+            "jps",
+            "lbm",
+            "max",
+            "miff",
+            "mng",
+            "msp",
+            "nitf",
+            "ota",
+            "pbm",
+            "pc1",
+            "pc2",
+            "pc3",
+            "pcf",
+            "pcx",
+            "pdn",
+            "pgm",
+            "PI1",
+            "PI2",
+            "PI3",
+            "pict",
+            "pct",
+            "pnm",
+            "pns",
+            "ppm",
+            "psb",
+            "psd",
+            "pdd",
+            "psp",
+            "px",
+            "pxm",
+            "pxr",
+            "qfx",
+            "raw",
+            "rle",
+            "sct",
+            "sgi",
+            "rgb",
+            "int",
+            "bw",
+            "tga",
+            "tiff",
+            "tif",
+            "vtf",
+            "xbm",
+            "xcf",
+            "xpm",
+            "3dv",
+            "amf",
+            "ai",
+            "awg",
+            "cgm",
+            "cdr",
+            "cmx",
+            "dxf",
+            "e2d",
+            "egt",
+            "eps",
+            "fs",
+            "gbr",
+            "odg",
+            "svg",
+            "stl",
+            "vrml",
+            "x3d",
+            "sxd",
+            "v2d",
+            "vnd",
+            "wmf",
+            "emf",
+            "art",
+            "xar",
+            "png",
+            "webp",
+            "jxr",
+            "hdp",
+            "wdp",
+            "cur",
+            "ecw",
+            "iff",
+            "lbm",
+            "liff",
+            "nrrd",
+            "pam",
+            "pcx",
+            "pgf",
+            "sgi",
+            "rgb",
+            "rgba",
+            "bw",
+            "int",
+            "inta",
+            "sid",
+            "ras",
+            "sun",
+            "tga"
+        ];
+
+        return exts.find(ext => url.toLowerCase().endsWith(`.${ext}`));
+    },
+
+    video: (url) => {
+        var exts = [
+            "3g2",
+            "3gp",
+            "aaf",
+            "asf",
+            "avchd",
+            "avi",
+            "drc",
+            "flv",
+            "m2v",
+            "m4p",
+            "m4v",
+            "mkv",
+            "mng",
+            "mov",
+            "mp2",
+            "mp4",
+            "mpe",
+            "mpeg",
+            "mpg",
+            "mpv",
+            "mxf",
+            "nsv",
+            "ogg",
+            "ogv",
+            "qt",
+            "rm",
+            "rmvb",
+            "roq",
+            "svi",
+            "vob",
+            "webm",
+            "wmv",
+            "yuv"
+        ];
+
+        return exts.find(ext => url.toLowerCase().endsWith(`.${ext}`));
+    },
+
+    randomThumbnail: () => {
+        var thumbnails = {
+            "blue": "https://cdn.glitch.com/e1af67ac-1769-4b40-b8e8-c03db308afa2%2Fblue_bug.png?v=1619060488811",
+            "green": "https://cdn.glitch.com/e1af67ac-1769-4b40-b8e8-c03db308afa2%2Fgreen_bug.png?v=1619060492236",
+            "purple": "https://cdn.glitch.com/e1af67ac-1769-4b40-b8e8-c03db308afa2%2Fpurple_bug.png?v=1619060495206",
+            "red": "https://cdn.glitch.com/e1af67ac-1769-4b40-b8e8-c03db308afa2%2Fred_bug.png?v=1619060498647",
+            "orange": "https://cdn.glitch.com/e1af67ac-1769-4b40-b8e8-c03db308afa2%2Forange_bug.png?v=1619060503940",
+            "yellow": "https://cdn.glitch.com/e1af67ac-1769-4b40-b8e8-c03db308afa2%2Fyellow_bug.png?v=1619060510238"
+        };
+
+        var rand = Math.floor(Math.random() * Object.keys(thumbnails).length);
+        return Object.values(thumbnails)[rand];
+    }
+}
+
 var reportFunction = (message, choice, menu) => {
     //Report a player
     let thumb = "https://cdn.discordapp.com/attachments/372124612647059476/431626525809573898/ZHFinal.png";
@@ -116,7 +299,8 @@ function handleTicketing(message, user) {
             var firstTitle = "";
             var secondTitle = "";
 
-            var orig = "https://cdn.discordapp.com/attachments/668485643487412237/691701166408728676/bug.png";
+            // var orig = "https://cdn.discordapp.com/attachments/668485643487412237/691701166408728676/bug.png";
+            var orig = "";
 
             collected.array().forEach((m) => {
 
@@ -180,9 +364,34 @@ function handleTicketing(message, user) {
 
                 if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
 
+                //Determine type of evidence
+                var evtype = {
+                    types: ["Youtube", "Image", "Video", "Unknown", "None"],
+                    determined: "None",
+                    "Youtube": "",
+                    "Image": "",
+                    "Video": "",
+                    "Unknown": "",
+                    "None": ""
+                }
+
+                if (identify.image(evidence)) evtype.determined = evtype.types[1];
+                else if (identify.video(evidence)) evtype.determined = evtype.types[2];
+                else if (evidence.replace(/\./g, "").match("youtube")) evtype.determined = evtype.types[0];
+                else if (evidence != "" && evidence.length > 0) evtype.determined = evtype.types[3];
+
+                evtype[evtype.determined] = evidence;
+
+                //Identify random-colored bug report thumbnail image
+                var randThumb = identify.randomThumbnail();
+
+                //Check for empty embed fields
+                if (bugDesc == "" || bugDesc.length <= 0) bugDesc = "{No description provided}";
+                if (bugTitle == "" || bugTitle.length <= 0) bugTitle = "{No title provided}";
+
                 //Now create a bug report embed to be posted to the #bugs channel
                 let bugReport = new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {
-                    thumbnail: orig,
+                    thumbnail: randThumb,
                     fields: [
                         {
                             name: `Bug Description`,
@@ -190,16 +399,19 @@ function handleTicketing(message, user) {
                         },
                         {
                             name: `Bug Evidence`,
-                            value: `[🔗](${evidence})`
+                            value: evtype.determined != "None" ? `**[🔗 ${evtype.determined}](${evidence})**` : `**🔗 ${evtype.determined}**`
                         }
                     ],
-                    image: evidence.match(/\.(jpeg|jpg|gif|png)$/) ? evidence : "",
-                    video: !evidence.match(/\.(jpeg|jpg|gif|png)$/) ? evidence : "",
+                    image: evtype.Image,
+                    video: evtype.Video,
                     title: bugTitle
                 });
 
                 //Send the bug report embed to #bugs
                 message.guild.channels.cache.get(message.guild.channels.cache.find(c => c.name == "bugs").id).send(bugReport);
+
+                //Update evidence variable if evidence not provided
+                if (evtype.determined == "None") evidence = randThumb;
 
                 //Post the bug to our trello automagically
                 var Trello = require('trello-node-api')(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
