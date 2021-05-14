@@ -8,6 +8,8 @@ var Interface = require("../interface");
 const Interpreter = require("../interpreter");
 var Reactions = require("../evg").remodel("reactions");
 
+var lastThumbnail = -1;
+
 const identify = {
     image: (url) => {
         var exts = [
@@ -186,8 +188,36 @@ const identify = {
             "yellow": "https://cdn.glitch.com/e1af67ac-1769-4b40-b8e8-c03db308afa2%2Fyellow_bug.png?v=1619060510238"
         };
 
-        var rand = Math.floor(Math.random() * Object.keys(thumbnails).length);
-        return Object.values(thumbnails)[rand];
+        // var rand = Math.floor(Math.random() * Object.keys(thumbnails).length);
+
+        lastThumbnail++;
+        if (lastThumbnail > Object.keys(thumbnails).length) lastThumbnail = 0;
+
+        return Object.values(thumbnails)[lastThumbnail];
+    },
+
+    label: (key) => {
+        var labels = {
+            "high": "5b2ffa46a8c10b0fc9785423",
+            "med": "5b2ffa51832291b847f0332a",
+            "low": "5b2ffa60ec78a7278b802bca"
+        }
+
+        return labels[key];
+    },
+
+    labelToEmote: (key) => {
+        var images = {
+            "low": "<:lowPrio:842597253692653579>",
+            "med": "<:medPrio:842597271832494101>",
+            "high": "<:highPrio:842597193290743808>"
+        }
+
+        return images[key];
+    },
+
+    emoteToLabelName: (emoteName) => {
+        return emoteName.match("Prio") ? emoteName.replace("Prio", "") : false;
     }
 }
 
@@ -253,7 +283,7 @@ function handleTicketing(message, user) {
     overwrites.push({
         id: user.id,
         allow: ['SEND_MESSAGES'],
-    })
+    });
 
     //Create request message
     var request = new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {desc:"Thank you for opening a ticket, please describe your bug in two or less messages below.\nAttach an image/link to include it in the report.\nYour report will automatically be saved to a hidden channel.\n\nClick 📨 to submit your report!",title:"Bug Ticket"});
@@ -350,97 +380,133 @@ function handleTicketing(message, user) {
 
             });
 
-            //2.5 second timeout to allow for uploading of evidence to CannicideAPI
-            setTimeout(() => {
+            //Ask for bug priority level
+            var request2 = new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {
+                desc:`Please identify the priority of the bug you reported.\nThis helps us stay organized and address critical bugs immediately.\n\n${identify.labelToEmote("low")} - Minor issues, such as small visual or text bugs.\n${identify.labelToEmote("med")} - Moderate issues, such as non-severe gameplay bugs or glitches.\n${identify.labelToEmote("high")} - Major issues, such as bugs that harm gameplay.\n\nReact with the emote matching the priority level of this bug, in your opinion.\nIf you are not sure, select Medium priority.`,
+                title:"Bug Priority"
+            });
+            message.channel.send(request2).then(m => {
+                m.react(identify.labelToEmote("low"))
+                .then(() => m.react(identify.labelToEmote("med")))
+                .then(() => m.react(identify.labelToEmote("high")));
 
-                //Build title
-                bugTitle = firstTitle.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
+                var chosen = false;
+        
+                var reactor = m.createReactionCollector((reaction, tuser) => ["lowPrio", "medPrio", "highPrio"].includes(reaction.emoji.name) && tuser.id == user.id, {time: 4.5 * 60 * 1000});
+                reactor.on('collect', r => {
+                    chosen = identify.emoteToLabelName(r.emoji.name);
+                    reactor.stop();
+                });
+                reactor.on('end', collected => {
+                    //After priority is collected
 
-                if (bugTitle == ".") {
-                    bugTitle = secondTitle.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
+                    var defaulted = false;
 
-                    if (bugTitle == ".") bugTitle = "Bug Report";
-                }
+                    if (collected.size == 0 || !chosen) {
+                        chosen = identify.emoteToLabelName("medPrio");
+                        defaulted = true;
+                    }
 
-                if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
+                    m.delete();
 
-                //Determine type of evidence
-                var evtype = {
-                    types: ["Youtube", "Image", "Video", "Unknown", "None"],
-                    determined: "None",
-                    "Youtube": "",
-                    "Image": "",
-                    "Video": "",
-                    "Unknown": "",
-                    "None": ""
-                }
+                    //2.5 second timeout to allow for uploading of evidence to CannicideAPI
+                    setTimeout(() => {
 
-                if (identify.image(evidence)) evtype.determined = evtype.types[1];
-                else if (identify.video(evidence)) evtype.determined = evtype.types[2];
-                else if (evidence.replace(/\./g, "").match("youtube")) evtype.determined = evtype.types[0];
-                else if (evidence != "" && evidence.length > 0) evtype.determined = evtype.types[3];
+                        //Build title
+                        bugTitle = firstTitle.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
 
-                evtype[evtype.determined] = evidence;
+                        if (bugTitle == ".") {
+                            bugTitle = secondTitle.replace(/etc./gi, "%aed%").split(". ")[0].replace(/\%aed\%/gi, "etc.") + ".";
 
-                //Identify random-colored bug report thumbnail image
-                var randThumb = identify.randomThumbnail();
-
-                //Check for empty embed fields
-                if (bugDesc == "" || bugDesc.length <= 0) bugDesc = "{No description provided}";
-                if (bugTitle == "" || bugTitle.length <= 0) bugTitle = "{No title provided}";
-
-                //Now create a bug report embed to be posted to the #bugs channel
-                let bugReport = new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {
-                    thumbnail: randThumb,
-                    fields: [
-                        {
-                            name: `Bug Description`,
-                            value: bugDesc
-                        },
-                        {
-                            name: `Bug Evidence`,
-                            value: evtype.determined != "None" ? `**[🔗 ${evtype.determined}](${evidence})**` : `**🔗 ${evtype.determined}**`
+                            if (bugTitle == ".") bugTitle = "Bug Report";
                         }
-                    ],
-                    image: evtype.Image,
-                    video: evtype.Video,
-                    title: bugTitle
+
+                        if (bugTitle.endsWith("..")) bugTitle = bugTitle.substring(0, bugTitle.length - 1);
+
+                        //Determine type of evidence
+                        var evtype = {
+                            types: ["Youtube", "Image", "Video", "Unknown", "None"],
+                            determined: "None",
+                            "Youtube": "",
+                            "Image": "",
+                            "Video": "",
+                            "Unknown": "",
+                            "None": ""
+                        }
+
+                        if (identify.image(evidence)) evtype.determined = evtype.types[1];
+                        else if (identify.video(evidence)) evtype.determined = evtype.types[2];
+                        else if (evidence.replace(/\./g, "").match("youtube")) evtype.determined = evtype.types[0];
+                        else if (evidence != "" && evidence.length > 0) evtype.determined = evtype.types[3];
+
+                        evtype[evtype.determined] = evidence;
+
+                        //Identify random-colored bug report thumbnail image
+                        var randThumb = identify.randomThumbnail();
+
+                        //Check for empty embed fields
+                        if (bugDesc == "" || bugDesc.length <= 0) bugDesc = "{No description provided}";
+                        if (bugTitle == "" || bugTitle.length <= 0) bugTitle = "{No title provided}";
+
+                        //Now create a bug report embed to be posted to the #bugs channel
+                        let bugReport = new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {
+                            thumbnail: randThumb,
+                            fields: [
+                                {
+                                    name: `Bug Description`,
+                                    value: bugDesc
+                                },
+                                {
+                                    name: `Bug Evidence`,
+                                    value: evtype.determined != "None" ? `**[🔗 ${evtype.determined}](${evidence})**` : `**🔗 ${evtype.determined}**`
+                                },
+                                {
+                                    name: `Bug Priority`,
+                                    value: `${identify.labelToEmote(chosen)}${defaulted ? " (Auto-selected)" : ""}`
+                                }
+                            ],
+                            image: evtype.Image,
+                            video: evtype.Video,
+                            title: bugTitle
+                        });
+
+                        //Send the bug report embed to #bugs
+                        message.guild.channels.cache.get(message.guild.channels.cache.find(c => c.name == "bugs").id).send(bugReport);
+
+                        //Update evidence variable if evidence not provided
+                        if (evtype.determined == "None") evidence = randThumb;
+
+                        //Post the bug to our trello automagically
+                        var Trello = require('trello-node-api')(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
+                        var data = {
+                            name: bugTitle,
+                            desc: bugDesc + ` [Reported by ${user.tag}]`,
+                            pos: 'bottom',
+                            idList: process.env.BUGS_LIST, //REQUIRED
+                            due: null,
+                            dueComplete: false,
+                            idMembers: [],
+                            idLabels: [identify.label(chosen)],
+                            urlSource: evidence
+                        };
+
+                        Trello.card.create(data).then(function (response) {
+                            //console.log('Trello card creation response ', response);
+                        }).catch(function (error) {
+                            console.log('Trello card creation error:', error);
+                        });
+
+                    }, 2500);
+
+                    //Send thank you message for reporting bug, and delete after 5 seconds
+                    message.channel.send(new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {desc:"Your bug report has been submitted! Thank you for submitting a ticket."}))
+                    .then(thanks => {
+                        setTimeout(() => {
+                            thanks.delete();
+                        }, 5000)
+                    });
+
                 });
-
-                //Send the bug report embed to #bugs
-                message.guild.channels.cache.get(message.guild.channels.cache.find(c => c.name == "bugs").id).send(bugReport);
-
-                //Update evidence variable if evidence not provided
-                if (evtype.determined == "None") evidence = randThumb;
-
-                //Post the bug to our trello automagically
-                var Trello = require('trello-node-api')(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
-                var data = {
-                    name: bugTitle,
-                    desc: bugDesc + ` [Reported by ${user.tag}]`,
-                    pos: 'bottom',
-                    idList: process.env.BUGS_LIST, //REQUIRED
-                    due: null,
-                    dueComplete: false,
-                    idMembers: [],
-                    idLabels: [],
-                    urlSource: evidence
-                };
-
-                Trello.card.create(data).then(function (response) {
-                    //console.log('Trello card creation response ', response);
-                }).catch(function (error) {
-                    console.log('Trello card creation error:', error);
-                });
-
-            }, 2500);
-
-            //Send thank you message for reporting bug, and delete after 5 seconds
-            message.channel.send(new Interface.Embed({guild:true,author:user,member:message.guild.member(user.id),client:message.client}, {desc:"Your bug report has been submitted! Thank you for submitting a ticket."}))
-            .then(thanks => {
-                setTimeout(() => {
-                    thanks.delete();
-                }, 5000)
             });
 
         }

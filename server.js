@@ -11,6 +11,7 @@ const client = new Handler.Client({
 });
 
 var Interpreter = require("./interpreter");
+var Interface = require("./interface");
 
 //Setup website
 require("./website").setup(Handler.express, client);
@@ -41,6 +42,37 @@ client.once('ready', () => {
             .then(r => {
                 message.react("713053971211878452");
             });
+        }
+    });
+
+    //Setup requirement of using suggestion reactions in suggestion channels:
+    Interpreter.register({
+        type: "message",
+        filter: (m, args) => !args[0].toLowerCase().match("suggestion:") && m.channel.name.toLowerCase().match("suggestions") && !m.member.roles.cache.find(x => x.name == "Staff"),
+        response: (message) => {
+
+            var Embed = Interface.Embed;
+            var funSuggestions = [
+                "Try to blame Butterontoast7 more",
+                "Give everyone the #BlameZombie tag",
+                "Avoid using #BlameJay anywhere",
+                "Add a #BlameDustin tag",
+                "I'm from planet minecraft give me op",
+                "Heat me up because I'm way too cool",
+                "Remove Herobrine",
+                "Remove all zombies from the game, they're too difficult"
+            ];
+
+            var sugg = funSuggestions[Math.floor(Math.random() * funSuggestions.length)];
+
+            message.channel.send(new Embed(message, {
+                desc: `Hello ${message.author.tag},\n**Please use the format \`Suggestion: <your suggestion>\` to make suggestions**.\n\nExample:\n\`\`\`fix\nSuggestion: ${sugg}\n\`\`\`\n\nTo make it easier to read through suggestions and avoid clogging up suggestion channels, please take all discussion of suggestions to the general or off-topic discussion channels.`
+            }))
+            .then(m => {
+                m.delete({timeout: 15000});
+            });
+
+            message.delete({timeout: 250});
         }
     });
 
