@@ -1,5 +1,5 @@
 # panacea
-A completely open-source discord bot for the Zombie Horde Minecraft server, built on Discord.js, ExpressJS, and React.
+An open-source Discord bot for the Zombie Horde Minecraft server, built on Discord.js, ExpressJS, and React.
 
 Now powered by Cannicide's [djs-vidar](https://npmjs.com/package/djs-vidar) command creation and handling system, with support for Discord API v10 and Discord.js v14!
 
