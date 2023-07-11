@@ -1,4 +1,5 @@
 import { ListItem, ListItemAvatar, ListItemText, ListItemIcon, Avatar, Skeleton, Chip, ListSubheader, useMediaQuery } from '@mui/material';
+import { abbreviateNumber } from 'discord-arts-zhorde/src/Utils/imageUtils';
 import LeaderboardRankProgress from './LeaderboardRankProgress';
 import { rankTheme } from '../theme';
 
@@ -30,6 +31,18 @@ const listStyle = {
 const listNumberIconStyle = {
     justifyContent: "center"
 };
+
+const listNumber2ndExtraStyle = {
+    ...listNumberIconStyle,
+    color: rankTheme.primary,
+    marginRight: "17px"
+}
+
+const listNumber1stExtraStyle = {
+    ...listNumber2ndExtraStyle,
+    minWidth: "65px",
+    marginRight: "2px"
+}
 
 const getListNumberChipStyle = index => ({
     minWidth: 32,
@@ -73,30 +86,39 @@ export function LeaderboardRankEntry({ pid, avatar, username, xp, level, message
 
     const isLarge = useMediaQuery(rankTheme.provider.breakpoints.up('md'));
     const largeComps = (
-        <ListItemIcon sx={listNumberIconStyle}>
-            {messages}
-        </ListItemIcon>
+        <>
+            <ListItemIcon sx={listNumber1stExtraStyle}>
+                {abbreviateNumber(messages)}
+            </ListItemIcon>
+            <ListItemIcon sx={listNumber2ndExtraStyle}>
+                {abbreviateNumber(xp)}
+            </ListItemIcon>
+        </>
     );
+
+    const hasId = !avatar?.match(/(?<=cdn\.discordapp\.com\/avatars\/)[0-9]{18}/g)?.[0];
+    const TextPlaceholder = () => (<span style={{visibility:"hidden"}}>100</span>);
 
     return pid ?
             (<ListItem key={pid} sx={listStyle}>
                 <ListItemIcon sx={listNumberIconStyle}>
-                    <Chip label={index + 1} sx={getListNumberChipStyle(index)} />
+                    <Chip label={abbreviateNumber(index + 1)} sx={getListNumberChipStyle(index)} />
                 </ListItemIcon>
                  <ListItemAvatar>
-                     <Avatar src={avatar} alt={username}>
+                     <Avatar src={avatar} alt={username} sx={hasId ? { bgcolor: rankTheme.info, color: rankTheme.smoothBlack } : {}}>
                         {username.charAt(0)}
                      </Avatar>
                  </ListItemAvatar>
                  <ListItemText
                      primary={username}
                  />
+                 {isLarge ? largeComps : ""}
                  <LeaderboardRankProgress xp={xp} maxxp={rankUtils.getXpTotalAtLevel(level + 1)} level={level} />
             </ListItem>) :
             (<ListItem key={"a" + index} sx={listStyle}>
                 <ListItemIcon sx={listNumberIconStyle}>
                     <Skeleton variant="circular">
-                        <Chip label={index + 1} sx={getListNumberChipStyle(index)} />
+                        <Chip label={abbreviateNumber(index + 1)} sx={getListNumberChipStyle(index)} />
                     </Skeleton>
                 </ListItemIcon>
                 <ListItemAvatar>
@@ -107,6 +129,20 @@ export function LeaderboardRankEntry({ pid, avatar, username, xp, level, message
                 <ListItemText sx={{marginRight: 2}}>
                     <Skeleton variant="rectangular" />
                 </ListItemText>
+                {isLarge ? 
+                    <ListItemIcon sx={listNumber1stExtraStyle}>
+                        <Skeleton variant="rectangular">
+                            <TextPlaceholder />
+                        </Skeleton>
+                    </ListItemIcon>
+                : ""}
+                {isLarge ? 
+                    <ListItemIcon sx={listNumber2ndExtraStyle}>
+                        <Skeleton variant="rectangular">
+                            <TextPlaceholder />
+                        </Skeleton>
+                    </ListItemIcon>
+                : ""}
                 <Skeleton variant="circular">
                     <LeaderboardRankProgress xp="0" maxxp="0.1" level="0" />
                 </Skeleton>
@@ -125,6 +161,12 @@ export function LeaderboardRankHeader({ bg }) {
             <div style={listHeaderExpand}>
                 User
             </div>
+            {isLarge ? <div style={listHeaderCompact}>
+                Messages
+            </div> : ""}
+            {isLarge ? <div style={{...listHeaderCompact, marginRight: "15px"}}>
+                XP
+            </div> : ""}
             <div style={listHeaderCompact}>
                 Level
             </div>

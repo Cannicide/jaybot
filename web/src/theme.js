@@ -21,6 +21,8 @@ export const rankTheme = {
   background: "#002a1c",
   color: "#eee",
   colorMuted: "rgba(255, 255, 255, 0.7)",
+  smoothBlack: "#121212",
+  info: "#29b6f6",
   rankGoldBackground: "rgba(241, 196, 15, 0.36)",
   rankSilverBackground: "rgba(161, 164, 201, 0.36)",
   rankBronzeBackground: "rgba(173, 138, 86, 0.36)",
