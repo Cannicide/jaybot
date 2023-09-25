@@ -1,22 +1,46 @@
-import * as React from "react";
+import Page from "./Page";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import Avatar from "@mui/material/Avatar";
+import Divider from "@mui/material/Divider";
 import RankLeaderboard from "../components/RankLeaderboard";
 import { Theme, rankTheme } from "../theme";
 
+const ZhordeLogo = () => {
+    const url = "https://cdn.discordapp.com/attachments/728320173009797190/1128776789578235914/ZHFinal.png";
+
+    return (
+        <Avatar variant="rounded" alt="ZombieHorde" src={url} sx={{ minWidth: 50, minHeight: 50, width: 100, height: 100 }}>
+            ZH
+        </Avatar>
+    );
+}
+
 const Main = ({ children }) => (
-    <div style={{background: rankTheme.smoothBlack, color: rankTheme.color, width: "100%", height: "100%", position: "fixed", top: "0", left: "0", overflowY: "auto"}}>
+    <div style={{background: rankTheme.smoothBlack, color: rankTheme.color, width: "100%", height: "100%", position: "fixed", top: "0", left: "0", overflowY: "auto", display: "flex", alignItems: "center", flexDirection: "column"}}>
         {children}
     </div>
 );
 
-class Ranks extends React.Component {
+const Section = ({ children, sx={} }) => (
+    <Container maxWidth="md" sx={{ margin: "15px 0px", display: "flex", justifyContent: "center", alignItems: "center", ...sx }}>
+        {children}
+    </Container>
+);
 
-    state = { users: new Array(100).fill(null) }
+class Ranks extends Page {
 
-    componentDidMount() {
+    state = {
+        lifetimeRanks: new Array(100).fill(null),
+        monthlyRanks: new Array(100).fill(null),
+        isMonthly: false
+    }
+
+    onMount() {
         this.getUsers();
     }
 
@@ -25,52 +49,64 @@ class Ranks extends React.Component {
         return new Array(len).fill(null).map(_ => chars[Math.floor(Math.random() * chars.length)]).join("");
     }
 
-    getUsers() {
-        const users = [
-            {
-                playerId: "abc123",
-                playerUsername: "Jay",
-                playerAvatar: "https://cdn.discordapp.com/avatars/274639466294149122/fc00171d20cdcaaf4f7e3e88b6ce9d0d.webp?size=128",
-                xp: 70,
-                get level() {
-                    return Math.floor(this.xp / 75);
-                },
-                get messages() {
-                    return Math.floor(this.xp / 15);
-                }
-            }
-        ].concat(new Array(84).fill(null).map(_ => ({
-            playerId: this.getUUID(10),
-            playerUsername: "BotTHE" + this.getUUID(Math.floor(Math.random() * 8) + 1),
-            playerAvatar: null,
-            xp: Math.floor(Math.random() * 2500) + 1,
-            get level() {
-                return Math.floor(this.xp / 75);
-            },
-            get messages() {
-                return Math.floor(this.xp / 15);
-            }
-        })).concat(new Array(15).fill(null)));
+    async getUsers() {
+        try {
+            const lifetimeRaw = await fetch("/api/ranks/top");
+            const monthlyRaw = await fetch("/api/ranks/top/monthly");
 
-        setTimeout(() => this.setState({ users }), 5000);
+            let lifetimeRanks = await lifetimeRaw.json();
+            let monthlyRanks = await monthlyRaw.json();
+
+            lifetimeRanks = lifetimeRanks.concat(new Array(100 - lifetimeRanks.length).fill(null));
+            monthlyRanks = monthlyRanks.concat(new Array(100 - monthlyRanks.length).fill(null));
+
+            setTimeout(() => this.setState({ lifetimeRanks, monthlyRanks }), 250);
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+
+    switchType(newType) {
+        this.setState({ isMonthly: newType === "monthly" });
     }
 
     render() {
-        const { users } = this.state;
+        const { lifetimeRanks, monthlyRanks, isMonthly } = this.state;
 
         return (
             <Theme theme={rankTheme.provider}>
                 <Main>
-                    <Container maxWidth="md">
-                        <Box sx={{ bgcolor: rankTheme.background, padding: "0px 15px 15px 15px", margin: "15px 0px", borderRadius: "15px" }}>
-                            <RankLeaderboard users={users} />
+                    <Section sx={{ flexDirection: "column" }}>
+                        <ZhordeLogo />
+                        <Divider role="presentation" sx={{ width: "100%" }}>
+                            <Typography variant="h4" display="block" sx={{ textAlign: "center" }}>
+                                Discord Ranks
+                            </Typography>
+                        </Divider>
+                    </Section>
+                    <Section sx={{ margin: "30px 0px" }}>
+                        <ToggleButtonGroup
+                            color={isMonthly ? "info" : "primary"}
+                            value={isMonthly ? "monthly" : "lifetime"}
+                            exclusive
+                            onChange={(_, n) => this.switchType(n)}
+                            aria-label="Category"
+                        >
+                            <ToggleButton value="lifetime">Lifetime</ToggleButton>
+                            <ToggleButton value="monthly">Monthly</ToggleButton>
+                        </ToggleButtonGroup>
+                    </Section>
+                    <Section>
+                        <Box sx={{ bgcolor: rankTheme.background, padding: "0px 15px 15px 15px", borderRadius: "15px", width: "100%" }}>
+                            <RankLeaderboard users={isMonthly ? monthlyRanks : lifetimeRanks} isMonthly={isMonthly} />
                         </Box>
-                    </Container>
-                    <Container maxWidth="md">
-                        <Typography variant="overline" display="block" gutterBottom sx={{ textAlign: "center", marginBottom: "15px" }}>
+                    </Section>
+                    <Section>
+                        <Typography variant="overline" display="block" gutterBottom sx={{ textAlign: "center" }}>
                             Zhorde Panacea by <Link href="https://github.com/Cannicide" underline="none" target="_blank" rel="noopener">Cannicide</Link>
                         </Typography>
-                    </Container>
+                    </Section>
                 </Main>
             </Theme>
         );

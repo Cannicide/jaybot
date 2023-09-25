@@ -2,11 +2,11 @@ const { app, path, express } = require("../panacea");
 const { getTop100, getUser } = require("./ranks");
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../web/build')));
+app.use(express.static(path.join(__dirname, '/../../web/build')));
 
 // Util function to enable restrictive CORS headers on a route
 function cors(res) {
-    res.set('Access-Control-Allow-Origin', 'localhost:8500 localhost:8501 zh.cannicide.net');
+    res.set('Access-Control-Allow-Origin', 'http://localhost:8501');
 }
 
 // API get top 100 ranks
@@ -46,7 +46,7 @@ app.get("/api/ranks/user/:id", async (req, res) => {
 
 // React route handling
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname + '../web/build/index.html'));
+    res.sendFile(path.join(__dirname + '/../../web/build/index.html'));
 });
 
 // Setup express

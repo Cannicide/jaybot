@@ -112,7 +112,7 @@ module.exports.db = {
             defaultValue: 0
         },
         messages: {
-            type: sql.DataTypes.INTEGER, // TODO: actually track message count
+            type: sql.DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0
         },

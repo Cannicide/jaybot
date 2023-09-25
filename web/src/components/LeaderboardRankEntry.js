@@ -7,7 +7,16 @@ const rankUtils = {
     getXpTotalAtLevel(level) {
         // Apply derivation of Mee6 formula to get xp at level
         return Math.floor((5 * level / 6) * (2 * level + 13) * (level + 7));
-    }
+    },
+    getXpFromCurrentToNextLevel(currentLevel) {
+        // Get xp needed to get from level A to level A + 1 (used in rank card progress bar)
+        return rankUtils.getXpTotalAtLevel(currentLevel + 1) - rankUtils.getXpTotalAtLevel(currentLevel);
+    },
+
+    getXpProgressTowardsNextLevel(currentXp, currentLevel) {
+        // Get progress towards next level (used in rank card progress bar)
+        return currentXp - rankUtils.getXpTotalAtLevel(currentLevel);
+    },
 };
 
 const rankColors = [
@@ -32,17 +41,17 @@ const listNumberIconStyle = {
     justifyContent: "center"
 };
 
-const listNumber2ndExtraStyle = {
+const listNumber2ndExtraStyle = (isMonthly) => ({
     ...listNumberIconStyle,
-    color: rankTheme.primary,
+    color: isMonthly ? rankTheme.info : rankTheme.primary,
     marginRight: "17px"
-}
+});
 
-const listNumber1stExtraStyle = {
-    ...listNumber2ndExtraStyle,
+const listNumber1stExtraStyle = (isMonthly) => ({
+    ...listNumber2ndExtraStyle(isMonthly),
     minWidth: "65px",
     marginRight: "2px"
-}
+});
 
 const getListNumberChipStyle = index => ({
     minWidth: 32,
@@ -63,7 +72,8 @@ const getListHeaderStyle = (bgcolor) => ({
     display: "flex",
     flexDirection: "row",
     borderRadius: 0,
-    opacity: 0.9
+    opacity: 0.9,
+    transform: "translateY(-2px)"
 });
 
 const listHeaderCompact = {
@@ -82,21 +92,21 @@ const listHeaderExpand = {
     marginLeft: "10px"
 }
 
-export function LeaderboardRankEntry({ pid, avatar, username, xp, level, messages, index }) {
+export function LeaderboardRankEntry({ pid, avatar, username, xp, level, messages, index, isMonthly }) {
 
     const isLarge = useMediaQuery(rankTheme.provider.breakpoints.up('md'));
     const largeComps = (
         <>
-            <ListItemIcon sx={listNumber1stExtraStyle}>
+            <ListItemIcon sx={listNumber1stExtraStyle(isMonthly)}>
                 {abbreviateNumber(messages)}
             </ListItemIcon>
-            <ListItemIcon sx={listNumber2ndExtraStyle}>
+            <ListItemIcon sx={listNumber2ndExtraStyle(isMonthly)}>
                 {abbreviateNumber(xp)}
             </ListItemIcon>
         </>
     );
 
-    const hasId = !avatar?.match(/(?<=cdn\.discordapp\.com\/avatars\/)[0-9]{18}/g)?.[0];
+    // const hasId = avatar?.match(/(?<=cdn\.discordapp\.com\/avatars\/)[0-9]{18}/g)?.[0];
     const TextPlaceholder = () => (<span style={{visibility:"hidden"}}>100</span>);
 
     return pid ?
@@ -105,15 +115,20 @@ export function LeaderboardRankEntry({ pid, avatar, username, xp, level, message
                     <Chip label={abbreviateNumber(index + 1)} sx={getListNumberChipStyle(index)} />
                 </ListItemIcon>
                  <ListItemAvatar>
-                     <Avatar src={avatar} alt={username} sx={hasId ? { bgcolor: rankTheme.info, color: rankTheme.smoothBlack } : {}}>
-                        {username.charAt(0)}
-                     </Avatar>
+                     <Avatar src={avatar} sx={{ bgcolor: rankTheme.smoothBlack, color: isMonthly ? rankTheme.info : rankTheme.primary }} />
                  </ListItemAvatar>
                  <ListItemText
                      primary={username}
+                     sx={{
+                        "& span": {
+                            textOverflow: "ellipsis",
+                            overflowX: "hidden",
+                            maxWidth: 160
+                        }
+                     }}
                  />
                  {isLarge ? largeComps : ""}
-                 <LeaderboardRankProgress xp={xp} maxxp={rankUtils.getXpTotalAtLevel(level + 1)} level={level} />
+                 <LeaderboardRankProgress xp={rankUtils.getXpProgressTowardsNextLevel(xp, level)} maxxp={rankUtils.getXpFromCurrentToNextLevel(level)} level={level} />
             </ListItem>) :
             (<ListItem key={"a" + index} sx={listStyle}>
                 <ListItemIcon sx={listNumberIconStyle}>
@@ -130,14 +145,14 @@ export function LeaderboardRankEntry({ pid, avatar, username, xp, level, message
                     <Skeleton variant="rectangular" />
                 </ListItemText>
                 {isLarge ? 
-                    <ListItemIcon sx={listNumber1stExtraStyle}>
+                    <ListItemIcon sx={listNumber1stExtraStyle(isMonthly)}>
                         <Skeleton variant="rectangular">
                             <TextPlaceholder />
                         </Skeleton>
                     </ListItemIcon>
                 : ""}
                 {isLarge ? 
-                    <ListItemIcon sx={listNumber2ndExtraStyle}>
+                    <ListItemIcon sx={listNumber2ndExtraStyle(isMonthly)}>
                         <Skeleton variant="rectangular">
                             <TextPlaceholder />
                         </Skeleton>

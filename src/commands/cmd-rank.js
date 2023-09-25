@@ -1,5 +1,5 @@
 const Vidar = require("djs-vidar");
-const { sendRankCard, sendRankCardMonthly, sendLeaderboardsMessage, removeUser, getUser, setXp, clearXp } = require("../systems/ranks");
+const { sendRankCard, sendRankCardMonthly, sendLeaderboardsMessage, removeUser, getUser, setXp, clearXp, updateRank: simulateMessages } = require("../systems/ranks");
 
 const rankCommand = async (i) => {
     await i.deferReply();
@@ -44,8 +44,7 @@ const docs = {
         "import": "Admin-only command to import a user rank.",
         "clear": "Admin-only command to clear rank data.",
         "importmee6": "Admin-only command to import Mee6 data.",
-        // "color": "Admin-only command to set custom rank color."
-        // TODO: simulate command
+        "simulate": "Admin-only command to simulate xp gain."
     }
 };
 
@@ -64,6 +63,7 @@ Vidar.command("rankadmin", "Command to manage ranks.")
 .argument("import <user: user> <xp: int> <level: int>")
 .argument("clear")
 .argument("importmee6")
+.argument("simulate <messages: int>")
 .require("Administrator")
 .docs(docs)
 .action({
@@ -108,7 +108,9 @@ Vidar.command("rankadmin", "Command to manage ranks.")
             if (rank.xp.match("k")) xp = Number(rank.xp.slice(0, -1)) * 1000;
             else xp = Number(rank.xp);
 
-            // TODO: do the same for message count
+            let messages;
+            if (rank.messages.match("k")) messages = Number(rank.messages.slice(0, -1)) * 1000;
+            else messages = Number(rank.messages);
 
             return {
                 playerId: id,
@@ -116,7 +118,7 @@ Vidar.command("rankadmin", "Command to manage ranks.")
                 playerAvatar: rank.avatar,
                 xp,
                 level: rank.level,
-                messages: rank.messages
+                messages
             };
         }).filter((v,i,a)=> v && a.findIndex(v2=>(v2?.playerId===v.playerId))===i);
 
@@ -125,7 +127,17 @@ Vidar.command("rankadmin", "Command to manage ranks.")
         }
 
         await i.editReply(`> ✅ **Successfully imported ${oldRanks.length} user ranks from the Mee6 archive.**`);
-    }
+    },
+    "simulate": async (i) => {
+        if (i.user.id != "274639466294149122") return await i.reply({ content: "> <:no:669928674119778304> **Only Cannicide is allowed to use the `/rankadmin simulate` command.**", ephemeral: true });
+        await i.deferReply({ ephemeral: true });
+
+        const { messages } = Vidar.args(i);
+        const user = await i.user.fetch(true);
+
+        await simulateMessages(user, messages, false);
+        await i.editReply(`> ✅ **Successfully simulated messages for user:** ${user}`);
+    },
 });
 
 Vidar.command("levels", "View Discord message XP leaderboards.")

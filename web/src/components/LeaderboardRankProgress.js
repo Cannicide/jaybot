@@ -33,7 +33,7 @@ export default function LeaderboardRankProgress(props) {
             />
             <Box
                 sx={{
-                top: "5px",
+                top: 0,
                 left: 0,
                 bottom: 0,
                 right: 0,

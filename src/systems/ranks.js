@@ -62,7 +62,7 @@ const rankUtils = {
      * @param {Number} newXp
      * @param {boolean} isLevelUp
      */
-    async updateXp(playerRank, newXp, isLevelUp, user) {
+    async updateXp(playerRank, newXp, isLevelUp, user, newMessages=1) {
         // Update xp and level
 
         return await db.PlayerRank.update({
@@ -74,7 +74,7 @@ const rankUtils = {
             playerAvatar: user?.displayAvatarURL(),
             customColor: rankUtils.isDarkColor(user?.accentColor) ? null : user.hexAccentColor,
             // @ts-ignore
-            messages: playerRank.messages + 1
+            messages: playerRank.messages + newMessages
         // @ts-ignore
         }, { where: { playerId: playerRank.playerId } });
     },
@@ -241,9 +241,9 @@ const rankUtils = {
         });
     },
 
-    getLeaderboards(guild) {
+    getLeaderboards() {
         // Get leaderboards link for guild
-        return `https://zh.cannicide.net/ranks/${guild.id}`;
+        return `https://zh.cannicide.net/ranks`;
     },
 
     sendLevelUpMessage(player, currentLevel) {
@@ -258,7 +258,7 @@ const rankUtils = {
             components: [new Discord.ActionRowBuilder().addComponents(
                 new Discord.ButtonBuilder()
                 .setStyle(Discord.ButtonStyle.Link)
-                .setURL(rankUtils.getLeaderboards(interaction.guild))
+                .setURL(rankUtils.getLeaderboards())
                 .setLabel("View leaderboards")
             )]
         });
@@ -290,7 +290,35 @@ const rankUtils = {
 
     getFancyUsername(name) {
         return name.slice(0, 1).toUpperCase() + name.slice(1);
-    }
+    },
+
+    async updateRank(user, messages=1, useCooldown=true) {
+        const [ playerRank ] = await db.PlayerRank.findOrCreate({
+            where: { playerId: user.id },
+            defaults: {
+                playerUsername: rankUtils.getFancyUsername(user.username),
+                playerAvatar: user?.displayAvatarURL(),
+                customColor: rankUtils.isDarkColor(user?.accentColor) ? null : user.hexAccentColor,
+                monthTimestamp: Date.now()
+            }
+        });
+
+        if (useCooldown && rankUtils.isInCooldown(playerRank)) return;
+
+        const newXp = rankUtils.generateXp() * messages;
+        // @ts-ignore
+        const isLevelUp = rankUtils.isLevelUp(newXp, playerRank.xp, playerRank.level);
+        // @ts-ignore
+        const isLevelUpMonthly = rankUtils.isLevelUp(newXp, playerRank.xpMonthly, playerRank.levelMonthly);
+        
+        // @ts-ignore
+        if (isLevelUp) rankUtils.sendLevelUpMessage(user, playerRank.level);
+
+        await rankUtils.updateCooldown(playerRank);
+
+        await rankUtils.updateXp(playerRank, newXp, isLevelUp, user, messages);
+        await rankUtils.updateXpMonthly(playerRank, newXp, isLevelUpMonthly);
+    },
 }
 
 createEvent({
@@ -299,31 +327,7 @@ createEvent({
         if (!message.author || message.author.bot || !message.guild || message.system) return;
         const user = await message.author.fetch({ force: true });
         
-        const [ playerRank ] = await db.PlayerRank.findOrCreate({
-            where: { playerId: message.author.id },
-            defaults: {
-                playerUsername: rankUtils.getFancyUsername(message.author.username),
-                playerAvatar: user?.displayAvatarURL(),
-                customColor: rankUtils.isDarkColor(user?.accentColor) ? null : user.hexAccentColor,
-                monthTimestamp: Date.now()
-            }
-        });
-
-        if (rankUtils.isInCooldown(playerRank)) return;
-
-        const newXp = rankUtils.generateXp();
-        // @ts-ignore
-        const isLevelUp = rankUtils.isLevelUp(newXp, playerRank.xp, playerRank.level);
-        // @ts-ignore
-        const isLevelUpMonthly = rankUtils.isLevelUp(newXp, playerRank.xpMonthly, playerRank.levelMonthly);
-        
-        // @ts-ignore
-        if (isLevelUp) rankUtils.sendLevelUpMessage(message.author, playerRank.level);
-
-        await rankUtils.updateCooldown(playerRank);
-
-        await rankUtils.updateXp(playerRank, newXp, isLevelUp, user);
-        await rankUtils.updateXpMonthly(playerRank, newXp, isLevelUpMonthly);
+        await rankUtils.updateRank(user);
     }
 });
 
