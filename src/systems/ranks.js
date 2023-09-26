@@ -90,7 +90,7 @@ const rankUtils = {
         // @ts-ignore
         const prevMonth = new Date(+playerRank.monthTimestamp).getMonth();
         if (prevMonth != new Date().getMonth()) {
-            const rank = await rankUtils.getRankMonthly();
+            const rank = await rankUtils.getRankMonthly(playerRank);
             if (rank < 4) require("fs").writeFileSync(__dirname + "/../../storage/monthlyRankWinners.json", (() => {
                 const lb = require("../../storage/monthlyRankWinners.json");
                 lb[rank] = {
