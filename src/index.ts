@@ -9,6 +9,7 @@ import "./commands/cmd-yeanay.js";
 import "./commands/cmd-reactionroles.js";
 import "./commands/cmd-statsadmin.js";
 import "./commands/cmd-rank.js";
+import "./commands/cmd-pluralkit.js";
 
 // Import event systems
 import "./events/ruleroles.js";

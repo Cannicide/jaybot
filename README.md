@@ -9,3 +9,4 @@ Now powered by Cannicide's [Brynjolf suite](https://www.npmjs.com/package/@brynj
 - Automatically add a specific role when users accept the rules
 - Allow users to react to a message to gain reaction roles
 - Advanced rank system based on server activity, with custom rank card images and a dynamic leaderboard webpage made with React
+- Command to explain PluralKit, to avoid admins needing to repeatedly explain it themselves
