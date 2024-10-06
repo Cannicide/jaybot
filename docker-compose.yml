@@ -1,0 +1,19 @@
+version: "1.0"
+services:
+  # A user-defined name for this container
+  jaybot:
+    container_name: jaybot
+    build:
+        context: .
+        dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8500:8500"
+    # Mounts the local directory to docker container as a volume.
+    volumes:
+      - .:/app
+      - /app/node_modules

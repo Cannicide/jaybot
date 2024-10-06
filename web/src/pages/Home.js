@@ -4,7 +4,7 @@ export default class Home extends Page {
     render() {
         return (
             <>
-                <h1>Zhorde Panacea Homepage</h1>
+                <h1>Jaybot Homepage</h1>
                 <p>This homepage is currently under construction.</p>
                 <p>Perhaps you meant to go to one of the following pages:</p>
                 <ul>

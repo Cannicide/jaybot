@@ -1,9 +1,9 @@
 {
-  "short_name": "Panacea",
-  "name": "Panacea | Official ZombieHorde Discord Bot",
+  "short_name": "Jaybot",
+  "name": "Jaybot | Official ZombieHorde Discord Bot",
   "icons": [
     {
-      "src": "https://cdn.discordapp.com/attachments/728320173009797190/1128765968265515160/ZHBotServer.png",
+      "src": "https://cdn.cannicide.net/zhorde/logo.png",
       "sizes": "1920x1920 512x512 192x192 64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }

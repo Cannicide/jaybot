@@ -1,6 +1,5 @@
 node_modules/
-old/
 .env
-package-lock.json
 storage/*
 web/build
+lib/

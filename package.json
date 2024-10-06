@@ -1,34 +1,41 @@
 {
-  "name": "panaceabot",
-  "version": "4.0.1",
+  "name": "jaybot",
+  "version": "5.0.0",
   "description": "The official discord bot of ZombieHorde.net",
-  "main": "./src/index.js",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "type": "module",
   "author": {
     "name": "Cannicide"
   },
   "scripts": {
-    "start": "pm2 start ./src/index.js --name=panacea",
-    "test": "node ./src/index.js"
+    "build": "tsc",
+    "start": "node ./lib/index.js"
   },
   "dependencies": {
-    "discord-arts-zhorde": "^1.0.1",
-    "discord.js": "^14.11.0",
-    "djs-vidar": "^1.0.0",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
+    "@brynjolf/commands": "^0.0.1",
+    "@brynjolf/events": "^0.0.1",
+    "discord-arts-zhorde": "github:cannicide/discord-arts-zhorde",
+    "discord.js": "^14.16.3",
+    "express": "^4.21.0",
     "miniget": "^4.2.3",
-    "sequelize": "^6.32.1",
-    "sifbase": "^1.0.2",
-    "sqlite3": "^5.1.6",
-    "trello-node-api": "^0.0.9"
+    "mongodb": "^5.9.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.4",
+    "typescript": "^5.6.2"
   },
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "license": "MIT",
   "keywords": [
     "node",
     "zhorde",
     "express"
+  ],
+  "files": [
+    "/lib"
   ]
 }

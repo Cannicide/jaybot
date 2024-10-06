@@ -11,7 +11,7 @@ import RankLeaderboard from "../components/RankLeaderboard";
 import { Theme, rankTheme } from "../theme";
 
 const ZhordeLogo = () => {
-    const url = "https://cdn.discordapp.com/attachments/728320173009797190/1128776789578235914/ZHFinal.png";
+    const url = "https://cdn.cannicide.net/zhorde/logo.png";
 
     return (
         <Avatar variant="rounded" alt="ZombieHorde" src={url} sx={{ minWidth: 50, minHeight: 50, width: 100, height: 100 }}>
@@ -104,7 +104,7 @@ class Ranks extends Page {
                     </Section>
                     <Section>
                         <Typography variant="overline" display="block" gutterBottom sx={{ textAlign: "center" }}>
-                            Zhorde Panacea by <Link href="https://github.com/Cannicide" underline="none" target="_blank" rel="noopener">Cannicide</Link>
+                            Zhorde Jaybot by <Link href="https://github.com/Cannicide" underline="none" target="_blank" rel="noopener">Cannicide</Link>
                         </Typography>
                     </Section>
                 </Main>
