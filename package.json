@@ -17,7 +17,7 @@
     "@brynjolf/events": "^0.0.1",
     "discord-arts-zhorde": "github:cannicide/discord-arts-zhorde",
     "discord.js": "^14.16.3",
-    "express": "^4.21.0",
+    "express": "^4.21.2",
     "miniget": "^4.2.3",
     "mongodb": "^5.9.2"
   },
